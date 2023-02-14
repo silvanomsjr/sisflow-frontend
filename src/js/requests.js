@@ -7,15 +7,8 @@ async function baseRequestFBody(headers, endpoint){
 
   var vreturn = {};
 
-  console.log('variavel ambiente')
-  console.log(process.env.VUE_APP_SERVICE_URL)
-  console.log('variavel base_url')
-  console.log(base_url)
-  console.log('endpoint')
-  console.log(endpoint)
-
   try{
-    vreturn['response'] = await fetch(`https://sisges-back.up.railway.app/${endpoint}`, headers);
+    vreturn['response'] = await fetch(`${base_url}${endpoint}`, headers);
     vreturn['status'] = vreturn['response'].status;
 
     let vreturnOk = vreturn['response'].ok;
