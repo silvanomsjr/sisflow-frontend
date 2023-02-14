@@ -5,7 +5,9 @@ node_modules
 # env files
 .env
 .env.local
+.env.homol
 .env.*.local
+.env.*.homol
 
 # Log files
 npm-debug.log*
