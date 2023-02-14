@@ -1,6 +1,6 @@
 var sha256 = require('js-sha256');
 
-const base_url = `${process.env.VUE_APP_LOCAL_URL}`
+const base_url = `${process.env.VUE_APP_SERVICE_URL}`
 
 // Used to avoid code duplication on requests
 async function baseRequestFBody(headers, endpoint){
