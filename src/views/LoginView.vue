@@ -81,35 +81,6 @@
 
       </form>
 
-      <div class="wrapperhrefs">
-        <div>
-          <TextCustom 
-            customColor="darkblue1"
-            customFontSize="small_bold"
-            display="block">
-            Verifique as regras de estágio para o seu curso:
-          </TextCustom>
-        </div>
-        <div class="divhref">
-          <HrefCustom
-            id="cchref"
-            customColor="lightblue"
-            customFontSize="small"
-            href="https://facom.ufu.br/graduacao/bcc/estagio-supervisionado">
-            Ciência da Computação
-          </HrefCustom>
-        </div>
-        <div class="divhref">
-          <HrefCustom
-            id="sihref"
-            customColor="lightblue"
-            customFontSize="small"
-            href="https://facom.ufu.br/legislacoes/normas-de-estagio-curricular-do-bacharelado-em-sistemas-de-informacao">
-            Sistemas de Informação
-          </HrefCustom>
-        </div>
-      </div>
-
     </div>
 
     <div class="bottom horCenter"
@@ -139,7 +110,6 @@
 <script>
 
 import ButtonCustom from '../components/ButtonCustom.vue'
-import HrefCustom from '../components/HrefCustom.vue'
 import ImgLogoUfu from '../components/ImgLogoUfu.vue'
 import InputCustom from '../components/InputCustom.vue'
 import LineCustom from '../components/LineCustom.vue'
@@ -152,7 +122,6 @@ export default {
 
   components: {
     ButtonCustom,
-    HrefCustom,
     ImgLogoUfu,
     InputCustom,
     LineCustom,
@@ -179,15 +148,25 @@ export default {
       let mailV = this.$refs.mail.getV().trim();
       let passV = this.$refs.pass.getV();
 
+      // verify institutional mail
       if(!mailV.match(/\S+@\S+\.\S+/)){
         this.$root.renderMsg('warn', 'Email inválido!', '');
         this.$root.clearLoginData();
         return;
       }
-
       if(!mailV.endsWith('@ufu.br')){
         this.$root.renderMsg('warn', 'O email informado deve ser o institucional!', '');
         this.$root.clearLoginData();
+        return;
+      }
+      
+      // verify password
+      if(!/^\S*$/.test(passV)){
+        this.$root.renderMsg('warn', 'Senha inválida!', 'A senha não contém espaços.');
+        return;
+      }
+      if(!/^.{8,18}$/.test(passV)){
+        this.$root.renderMsg('warn', 'Senha inválida!', 'A senha não contém de 8 a 18 caracteres.');
         return;
       }
 
@@ -198,7 +177,7 @@ export default {
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, [
-          'Usuário não cadastrado!', 
+          'Usuário não cadastrado!',
           'Senha incorreta!']);
       }
     }
@@ -252,9 +231,6 @@ export default {
 }
 .signFields{
   margin-top: 10px;
-}
-.wrapperhrefs{
-  margin-top: 20px;
 }
 .divhref{
   margin-left: 20px;

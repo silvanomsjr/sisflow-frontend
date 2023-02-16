@@ -86,17 +86,8 @@ export default {
     if (this.tokenData != null){
       this.userLoggedData = jwt_decode(this.tokenData);
 
-      if (this.$route.meta && this.$route.meta.allowedUsers){
-        this.userAcessAllowed = this.$route.meta.allowedUsers.includes(this.userLoggedData['tipo']);
-        
-        if(!this.userAcessAllowed){
-          let self = this;
-          this.renderMsg(
-            'warn', 
-            'Acesso não permitido!', 
-            'O usuário não possui permissão para acessar esta pagina.',
-            function () { self.$root.renderView('home'); });
-        }
+      if(this.$route.meta && this.$route.meta.allowedUsers){
+        this.verifyUserAcessForPage();
       }
     }
     
@@ -115,19 +106,8 @@ export default {
       }
       // verifies if user is allowed to access a page with allowedUsers
       else if(this.userLoggedData && this.$route.meta && this.$route.meta.allowedUsers){
-        this.userAcessAllowed = this.$route.meta.allowedUsers.includes(this.userLoggedData['tipo']);
-        
-        if(!this.userAcessAllowed){
-          let self = this;
-          this.renderMsg(
-            'warn', 
-            'Acesso não permitido!', 
-            'O usuário não possui permissão para acessar esta pagina.',
-            function () { self.$root.renderView('home'); });
-        }
+        this.verifyUserAcessForPage();
       }
-
-      // unauthorized acess
     }
   },
 
@@ -200,13 +180,6 @@ export default {
         this.renderMsg('error', '', errorMsgs);
       }
     },
-    
-    clearLoginData(){
-      UserStorage.removeTokenJwt();
-      this.tokenData = null;
-      this.userLoggedData = null;
-    },
-    /**  **/
 
     /** Requests methods **/
     async doLoginRequest(mailV, passV){
@@ -237,8 +210,47 @@ export default {
         this.loadModalEnabled = false;
       }
       return vreturn;
-    }
+    },
     /** **/
+
+    /** Other methods */
+
+    verifyUserAcessForPage(){
+
+      this.userAcessAllowed = false;
+
+      if(this.userLoggedData){
+        // if only one user letter(sigla)
+        if(typeof this.userLoggedData['siglas'] === 'string'){
+          this.userAcessAllowed = this.$route.meta.allowedUsers.includes(this.userLoggedData['siglas']);
+        }
+        // list od letters
+        else{
+          // foreach allowed type of user for page verify if user is one
+          this.$route.meta.allowedUsers.forEach(siglaUser => {
+            if(this.userLoggedData['siglas'].includes(siglaUser)){
+              this.userAcessAllowed = true;
+            }
+          });
+        }
+
+        if(!this.userAcessAllowed){
+          let self = this;
+          this.renderMsg(
+            'warn', 
+            'Acesso não permitido!', 
+            'O usuário não possui permissão para acessar esta pagina.',
+            function () { self.$root.renderView('home'); });
+        }
+      }
+    },
+
+    clearLoginData(){
+      UserStorage.removeTokenJwt();
+      this.tokenData = null;
+      this.userLoggedData = null;
+    },
+    /**  **/
   }
 }
 </script>
