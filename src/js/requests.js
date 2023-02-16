@@ -1,5 +1,3 @@
-var sha256 = require('js-sha256');
-
 const base_url = `${process.env.VUE_APP_SERVICE_URL}`
 
 // Used to avoid code duplication on requests
@@ -44,9 +42,7 @@ async function doLogin(_, args){
   let userMailIns = args[0];
   let userPass = args[1];
 
-  // password is encrypted with SHA-256 algorithm for security
-  let userPassHash = sha256(userPass);
-  let auth = window.btoa(`${userMailIns}:${userPassHash}`);
+  let auth = window.btoa(`${userMailIns}:${userPass}`);
   
   var myHeaders = {
     method: 'POST',
@@ -60,7 +56,7 @@ async function doLogin(_, args){
   return vreturn;
 }
 
-async function signGetCode(_, args){
+async function signMakeCode(_, args){
   
   let mailIns = args[0];
 
@@ -79,12 +75,32 @@ async function signGetCode(_, args){
   return vreturn;
 }
 
-async function doSign(_, args){
+async function signVerifyCode(_, args){
+
+  let emailIns = args[0];
+  let cadCode = args[1];
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    }
+  }
+
+  var querystring = `?email_ins=${emailIns}&cad_code=${cadCode}`;
+
+  let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
+  return vreturn;
+}
+
+async function signDoWithCode(_, args){
   
-  let mailIns = args[0];
+  let emailIns = args[0];
   let emailSec = args[1];
-  let hashSenha = sha256(args[2]);
-  let cadCode = args[3];
+  let telefone = args[2]
+  let senha = args[3];
+  let cadCode = args[4];
 
   var myHeaders = {
     method: 'PUT',
@@ -93,9 +109,10 @@ async function doSign(_, args){
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      'email_ins': mailIns,
+      'email_ins': emailIns,
       'email_sec': emailSec,
-      'hash_senha': hashSenha,
+      'telefone': telefone,
+      'senha': senha,
       'cad_code': cadCode
     })
   }
@@ -106,6 +123,7 @@ async function doSign(_, args){
 
 export default{
   doLogin,
-  signGetCode,
-  doSign
+  signMakeCode,
+  signVerifyCode,
+  signDoWithCode
 }

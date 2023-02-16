@@ -12,7 +12,7 @@
 
       <div class="logo">
         <ImgLogoUfu/>
-        <TextCustom 
+        <TextCustom
           customColor="darkblue1"
           customFontSize='page_title'>
           Sisges
@@ -25,14 +25,15 @@
 
       <div class="signFields">
         <TextCustom 
-          customFontSize='page_title'>
+          customFontSize='page_title'
+          display="block">
           Cadastro
         </TextCustom>
       </div>
 
       <form class="divForm">
 
-        <div v-if="!this.waitSignCode">
+        <div v-if="this.signStep == 1">
           <div class="divField">
             <TextCustom
               class="alignLeft"
@@ -48,7 +49,28 @@
               display="inline-block"
             />
           </div>
+        </div>
 
+        <div v-if="this.signStep == 2">
+          <div class="divField">
+            <TextCustom
+              class="alignLeft"
+              display="block">
+              Confirme a código enviado a seu email institucional:
+            </TextCustom>
+            <InputCustom
+              id='signcode'
+              ref='signcode'
+              name='signcode'
+              maxlength='10'
+              autocomplete='off'
+              width="100%"
+              display="inline-block"
+            />
+          </div>
+        </div>
+
+        <div v-if="this.signStep == 3">
           <div class="divField">
             <TextCustom
               class="alignLeft"
@@ -59,6 +81,23 @@
               id='mailsec'
               ref='mailsec'
               name='mailsec'
+              autocomplete='off'
+              width="100%"
+              display="inline-block"
+            />
+          </div>
+
+          <div class="divField">
+            <TextCustom
+              class="alignLeft"
+              display="block">
+              Telefone
+            </TextCustom>
+            <InputCustom
+              id='phonenum'
+              ref='phonenum'
+              name='phonenum'
+              :mask="['(##) ####-####', '(##) #####-####']"
               autocomplete='off'
               width="100%"
               display="inline-block"
@@ -99,91 +138,51 @@
             />
           </div>
         </div>
-
-        <div v-else>
-          <div class="divField">
-            <TextCustom
-              class="alignLeft"
-              display="block">
-              Confirme a código enviado a seu email institucional:
-            </TextCustom>
-            <InputCustom
-              id='signcode'
-              ref='signcode'
-              name='signcode'
-              mask='#########'
-              autocomplete='off'
-              width="100%"
-              display="inline-block"
-            />
-          </div>
-        </div>
           
-        <div class="btnLogar horCenter">
+        <div v-if="this.signStep < 3"
+          class="btnLogar horCenter">
+
           <ButtonCustom
             id="btnSign"
-            :label="this.waitSignCode ? 'Confirmar' : 'Cadastrar'"
+            :label="this.signStep == 1 ?
+              'Enviar Código' : 
+              'Confirmar'"
             customTextColor="white"
             customBackColor="darkblue1"
             customFontSize="normal"
-            width="60%"
+            width="50%"
             padding="3px 20px"
-            @click="this.waitSignCode ? this.doSign() : this.processParamsAndMakeSignCode()"
+            @click="this.signStep == 1 ?
+              this.verifyInsMakeSignCode() : 
+              this.verifySignCode()"
           />
         </div>
-
       </form>
-
-      <div v-if="!this.waitSignCode"
-        class="wrapperhrefs">
-        <div>
-          <TextCustom 
-            customColor="darkblue1"
-            customFontSize="small_bold"
-            display="block">
-            Verifique as regras de estágio para o seu curso:
-          </TextCustom>
-        </div>
-        <div class="divhref">
-          <HrefCustom
-            id="cchref"
-            customColor="lightblue"
-            customFontSize="small"
-            href="https://facom.ufu.br/graduacao/bcc/estagio-supervisionado">
-            Ciência da Computação
-          </HrefCustom>
-        </div>
-        <div class="divhref">
-          <HrefCustom
-            id="sihref"
-            customColor="lightblue"
-            customFontSize="small"
-            href="https://facom.ufu.br/legislacoes/normas-de-estagio-curricular-do-bacharelado-em-sistemas-de-informacao">
-            Sistemas de Informação
-          </HrefCustom>
-        </div>
-      </div>
-
     </div>
 
     <div class="bottom horCenter"
      :style="{
       'background-color': this.bottomBackColor,
-      
      }">
-      <TextCustom
+      <TextCustom v-if="this.signStep < 3"
         customColor="white"
         customFontSize="small"
         margin="0px 10px 0px 0px">
-        {{ this.waitSignCode ? 'Deseja reenviar o código?' : 'Possui conta cadastrada?'}}
+        {{ this.signStep == 1 ? 'Possui conta cadastrada?' : 'Deseja reenviar o código?' }}
       </TextCustom>
-      <ButtonCustom 
+      <ButtonCustom
         id="btnRedirectLogin"
-        :label="this.waitSignCode ? 'Reenviar' : 'Login'"
+        :label="this.signStep == 1 ? 
+          'Login' : this.signStep == 2 ? 
+          'Reenviar' : 
+          'Cadastrar'"
         customFontSize="small"
-        width="50%"
+        width="40%"
         padding="2px 20px"
-        @click="this.waitSignCode ? this.makeSignCode() : this.$root.renderView('login')"
+        @click="this.signStep == 1 ? 
+          this.$root.renderView('login') : this.signStep == 2 ?
+          this.makeSignCode() : 
+          this.doSign()"
       />
     </div>
   </div>
@@ -193,7 +192,6 @@
 <script>
 
 import ButtonCustom from '../components/ButtonCustom.vue'
-import HrefCustom from '../components/HrefCustom.vue'
 import ImgLogoUfu from '../components/ImgLogoUfu.vue'
 import InputCustom from '../components/InputCustom.vue'
 import LineCustom from '../components/LineCustom.vue'
@@ -207,7 +205,6 @@ export default {
 
   components: {
     ButtonCustom,
-    HrefCustom,
     ImgLogoUfu,
     InputCustom,
     LineCustom,
@@ -216,7 +213,7 @@ export default {
 
   data(){
     return {
-      waitSignCode: false,
+      signStep: 1,
 
       topBackColor: 'rgb(255,255,255)',
       bottomBackColor: 'rgb(28, 34, 86)',
@@ -225,6 +222,7 @@ export default {
   },
 
   created(){
+    console.log(this.$route.query)
     this.topBackColor = Utils.handleColorSelection('white');
     this.bottomBackColor = Utils.handleColorSelection('darkblue1');
     this.boxBorderColor = Utils.handleColorSelection('darkblue1');
@@ -232,32 +230,97 @@ export default {
 
   methods: {
 
-    async processParamsAndMakeSignCode(){
+    async verifyInsMakeSignCode(){
+      
+      this.$root.clearLoginData();
 
       let mailInsV = this.$refs.mailins.getV().trim();
-      let mailSecV = this.$refs.mailsec.getV().trim();
-      let passV = this.$refs.pass.getV();
-      let passConfV = this.$refs.passconf.getV();
 
       // verify institutional mail
       if(!Utils.validateMail(mailInsV)){
         this.$root.renderMsg('warn', 'Email institucional inválido!', '');
-        this.$root.clearLoginData();
         return;
       }
       if(!mailInsV.endsWith('@ufu.br')){
         this.$root.renderMsg('warn', 'O email informado deve ser o institucional!', '');
-        this.$root.clearLoginData();
         return;
       }
+
+      this.mailInsV = mailInsV;
+      await this.makeSignCode();
+    },
+
+    // request 1 - send institutional mail to generate sign code
+    async makeSignCode(){
+
+      let vreturn = await this.$root.doRequest(
+        Requests.signMakeCode,
+        [this.mailInsV]);
+
+      if(vreturn && vreturn['ok']){
+        this.signStep = 2;
+      }
+      else{
+        this.$root.renderRequestErrorMsg( vreturn, [
+          'Email já utilizado!', 
+          'Email institucional não encontrado no sistema!']);
+      }
+    },
+
+    // request 2 - verifyes sign auth code
+    async verifySignCode(){
+
+      let signCode = this.$refs.signcode.getV().trim();
+
+      // verify sgnCode format
+      if(signCode.length != 10){
+        this.$root.renderMsg('warn', 'Codigo inválido!', 'O código deve possuir 10 dígitos!');
+        return;
+      }
+
+      let vreturn = await this.$root.doRequest(
+        Requests.signVerifyCode,
+        [this.mailInsV, signCode]);
+
+      if(vreturn && vreturn['ok']){
+        this.signCode = signCode;
+        this.signStep = 3;
+      }
+      else{
+        this.$root.renderMsg('warn', 'Código inválido!', 'Os códigos expiram após 8 horas, reenvie um novo caso necessário.');
+      }
+    },
+
+    // request 3 - do user registration
+    async doSign(){
+      
+      let mailSecV = this.$refs.mailsec.getV().trim();
+      let phonenumV = this.$refs.phonenum.getV().replaceAll(/\(|\)|-|\s/g, '');
+      let passV = this.$refs.pass.getV();
+      let passConfV = this.$refs.passconf.getV();
+
       // verify secundary mail
       if(mailSecV){
         if(!Utils.validateMail(mailSecV)){
-          this.$root.renderMsg('warn', 'Email secundário inválido!', '');
-          this.$root.clearLoginData();
+          this.$root.renderMsg('warn', 'Email secundário inválido!', 'O campo é opcional e está invalido.');
           return;
         }
       }
+      else{
+        mailSecV = '';
+      }
+
+      // verify phone num
+      if(phonenumV){
+        if(phonenumV.length > 0 && phonenumV.length < 10){
+          this.$root.renderMsg('warn', 'Telefone inválido!', 'O campo é opcional e está preenchido parcialmente.');
+          return;
+        }
+      }
+      else{
+        phonenumV = '';
+      }
+
       // verify password
       let passErrMsg = [];
 
@@ -277,45 +340,15 @@ export default {
         return;
       }
 
-      // saves sign vars and send request to send sign code to institutional mail
-      this.mailInsV = mailInsV;
-      this.mailSecV = mailSecV;
-      this.passV = passV;
-
-      await this.makeSignCode();
-    },
-
-    async makeSignCode(){
-
-      let vreturn = await this.$root.doRequest(Requests.signGetCode, [this.mailInsV]);
-
-      if(vreturn && vreturn['ok']){
-        this.waitSignCode = true;
-      }
-      else{
-        this.$root.renderRequestErrorMsg( vreturn, [
-          'Email já utilizado!', 
-          'Email institucional não encontrado no sistema!']);
-      }
-    },
-
-    async doSign(){
-
-      let signCode = this.$refs.signcode.getV().trim();
-      if(signCode.length != 9){
-        this.$root.renderMsg('warn', 'Codigo inválido!', 'O código possui 9 dígitos!');
-        return;
-      }
-
       let vreturn = await this.$root.doRequest(
-        Requests.doSign, 
-        [this.mailInsV, this.mailSecV, this.passV, signCode]);
+        Requests.signDoWithCode,
+        [this.mailInsV, mailSecV, phonenumV, passV, this.signCode]);
 
       if(vreturn && vreturn['ok']){
         let self = this;
         this.$root.renderMsg(
-          'ok', 
-          'Sucesso!', 
+          'ok',
+          'Sucesso!',
           'Faça login para acessar o sistema.',
           function () { self.$root.renderView('login'); });
       }
@@ -359,7 +392,7 @@ export default {
     transform: translate(-50%,-50%);
   }
   .boxSign{
-    width: 40%;
+    width: 50%;
   }
 }
 .top, .bottom{

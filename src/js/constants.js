@@ -16,10 +16,10 @@ const TEXT_NORMAL = "18px";
 const TEXT_SMALL = "15px";
 
 // text font sizes, small screens
-const SMTEXT_PAGE_TITLE = "23px";
-const SMTEXT_TITLE = "19px";
-const SMTEXT_NORMAL = "14px";
-const SMTEXT_SMALL = "12px";
+const SMTEXT_PAGE_TITLE = "25px";
+const SMTEXT_TITLE = "21px";
+const SMTEXT_NORMAL = "17px";
+const SMTEXT_SMALL = "14px";
 
 // interval normal screens to small, used in responsivity
 const SM_VIEWPORT_SIZE = 900;
