@@ -184,7 +184,7 @@ export default {
     /** Requests methods **/
     async doLoginRequest(mailV, passV){
 
-      let vreturn = await this.doRequest(Requests.doLogin, [mailV, passV]);
+      let vreturn = await this.doRequest(Requests.loginDo, [mailV, passV]);
 
       if(vreturn && vreturn['ok']){
         let token = vreturn['response'];

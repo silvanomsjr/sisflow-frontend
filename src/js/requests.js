@@ -37,7 +37,7 @@ async function baseRequestFBody(headers, endpoint){
 }
 
 // do auth with user login mail password
-async function doLogin(_, args){
+async function loginDo(_, args){
 
   let userMailIns = args[0];
   let userPass = args[1];
@@ -122,7 +122,7 @@ async function signDoWithCode(_, args){
 }
 
 export default{
-  doLogin,
+  loginDo,
   signMakeCode,
   signVerifyCode,
   signDoWithCode
