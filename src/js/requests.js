@@ -75,7 +75,7 @@ async function signMakeCode(_, args){
   return vreturn;
 }
 
-async function signVerifyCode(_, args){
+async function signVerifyCodeData(_, args){
 
   let emailIns = args[0];
   let cadCode = args[1];
@@ -89,6 +89,24 @@ async function signVerifyCode(_, args){
   }
 
   var querystring = `?email_ins=${emailIns}&cad_code=${cadCode}`;
+
+  let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
+  return vreturn;
+}
+
+async function signVerifyCodeToken(_, args){
+
+  let token = args[0];
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    }
+  }
+
+  var querystring = `?acess_token=${token}`;
 
   let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
   return vreturn;
@@ -124,6 +142,7 @@ async function signDoWithCode(_, args){
 export default{
   loginDo,
   signMakeCode,
-  signVerifyCode,
+  signVerifyCodeData,
+  signVerifyCodeToken,
   signDoWithCode
 }

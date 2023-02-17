@@ -221,11 +221,29 @@ export default {
     }
   },
 
-  created(){
-    console.log(this.$route.query)
+  async created(){
     this.topBackColor = Utils.handleColorSelection('white');
     this.bottomBackColor = Utils.handleColorSelection('darkblue1');
     this.boxBorderColor = Utils.handleColorSelection('darkblue1');
+
+    // if token given by url
+    if(this.$route.query && this.$route.query['acess_token']){
+      let token = this.$route.query['acess_token'];
+
+      let vreturn = await this.$root.doRequest(
+        Requests.signVerifyCodeToken,
+        [token]);
+
+      if(vreturn && vreturn['ok']){
+        this.mailInsV = vreturn['response']['email_ins'];
+        this.signCode = vreturn['response']['cad_code'];
+        this.signStep = 3;
+      }
+      else{
+        this.$root.renderMsg('warn', 'Código inválido!', 'Os códigos expiram após 8 horas, reenvie um novo caso necessário.');
+      }
+    }
+
   },
 
   methods: {
@@ -279,7 +297,7 @@ export default {
       }
 
       let vreturn = await this.$root.doRequest(
-        Requests.signVerifyCode,
+        Requests.signVerifyCodeData,
         [this.mailInsV, signCode]);
 
       if(vreturn && vreturn['ok']){
