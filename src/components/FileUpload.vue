@@ -7,6 +7,7 @@
       :name="this.name"
       :ref="this.id + '_I'"
       type='file'
+      @click="resetFileUpload()"
       @change="handleFileUpload($event)"
     >
     <progress class='fileIProgress' :ref="this.id + '_P'" value='0' max='100'/>
@@ -44,20 +45,22 @@ export default {
 
   created(){
     this.darkblue1 = Cst.COLOR_DARKBLUE1;
+    this.gray = Cst.COLOR_GRAY1;
     this.white = Cst.COLOR_WHITE;
   },
 
   mounted(){
+    this.fileI = document.getElementById(this.id);
     this.fileILabel = document.getElementById(this.id + '_L');
-    this.fileILabel.style.backgroundColor = this.darkblue1;
-    this.fileILabel.style.color = this.white;
+    this.progressE = this.$refs[this.id + '_P'];
+    this.setLabelEnabled();
   },
 
   methods: {
     handleFileUpload(event){
-
+      
       // if event element and its file
-      if(event.target.files && event.target.files[0]){
+      if(!this.fileILabelDisabled && event.target.files && event.target.files[0]){
 
         let file = event.target.files[0];
         let fileType = file['type'];
@@ -78,13 +81,15 @@ export default {
           return;
         }
         
+        this.progressE.setAttribute('value', 0);
+        this.setLabelDisabled();
         this.uploadFile(file, fileUserNameF, fileDirName, userNameIns);
       }
     },
 
     uploadFile(file, fileUserName, fileDirName, userMailIns){
       
-      let progressU = this.$refs[this.id + '_P'];
+      let pageContext = this;
       let payload = new FormData();
       payload.append('file', file);
       payload.append('file_user_name', fileUserName)
@@ -97,16 +102,37 @@ export default {
 
       // on upload use an event listener to track progress done
       xhr.upload.addEventListener('progress', function(event){
-        progressU.setAttribute('value', (event.loaded/event.total) * 100);
+        pageContext.progressE.setAttribute('value', (event.loaded/event.total) * 100);
       });
 
-      // when request finishes 
+      // when request finishes
       xhr.addEventListener('load', function(){
         console.log(xhr.status);
         console.log(xhr.response);
+        pageContext.setLabelEnabled();
       });
 
       xhr.send(payload);
+    },
+
+    setLabelDisabled(){
+      this.fileILabel.style.backgroundColor = this.gray;
+      this.fileILabel.style.color = this.white;
+      this.fileILabel.style.cursor = 'default';
+      this.fileI.disabled = true;
+      this.fileILabelDisabled = true;
+    },
+
+    setLabelEnabled(){
+      this.fileILabel.style.backgroundColor = this.darkblue1;
+      this.fileILabel.style.color = this.white;
+      this.fileILabel.style.cursor = 'pointer';
+      this.fileI.disabled = false;
+      this.fileILabelDisabled = false;
+    },
+
+    resetFileUpload(){
+      this.fileI.value = '';
     }
   }
 }
@@ -124,13 +150,12 @@ export default {
 .fileInputWrapper > *{
   vertical-align: middle;
 }
-input[type='file'] {
+.fileInput{
   display: none
 }
 .labelInput {
   display: inline-block;
   border-radius: 5px;
-  cursor: pointer;
   margin: 10px;
   padding: 6px 20px
 }
