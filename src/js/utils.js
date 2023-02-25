@@ -25,11 +25,11 @@ function handleColorSelection(colorType){
   if(colorType == 'gray1'){
     return Cst.COLOR_GRAY1;
   }
-  if(colorType == 'lightblue'){
-    return Cst.COLOR_LIGHTBLUE;
-  }
   if(colorType == 'gray2'){
     return Cst.COLOR_GRAY2;
+  }
+  if(colorType == 'lightblue'){
+    return Cst.COLOR_LIGHTBLUE;
   }
   if(colorType == 'white'){
     return Cst.COLOR_WHITE;
@@ -73,6 +73,28 @@ function handleFontType(fontType){
   return [fontSize, fontWeight];
 }
 
+
+function leftZerosPad(num, nChar){
+
+  let tmpStr = num.toString()
+  while(tmpStr.length < nChar)
+    tmpStr = '0' + tmpStr;
+    
+  return tmpStr
+}
+
+function getDateTimeString(date, dateDelim = '-', hourDelim = ':'){
+
+  if(date instanceof Date){
+    return leftZerosPad(date.getDate(), 2) + dateDelim
+      + leftZerosPad((date.getMonth()+1), 2)  + dateDelim
+      + date.getFullYear() + " "  
+      + leftZerosPad(date.getHours(), 2) + hourDelim 
+      + leftZerosPad(date.getMinutes(), 2) + hourDelim
+      + leftZerosPad(date.getSeconds(), 2);
+  }
+}
+
 function getJsonKeyTree(json){
 
   if(json == null){
@@ -81,7 +103,6 @@ function getJsonKeyTree(json){
 
   let primaryK = Object.keys(json);
   let first = true;
-
   let retString = '{';
   
   try{
@@ -111,7 +132,6 @@ function getJsonKeyTree(json){
   return retString;
 }
 
-
 function getNameFormated(name){
   let tmp = name.split(' ');
   return ( 
@@ -130,6 +150,7 @@ export default{
   handleColorSelection,
   handleFontType,
   isPageOnMobile,
+  getDateTimeString,
   getJsonKeyTree,
   getNameFormated,
   validateMail

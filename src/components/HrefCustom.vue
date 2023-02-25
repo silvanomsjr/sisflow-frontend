@@ -8,7 +8,8 @@
       'color': this.cColor,
       'font-weight': this.cFontWeight,
       'font-size': this.cFontSize,
-      'margin': this.margin
+      'margin': this.margin,
+      'display': this.display
     }">
 
     <slot></slot>
@@ -38,6 +39,10 @@ export default {
     },
     margin: {
       default: '0px',
+      type: String
+    },
+    display: {
+      default: 'inline',
       type: String
     }
   },

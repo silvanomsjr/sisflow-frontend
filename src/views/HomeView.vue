@@ -1,8 +1,11 @@
 <template>
 
-  <div id="dashContent">
+  <div>
     
     Bem vindo ao Sisges o sistema de gestão de estagios supervisionados
+
+    <TableCustom class="tableC"
+      :tableData="this.solicitationsTable"/>
 
     <div class="fileUTitle">
       Envie seu histórico textual
@@ -37,26 +40,42 @@
 <script>
 
 import FileUpload from '../components/FileUpload.vue'
+import TableCustom from '../components/TableCustom.vue'
+import Utils from '../js/utils.js'
 
 export default {
   
   name: 'HomeView',
 
-  props: {
-  },
-
   components: {
-    FileUpload
+    FileUpload,
+    TableCustom
   },
 
   data() {
     return {
-      fileUploadEndpoint: ''
+      fileUploadEndpoint: '',
+      solicitationsTable: {
+        'titles': [ 'Solicitacao', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
+        'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
+        'colWidths': [ '15%', '15%', '35%', '10%', '15%', '10%' ],
+        'content': []
+      }
     }
   },
 
   created() {
     this.$root.pageName = 'Home';
+
+    this.solicitationsTable['content'] = [];
+    this.solicitationsTable['content'].push([
+      'Avaliação para inicio de estagio',
+      Utils.getDateTimeString(new Date(), '/'),
+      'O aluno solicitou ao coordenador de estágios a avaliação da documentação acadêmica para verificar a possibilidade de realizar estágio',
+      'Em análise',
+      'Aguardando o retorno do coordenador de estágios',
+      { 'iconName' : 'fa-solid fa-clock-rotate-left', 'iconSelFunction' : function(){alert('oi')} }
+    ]);
   },
 
   mounted() {
@@ -77,26 +96,8 @@ export default {
 <!-- style applies only to this component -->
 <style scoped>
 
-#dashContent{
-  width: 100%;
-  height: calc(100% - 8px);
-}
-.dashText{
-  margin: 5px;
-}
-.wrapperMtLogo, .wrapperMtLogoMobyle{
-  display: inline-block;
-  width: 100%;
-  text-align: center;
-}
-.wrapperMtLogo > *, .wrapperMtLogoMobyle > *{
-  vertical-align: middle;
-}
-.wrapperMtLogoMobyle{
-  margin: 50px 0px;
-}
-.imgLogo{
-  display: inline-block;
+.tableC{
+  margin-top: 20px;
 }
 .fileUWrapper{
   border: 2px solid rgb(28,34,86);
