@@ -68,13 +68,17 @@ export default {
     maxFileSize: {
       default: 10,
       type: Number
+    },
+    useDefaultRequestHandler: {
+      default: true,
+      type: Boolean
     }
   },
 
   data(){
     return{
       tmpButtonText: '',
-      tmpIconName: '',
+      tmpIconName: 'fa-solid fa-cloud-arrow-up',
       fileIName: '...'
     }
   },
@@ -116,13 +120,13 @@ export default {
         let userNameIns = this.$root.userLoggedData['email_ins'];
 
         if(!this.accept.includes(fileType)){
-          this.$emit('onIncorrectFileType');
+          this.showIncorrectFileType();
           event.target.files = null;
           return;
         }
 
         if(fileSize > this.maxFileSize){
-          this.$emit('onIncorrectFileSize');
+          this.showIncorrectFileSize();
           event.target.files = null;
           return;
         }
@@ -139,9 +143,9 @@ export default {
       let pageContext = this;
       let payload = new FormData();
       payload.append('file', file);
-      payload.append('file_user_name', fileUserName)
-      payload.append('file_dir_name', fileDirName)
-      payload.append('user_mail_ins', userMailIns)
+      payload.append('file_user_name', fileUserName);
+      payload.append('file_dir_name', fileDirName);
+      payload.append('user_mail_ins', userMailIns);
 
       // create a XMLHttpRequest object to make an request with progress tracking
       let xhr = new XMLHttpRequest();
@@ -154,8 +158,14 @@ export default {
 
       // when request finishes
       xhr.addEventListener('load', function(){
-        console.log(xhr.status);
-        console.log(xhr.response);
+        // handle the request in upload component
+        if(pageContext.useDefaultRequestHandler){
+          pageContext.handleRequestResponse(xhr);
+        }
+        // handle the request in upload calling component
+        else{
+          pageContext.$emit('onRequestResponse', xhr);
+        }
         pageContext.setLabelEnabled();
       });
 
@@ -178,6 +188,25 @@ export default {
 
     resetFileUpload(){
       this.fileI.value = '';
+    },
+
+    handleRequestResponse(xhrResponse){
+      if(xhrResponse.status != 200){
+        let vreturn = 'Erro ao realizar o upload: ' + xhrResponse.status + ': ' + xhrResponse.response;
+        this.fileIName = '...';
+        this.$root.renderRequestErrorMsg(vreturn);
+      }
+    },
+
+    showIncorrectFileType(){
+      this.$root.renderMsg(
+        'warn',
+        'O arquivo deve possuir o formato ' + this.accept.replaceAll('application/', '') + '.',
+        '');
+    },
+    
+    showIncorrectFileSize(){
+      this.$root.renderMsg('warn', 'O tamanho do arquivo não pode ultrapassar ' + this.maxFileSize + 'MB.', '');
     }
   }
 }

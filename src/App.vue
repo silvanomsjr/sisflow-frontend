@@ -144,11 +144,11 @@ export default {
       
       this.msgModalEnabled = true;
     },
-    renderRequestErrorMsg(vreturn, knownMsgs){
+    renderRequestErrorMsg(vreturn, knownMsgs = null){
 
       var isKnownMsg = false;
 
-      if(vreturn && vreturn['response']){
+      if(vreturn && vreturn['response'] && knownMsgs){
         knownMsgs.forEach(knownMsg => {
           if(!isKnownMsg && vreturn['response']['message'] == knownMsg){
             this.renderMsg('warn', '', vreturn['response']['message']);

@@ -10,19 +10,13 @@
     <FileUpload id="fileupht" class="fileU"
       titleText="Envie seu histórico textual:"
       fileDirName="HT"
-      :maxFileSize="100"
       :uploadEndpoint="this.fileUploadEndpoint"
-      @onIncorrectFileType="this.showIncorrectFileType"
-      @onIncorrectFileSize="this.showIncorrectFileSize"
     />
   
     <FileUpload id="fileuphv" class="fileU"
       titleText="Envie seu histórico visual:"
       fileDirName="HV"
-      :maxFileSize="100"
       :uploadEndpoint="this.fileUploadEndpoint"
-      @onIncorrectFileType="this.showIncorrectFileType"
-      @onIncorrectFileSize="this.showIncorrectFileSize"
     />
 
   </div>
@@ -75,12 +69,6 @@ export default {
   },
 
   methods:{
-    showIncorrectFileType(){
-      this.$root.renderMsg('warn', 'O arquivo deve possuir o formato pdf.', '');
-    },
-    showIncorrectFileSize(){
-      this.$root.renderMsg('warn', 'O tamanho do arquivo não pode ultrapassar 10MB.', '');
-    }
   }
 }
 </script>

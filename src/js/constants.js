@@ -1,8 +1,8 @@
 // changing this colors reflects throughout the theme
 const COLOR_BLACK1 = "rgb(0,0,0)";
 const COLOR_BLACK2 = "rgb(54,52,52)";
-const COLOR_DARKBLUE1 = "rgb(28,34,86)"
-const COLOR_DARKBLUE2 = "rgb(39,46,112)"
+const COLOR_DARKBLUE1 = "rgb(28,34,86)";
+const COLOR_DARKBLUE2 = "rgb(39,46,112)";
 const COLOR_GRAY1 = "rgb(242, 241, 241)";
 const COLOR_GRAY2 = "rgb(203,203,203)";
 const COLOR_GRAY3 = "rgb(167,167,167)";
