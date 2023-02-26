@@ -7,31 +7,23 @@
     <TableCustom class="tableC"
       :tableData="this.solicitationsTable"/>
 
-    <div class="fileUTitle">
-      Envie seu histórico textual
-      <div class="fileUWrapper">
-        <FileUpload id="fileupht" class="fileU"
-          labelValue='Selecionar'
-          fileDirName="HT"
-          :uploadEndpoint="this.fileUploadEndpoint"
-          @onIncorrectFileType="this.showIncorrectFileType"
-          @onIncorrectFileSize="this.showIncorrectFileSize"
-        />
-      </div>
-    </div>
-    
-    <div class="fileUTitle">
-      Envie seu histórico visual
-      <div class="fileUWrapper">
-        <FileUpload id="fileuphv" class="fileU"
-          labelValue='Selecionar'
-          fileDirName="HV"
-          :uploadEndpoint="this.fileUploadEndpoint"
-          @onIncorrectFileType="this.showIncorrectFileType"
-          @onIncorrectFileSize="this.showIncorrectFileSize"
-        />
-      </div>
-    </div>
+    <FileUpload id="fileupht" class="fileU"
+      titleText="Envie seu histórico textual:"
+      fileDirName="HT"
+      :maxFileSize="100"
+      :uploadEndpoint="this.fileUploadEndpoint"
+      @onIncorrectFileType="this.showIncorrectFileType"
+      @onIncorrectFileSize="this.showIncorrectFileSize"
+    />
+  
+    <FileUpload id="fileuphv" class="fileU"
+      titleText="Envie seu histórico visual:"
+      fileDirName="HV"
+      :maxFileSize="100"
+      :uploadEndpoint="this.fileUploadEndpoint"
+      @onIncorrectFileType="this.showIncorrectFileType"
+      @onIncorrectFileSize="this.showIncorrectFileSize"
+    />
 
   </div>
 
@@ -99,28 +91,9 @@ export default {
 .tableC{
   margin-top: 20px;
 }
-.fileUWrapper{
-  border: 2px solid rgb(28,34,86);
-  border-radius: 15px;
+.fileU{
+  margin-top: 20px;
+  width: 100%;
 }
-.fileUTitle{
-  margin: 30px 0px;
-}
-.fileUWrapper, .fileUTitle{
-  text-align: center;
-}
-@media (min-width: 900px) {
-  .fileU{
-    display: inline-block;
-    width: 30%;
-  }
-}
-@media (max-width: 900px) {
-  .fileU{
-    display: inline-block;
-    width: 90%;
-  }
-}
-
 
 </style>

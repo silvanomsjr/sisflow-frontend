@@ -2,7 +2,7 @@
 
   <div class="menuWrapper"
     :style="{ 
-      'background-color': this.colors.backgroundBlockColor
+      'background-color': this.black1
     }"
     @mouseleave='this.handleMouseOut()'
     tabindex="0">
@@ -169,10 +169,6 @@ export default {
     this.darkblue1 = Cst.COLOR_DARKBLUE1;
     this.gray2 = Cst.COLOR_GRAY2;
     this.white = Cst.COLOR_WHITE;
-
-    this.colors = {
-      backgroundBlockColor: this.black1,
-    };
 
     let tmp = Utils.handleFontType("normal");
     this.fontSizeNormal = tmp[0];

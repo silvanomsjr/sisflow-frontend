@@ -14,6 +14,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { 
   faArrowRightArrowLeft,
+  faArrowRotateRight,
   faBars,
   faCheck,
   faChevronDown,
@@ -21,6 +22,7 @@ import {
   faChevronRight,
   faChevronUp,
   faClockRotateLeft, 
+  faCloudArrowUp,
   faHome,
   faList,
   faMoneyBill,
@@ -35,6 +37,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 library.add(
   faArrowRightArrowLeft,
+  faArrowRotateRight,
   faBars,
   faCheck,
   faChevronDown,
@@ -42,6 +45,7 @@ library.add(
   faChevronRight,
   faChevronUp,
   faClockRotateLeft,
+  faCloudArrowUp,
   faHome,
   faList,
   faMoneyBill,
