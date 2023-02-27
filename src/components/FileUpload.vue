@@ -13,7 +13,9 @@
         {{ this.fileIName }} 
       </div>
 
-      <label :id="this.id + '_L'" class='labelInput' :for="this.id"> 
+      <label :id="this.id + '_L'" class='labelInput' :for="this.id"
+        @mouseover="mouseLabelOver()"
+        @mouseout="mouseeLabelOut()"> 
         <font-awesome-icon :icon="this.tmpIconName"/>
         {{ this.tmpButtonText }}
       </label>
@@ -36,8 +38,9 @@
 
 <script>
 
-import Cst from "../js/constants.js"
-import TextCustom from "../components/TextCustom.vue"
+
+import TextCustom from '../components/TextCustom.vue'
+import Utils from '../js/utils.js'
 
 export default {
 
@@ -84,11 +87,10 @@ export default {
   },
 
   created(){
-    this.darkblue1 = Cst.COLOR_DARKBLUE1;
-    this.gray1 = Cst.COLOR_GRAY1;
-    this.gray2 = Cst.COLOR_GRAY2;
-    this.white = Cst.COLOR_WHITE;
-
+    this.darkblue1 = Utils.handleColorSelection('darkblue1');
+    this.darkblue1hover = this.darkblue1.replace(')', ',0.8)').replace('rgb', 'rgba');
+    this.white = Utils.handleColorSelection('white');
+    
     this.tmpButtonText = this.buttonText;
   },
 
@@ -204,9 +206,15 @@ export default {
         'O arquivo deve possuir o formato ' + this.accept.replaceAll('application/', '') + '.',
         '');
     },
-    
     showIncorrectFileSize(){
       this.$root.renderMsg('warn', 'O tamanho do arquivo não pode ultrapassar ' + this.maxFileSize + 'MB.', '');
+    },
+
+    mouseLabelOver(){
+      this.fileILabel.style.backgroundColor = this.darkblue1hover;
+    },
+    mouseeLabelOut(){
+      this.fileILabel.style.backgroundColor = this.darkblue1;
     }
   }
 }
