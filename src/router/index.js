@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import SignView from '../views/SignView.vue'
 import HomeView from '../views/HomeView.vue'
+import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
 import AreaTView from '../views/Teacher/AreaTView.vue'
 import AreaSView from '../views/Student/AreaSView.vue'
@@ -11,19 +12,25 @@ const routes = [
     path: '/',
     name: 'login',
     component: LoginView,
-    meta: { allowedUsers: ['A','P'] }
+    meta: { allowedUsers: 'ALL' }
   },
   {
     path: '/sign',
     name: 'sign',
     component: SignView,
-    meta: { allowedUsers: ['A','P'] }
+    meta: { allowedUsers: 'ALL' }
   },
   {
     path: '/home',
     name: 'home',
     component: HomeView,
     meta: { allowedUsers: ['A','P'] }
+  },
+  {
+    path: '/solicitation',
+    name: 'solicitation',
+    component: DSolicitationView,
+    meta: { allowedUsers: 'DYNAMIC' }
   },
   {
     path: '/areateacher',

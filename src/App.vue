@@ -61,7 +61,6 @@ export default {
       userLoggedData: null,
       userAcessAllowed: false,
       tokenData: null,
-      pageParams: null,
       pageName: '',
 
       loadModalEnabled: false,
@@ -87,7 +86,12 @@ export default {
       this.userLoggedData = jwt_decode(this.tokenData);
 
       if(this.$route.meta && this.$route.meta.allowedUsers){
-        this.verifyUserAcessForPage();
+
+        this.userAcessAllowed = this.isUserAllowedForPage(this.userLoggedData, this.$route.meta.allowedUsers);
+
+        if(!this.userAcessAllowed){
+          this.renderUserNotAllowedMsg();
+        }
       }
     }
     
@@ -106,7 +110,13 @@ export default {
       }
       // verifies if user is allowed to access a page with allowedUsers
       else if(this.userLoggedData && this.$route.meta && this.$route.meta.allowedUsers){
-        this.verifyUserAcessForPage();
+
+        this.userAcessAllowed = this.isUserAllowedForPage(this.userLoggedData, this.$route.meta.allowedUsers);
+
+        if(!this.userAcessAllowed){
+          this.renderUserNotAllowedMsg();
+          return;
+        }
       }
     }
   },
@@ -114,22 +124,19 @@ export default {
   methods: {
 
     /** Render methods **/
-    renderView(viewName, viewParams = null){
+    renderView(viewName, viewQueryParams = null){
 
-      this.pageParams = null;
-
-      // no user data
+      // no user data, redirect to login
       if( (this.userLoggedData == null || this.tokenData == null) && viewName != 'login' && viewName != 'sign'){
         this.$router.push({ name: 'login' });
+        return;
+      }
+
+      if(viewQueryParams != null){
+        this.$router.push({ name: viewName, query: viewQueryParams });
       }
       else{
-        if(viewParams != null){
-          this.pageParams = viewParams;
-          this.$router.push({ name: viewName });
-        }
-        else{
-          this.$router.push({ name: viewName });
-        }
+        this.$router.push({ name: viewName });
       }
     },
     renderMsg(msgType, msgTitle, msgInfo, msgOkFunction = null, msgAcceptFunction = null, msgRejectFunction = null){
@@ -143,6 +150,14 @@ export default {
       this.msgRejectFunction = msgRejectFunction;
       
       this.msgModalEnabled = true;
+    },
+    renderUserNotAllowedMsg(){
+      let pageContext = this;
+      this.renderMsg(
+        'warn', 
+        'Acesso não permitido!', 
+        'O usuário não possui permissão para acessar esta pagina.',
+        function () { pageContext.renderView('home'); });
     },
     renderRequestErrorMsg(vreturn, knownMsgs = null){
 
@@ -215,34 +230,32 @@ export default {
 
     /** Other methods */
 
-    verifyUserAcessForPage(){
+    isUserAllowedForPage(userData, allowedUsers){
 
-      this.userAcessAllowed = false;
-
-      if(this.userLoggedData){
-        // if only one user letter(sigla)
-        if(typeof this.userLoggedData['siglas'] === 'string'){
-          this.userAcessAllowed = this.$route.meta.allowedUsers.includes(this.userLoggedData['siglas']);
-        }
-        // list od letters
-        else{
-          // foreach allowed type of user for page verify if user is one
-          this.$route.meta.allowedUsers.forEach(siglaUser => {
-            if(this.userLoggedData['siglas'].includes(siglaUser)){
-              this.userAcessAllowed = true;
-            }
-          });
-        }
-
-        if(!this.userAcessAllowed){
-          let self = this;
-          this.renderMsg(
-            'warn', 
-            'Acesso não permitido!', 
-            'O usuário não possui permissão para acessar esta pagina.',
-            function () { self.$root.renderView('home'); });
-        }
+      if(!userData){
+        return false;
       }
+
+      // if pages allows acess to all users
+      if(allowedUsers == 'ALL' || allowedUsers == 'DYNAMIC'){
+        return true;
+      }
+
+      // if user has only one type (letter)
+      else if(typeof userData['siglas'] === 'string'){
+        return allowedUsers.includes(userData['siglas']);
+      }
+
+      // if user has many types (list of letters)
+      else{
+        // foreach allowed type of user for page verify if user is one
+        allowedUsers.forEach(allowedUser => {
+          if(userData['siglas'].includes(allowedUser)){
+            return true;
+          }
+        });
+      }
+      return false;
     },
 
     clearLoginData(){

@@ -46,6 +46,10 @@ export default {
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '15%', '15%', '35%', '10%', '15%', '10%' ],
         'content': []
+      },
+      dynamicPageData: {
+        'titulo': 'Solicitação de avaliação para inicio de estágio',
+        'perfis_permitidos': ['A']
       }
     }
   },
@@ -53,6 +57,7 @@ export default {
   created() {
     this.$root.pageName = 'Home';
 
+    let pageContext = this;
     this.solicitationsTable['content'] = [];
     this.solicitationsTable['content'].push([
       'Avaliação para inicio de estagio',
@@ -60,7 +65,12 @@ export default {
       'O aluno solicitou ao coordenador de estágios a avaliação da documentação acadêmica para verificar a possibilidade de realizar estágio',
       'Em análise',
       'Aguardando o retorno do coordenador de estágios',
-      { 'iconName' : 'fa-solid fa-clock-rotate-left', 'iconSelFunction' : function(){alert('oi')} }
+      {
+        'iconName' : 'fa-solid fa-clock-rotate-left', 
+        'iconSelFunction' : function(){
+          pageContext.$root.renderView('solicitation', { page_data: JSON.stringify(pageContext.dynamicPageData) });
+        }
+      }
     ]);
   },
 
