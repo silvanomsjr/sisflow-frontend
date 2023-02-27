@@ -266,7 +266,7 @@ export default {
   .fileInputName, .labelInput{
     margin: auto;
     display: block;
-    padding: 2px 10px;
+    padding: 3px 10px;
     border-radius: 5px;
   }
   .fileInputName{
@@ -274,7 +274,7 @@ export default {
     margin-bottom: 5px;
   }
   .labelInput{
-    width: 160px;
+    width: 100%;
     border: 1px solid rgb(28,34,86);
   }
 }

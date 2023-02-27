@@ -148,7 +148,6 @@ export default {
 @media (min-width: 900px) {
   .wrapper{
     width: 100%;
-    line-height: 100vh;
     text-align: center;
   }
   .wrapper > *{
@@ -175,7 +174,7 @@ export default {
   .menuBox, .contentBox{
     display: inline-block;
     min-height: 500px;
-    height: 100vh;
+    height: 99vh;
     line-height: normal;
     padding: 0px;
     margin: 0px;
@@ -196,6 +195,11 @@ export default {
     overflow: auto;
     overflow-x: hidden;
     clear: both;
+  }
+}
+@media (min-width: 900px) {
+  .menuBox{
+    height: calc(99vh - 15px);
   }
 }
 @media (max-width: 900px) {
