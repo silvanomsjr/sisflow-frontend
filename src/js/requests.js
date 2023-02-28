@@ -178,7 +178,7 @@ async function putSolicitation(token_jwt, args){
 async function getSolicitation(token_jwt, args){
   
   let solicitation = args[0];
-  let solicitation_step = args[1];
+  let solicitation_step_order = args[1];
 
   var myHeaders = {
     method: 'GET',
@@ -187,7 +187,7 @@ async function getSolicitation(token_jwt, args){
       'Authorization': `Bearer ${token_jwt}`
     }
   }
-  var querystring = `?solicitation=${solicitation}&solicitation_step=${solicitation_step}`;
+  var querystring = `?solicitation=${solicitation}&solicitation_step_order=${solicitation_step_order}`;
 
   let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
   return vreturn;

@@ -66,7 +66,7 @@ export default {
     let pageContext = this;
 
     // verify query params
-    if(!this.$route.query || !this.$route.query['solicitation'] || !this.$route.query['solicitation_step']){
+    if(!this.$route.query || !this.$route.query['solicitation'] || !this.$route.query['solicitation_step_order']){
       this.$root.renderMsg(
         'error', 
         'Pagina de solicitação inválida!',
@@ -75,11 +75,11 @@ export default {
       return;
     }
     let idSolicitation = this.$route.query['solicitation'];
-    let idSolicitationStep = this.$route.query['solicitation_step'];
+    let solicitationStepOrder = this.$route.query['solicitation_step_order'];
 
     let vreturn = await this.$root.doRequest(
       Requests.getSolicitation,
-      [idSolicitation, idSolicitationStep]);
+      [idSolicitation, solicitationStepOrder]);
 
     if(!vreturn || !vreturn['ok']){
       this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!']);

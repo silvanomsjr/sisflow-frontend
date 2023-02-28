@@ -132,7 +132,7 @@ export default {
                 pageContext.$root.renderView(
                   'solicitation', { 
                     'solicitation': solicitation['id_solicitacao'],
-                    'solicitation_step': solicitation['id_etapa_solicitacao'] })
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
               }
             }
           ]);
@@ -153,7 +153,7 @@ export default {
 
       if(vreturn && vreturn['ok']){
         await this.loadSolicitationsTable();
-        this.$root.renderView('solicitation', { 'solicitation': solicitationId, 'solicitation_step': 1 })
+        this.$root.renderView('solicitation', { 'solicitation': solicitationId, 'solicitation_step_order': 1 })
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);
