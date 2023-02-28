@@ -2,27 +2,60 @@
 
   <div>
     
-    <TextCustom
-      margin='0px 0px 15px 0px'
-      display='block'>
-      <p>Bem vindo ao Sisges, o sistema de gestão de estagios supervisionados.</p>
-      <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
-        à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
-        solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
-      <p>Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
-        solicitações.</p>
-      
-    </TextCustom>
+    <div class="pageContentRow">
+      <TextCustom
+        margin='0px 0px 15px 0px'
+        display='block'>
+        <p>Bem vindo ao Sisges, o sistema de gestão de estagios supervisionados.</p>
+        <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
+          à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
+          solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
+        <p>Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
+          solicitações.</p>
+      </TextCustom>
+    </div>
 
-    <TextCustom
-      customFontSize='title'
-      margin='20px 0px 5px 0px'
-      display='block'>
-      Suas solicitações
-    </TextCustom>
+    <div class="pageContentRow">
+      <TextCustom
+        customFontSize='title'
+        margin='20px 0px 5px 0px'
+        display='block'>
+        Suas solicitações
+      </TextCustom>
 
-    <TableCustom class="tableC"
-      :tableData="this.solicitationsTable"/>
+      <TableCustom class="tableC"
+        :tableData="this.solicitationsTable"/>
+    </div>
+
+    <div class="pageContentRow">
+      <TextCustom
+        customFontSize='title'
+        margin='20px 0px 5px 0px'
+        display='block'>
+        Realizar solicitações
+      </TextCustom>
+
+      <SelectCustom 
+        ref='selectc'
+        id="selectId"
+        class="selectC"
+        name="selectName"
+        :items="this.selectSolicitationsOpts"
+      />
+
+      <div class='btnWrapper'>
+        <ButtonCustom
+          id="btnSend"
+          label="Solicitar"
+          customTextColor="white"
+          customBackColor="darkblue1"
+          customFontSize="normal"
+          width="90%"
+          padding="3px 20px"
+          @click="doSolicitation"
+        />
+      </div>
+    </div>
 
   </div>
 
@@ -30,15 +63,20 @@
 
 <script>
 
+import ButtonCustom from '../components/ButtonCustom.vue'
+import Requests from '../js/requests.js'
+import SelectCustom from '../components/SelectCustom.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
-import Utils from '../js/utils.js'
+//import Utils from '../js/utils.js'
 
 export default {
   
   name: 'HomeView',
 
   components: {
+    ButtonCustom,
+    SelectCustom,
     TableCustom,
     TextCustom
   },
@@ -46,69 +84,107 @@ export default {
   data() {
     return {
       userCourse: 'BCC',
+      selectSolicitationsOpts: [
+        { label: 'Inicio de estágio obrigatório', value: '1' },
+        { label: 'Envio de relatório parcial', value: '2' },
+        { label: 'Envio de relatório final', value: '3' }
+      ],
       solicitationsTable: {
-        'titles': [ 'Tipo', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
+        'titles': [ 'Nome', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '15%', '15%', '35%', '10%', '15%', '10%' ],
         'content': []
-      },
-      dynamicPageData: {
-        'titulo': 'Solicitação de avaliação para inicio de estágio',
-        'perfis_permitidos': ['A'],
-        'descricao_top': '<p>Nesta etapa o aluno solicita uma avaliação de sua documentação ' + 
-          'acadêmica ao coordenador de estágios para que este verifique se o aluno atende ' + 
-          'às normas gerais de estágio.</p>' + 
-          '<p>As normas podem ser visualizadas no link: ' + 
-          '<a href="https://facom.ufu.br/graduacao/bcc/estagio-supervisionado">Normas de Estagio BCC</a>.</p>' + 
-          '<p>Para prosseguir anexe os documentos solicitados:</p>',
-        'descricao_mid': '',
-        'descricao_bot': '',
-        'anexos': [
-          { 
-            'label_txt' : 'Envie seu histórico textual',
-            'file_abs_type' : 'HT'
-          },
-          { 
-            'label_txt' : 'Envie seu histórico visual',
-            'file_abs_type' : 'HV'
-          }
-        ],
-        'enviar_req': true
       }
     }
   },
 
-  created() {
+  async created() {
     this.$root.pageName = 'Home';
-
-    let pageContext = this;
-    this.solicitationsTable['content'] = [];
-    this.solicitationsTable['content'].push([
-      'Avaliação para inicio de estagio',
-      Utils.getDateTimeString(new Date(), '/'),
-      'O aluno solicitou ao coordenador de estágios a avaliação da documentação acadêmica para verificar a possibilidade de realizar estágio',
-      'Em análise',
-      'Aguardando o retorno do coordenador de estágios',
-      {
-        'iconName' : 'fa-solid fa-clock-rotate-left', 
-        'iconSelFunction' : function(){
-          pageContext.$root.renderView('solicitation', { page_data: JSON.stringify(pageContext.dynamicPageData) });
-        }
-      }
-    ]);
+    await this.loadSolicitationsTable();
   },
 
   mounted() {},
 
-  methods:{}
+  methods:{
+
+    async loadSolicitationsTable(){
+
+      let vreturn = await this.$root.doRequest(
+        Requests.getSolicitations,
+        []);
+
+      if(vreturn && vreturn['ok']){
+
+        let pageContext = this;
+
+        pageContext.solicitationsTable['content'] = [];
+
+        vreturn['response'].forEach(solicitation => {
+          this.solicitationsTable['content'].push([
+            solicitation['nome_solicitacao'],
+            solicitation['data_hora_inicio'].replaceAll('-','/'),
+            solicitation['descricao'],
+            solicitation['decisao'],
+            solicitation['motivo'],
+            {
+              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconSelFunction' : function(){
+                pageContext.$root.renderView(
+                  'solicitation', { 
+                    'solicitation': solicitation['id_solicitacao'],
+                    'solicitation_step': solicitation['id_etapa_solicitacao'] })
+              }
+            }
+          ]);
+        });
+      }
+      else{
+        this.$root.renderRequestErrorMsg(vreturn);
+      }
+    },
+
+    async doSolicitation(){
+
+      let solicitationId = this.$refs.selectc.getV();
+
+      let vreturn = await this.$root.doRequest(
+        Requests.putSolicitation,
+        [solicitationId]);
+
+      if(vreturn && vreturn['ok']){
+        await this.loadSolicitationsTable();
+        this.$root.renderView('solicitation', { 'solicitation': solicitationId, 'solicitation_step': 1 })
+      }
+      else{
+        this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);
+      }
+    }
+  }
 }
 </script>
 
 <!-- style applies only to this component -->
 <style scoped>
 
+.pageContentRow{
+  margin-bottom: 40px;
+}
 .textC, .tableC{
   margin-top: 5px;
 }
+@media (min-width: 900px) {
+  .selectC, .btnWrapper{
+    display: inline-block;
+    width: 50%;
+  }
+}
+@media (max-width: 900px) {
+  .selectC, .btnWrapper{
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
 
 </style>

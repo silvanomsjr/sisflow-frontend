@@ -139,10 +139,67 @@ async function signDoWithCode(_, args){
   return vreturn;
 }
 
+async function getSolicitations(token_jwt, args){
+  
+  args;
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, 'solicitations');
+  return vreturn;
+}
+
+async function putSolicitation(token_jwt, args){
+  
+  let id_solicitacao = args[0];
+
+  var myHeaders = {
+    method: 'PUT',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'id_solicitacao': id_solicitacao
+    })
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, 'solicitation');
+  return vreturn;
+}
+
+async function getSolicitation(token_jwt, args){
+  
+  let solicitation = args[0];
+  let solicitation_step = args[1];
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+  var querystring = `?solicitation=${solicitation}&solicitation_step=${solicitation_step}`;
+
+  let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
+  return vreturn;
+}
+
 export default{
   loginDo,
   signMakeCode,
   signVerifyCodeData,
   signVerifyCodeToken,
-  signDoWithCode
+  signDoWithCode,
+  getSolicitations,
+  getSolicitation,
+  putSolicitation
 }
