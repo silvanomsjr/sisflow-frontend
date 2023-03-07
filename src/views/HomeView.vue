@@ -35,13 +35,7 @@
         Realizar solicitações
       </TextCustom>
 
-      <SelectCustom 
-        ref='selectc'
-        id="selectId"
-        class="selectC"
-        name="selectName"
-        :items="this.selectSolicitationsOpts"
-      />
+      <RadioTreeCustom :options="this.radioOpts" @optSelected="(newValue) => this.handleOptsClick(newValue)"/>
 
       <div class='btnWrapper'>
         <ButtonCustom
@@ -65,7 +59,7 @@
 
 import ButtonCustom from '../components/ButtonCustom.vue'
 import Requests from '../js/requests.js'
-import SelectCustom from '../components/SelectCustom.vue'
+import RadioTreeCustom from '../components/RadioTreeCustom.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
 //import Utils from '../js/utils.js'
@@ -76,7 +70,7 @@ export default {
 
   components: {
     ButtonCustom,
-    SelectCustom,
+    RadioTreeCustom,
     TableCustom,
     TextCustom
   },
@@ -84,10 +78,15 @@ export default {
   data() {
     return {
       userCourse: 'BCC',
-      selectSolicitationsOpts: [
-        { label: 'Inicio de estágio obrigatório', value: '1' },
-        { label: 'Envio de relatório parcial', value: '2' },
-        { label: 'Envio de relatório final', value: '3' }
+      radioOpts: [
+        { label: 'Option 1', value: 'option1' },
+        { label: 'Option 2', value: 'option2',
+          suboptions: [
+            { label: 'Suboption A', value: 'suboptionA' },
+            { label: 'Suboption B', value: 'suboptionB' }
+          ]
+        },
+        { label: 'Option 3', value: 'option3' }
       ],
       solicitationsTable: {
         'titles': [ 'Nome', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
@@ -141,6 +140,10 @@ export default {
       else{
         this.$root.renderRequestErrorMsg(vreturn);
       }
+    },
+
+    async handleOptsClick(newValue){
+      console.log(newValue);
     },
 
     async doSolicitation(){

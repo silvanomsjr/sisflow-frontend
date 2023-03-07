@@ -1,14 +1,15 @@
 <template>
 
-  <div>
+  <div id="appWrapper">
     <div id="pageBackground" ></div>
     <div id="pageWrapper">
       <!-- Render login and Sign -->
-      <router-view v-if="this.createdDone && (this.$route.path == '/' || this.$route.path == '/sign')"/>
+      <router-view v-if="this.createdDone && this.mountedDone && (this.$route.path == '/' || this.$route.path == '/sign')"/>
       
       <!-- Render other pages -->
       <PageLayout v-else-if="
-        this.createdDone && 
+        this.createdDone &&
+        this.mountedDone &&
         this.userLoggedData != null && 
         this.userAcessAllowed">
 
@@ -17,7 +18,7 @@
       </PageLayout>
 
       <!-- Shows load circle -->
-      <LoadModal v-show="!this.msgModalEnabled && (!this.createdDone || this.loadModalEnabled)"/>
+      <LoadModal v-show="!this.msgModalEnabled && (!this.createdDone || !this.mountedDone || this.loadModalEnabled)"/>
 
       <!-- Shows message modal -->
       <MsgModal ref='warningMsg' v-show="this.msgModalEnabled"
@@ -37,6 +38,7 @@
 
 <script>
 
+import Cst from './js/constants.js';
 import jwt_decode from 'jwt-decode'
 import LoadModal from './components/LoadModal.vue'
 import MsgModal from './components/MsgModal.vue'
@@ -58,6 +60,7 @@ export default {
   data() {
     return {
       createdDone: false,
+      mountedDone: false,
       userLoggedData: null,
       userAcessAllowed: false,
       tokenData: null,
@@ -77,7 +80,7 @@ export default {
     }
   },
 
-  async created(){
+  created(){
 
     // verify token in session cache 
     this.tokenData = UserStorage.getTokenJwt();
@@ -94,9 +97,15 @@ export default {
         }
       }
     }
-    
-    // page is only created after getting user data
+
+    // page is only rendered after getting user data
     this.createdDone = true;
+  },
+
+  mounted() {
+    // page is only rendered starting dynamic css colors vars
+    this.startCssDynamicColors();
+    this.mountedDone = true;
   },
 
   watch:{
@@ -229,6 +238,14 @@ export default {
     /** **/
 
     /** Other methods */
+
+    startCssDynamicColors(){
+      let appWrapper = document.getElementById('appWrapper');
+
+      Cst.DYNAMIC_CSS_VARS.forEach(cssVar => {
+        appWrapper.style.setProperty(cssVar['label'], cssVar['value']);
+      });
+    },
 
     isUserAllowedForPage(userData, allowedUsers){
 

@@ -1,4 +1,17 @@
-// changing this colors reflects throughout the theme
+// changing this css vars reflects throughout the theme
+const DYNAMIC_CSS_VARS = [
+  { 'label': '--color-black1', 'value': 'rgb(0,0,0)' },
+  { 'label': '--color-black2', 'value': 'rgb(54,52,52)' }, 
+  { 'label': '--color-darkblue1', 'value': 'rgb(28,34,86)' }, 
+  { 'label': '--color-darkblue2', 'value': 'rgb(39,46,112)' }, 
+  { 'label': '--color-gray1', 'value': 'rgb(242,241,241)' }, 
+  { 'label': '--color-gray2', 'value': 'rgb(203,203,203)' }, 
+  { 'label': '--color-gray3', 'value': 'rgb(167,167,167)' }, 
+  { 'label': '--color-lightblue', 'value': 'rgb(33,150,243)' }, 
+  { 'label': '--color-white', 'value': 'rgb(255,255,255)' }, 
+]
+
+// must refactor and remove this vars
 const COLOR_BLACK1 = "rgb(0,0,0)";
 const COLOR_BLACK2 = "rgb(54,52,52)";
 const COLOR_DARKBLUE1 = "rgb(28,34,86)";
@@ -25,6 +38,7 @@ const SMTEXT_SMALL = "14px";
 const SM_VIEWPORT_SIZE = 900;
 
 export default {
+  DYNAMIC_CSS_VARS,
   COLOR_BLACK1,
   COLOR_BLACK2,
   COLOR_DARKBLUE1,
