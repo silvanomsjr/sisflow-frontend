@@ -28,7 +28,7 @@
         @click="this.handleSelClick()">
 
         {{ this.items[this.actualOptSelected].label }}
-        <font-awesome-icon v-if="this.iconVisible"
+        <font-awesome-icon v-if="this.iconVisible && !this.disabled"
           class='selchevron'
           icon='fa-solid fa-chevron-down'
         />
@@ -122,6 +122,10 @@ export default {
     iconVisible: {
       default: true,
       type: Boolean
+    },
+    disabled: {
+      default: false,
+      type: Boolean
     }
   },
 
@@ -178,24 +182,34 @@ export default {
       }
     },
     handleSelClick(){
-      this.selectOptsWidth = this.$refs.selectBox.offsetWidth + 'px';
-      this.showOptsT = !this.showOptsT;
+      if(!this.disabled){
+        this.selectOptsWidth = this.$refs.selectBox.offsetWidth + 'px';
+        this.showOptsT = !this.showOptsT;
+      }
     },
     handleOptClick(index){
-      this.actualOptSelected = index;
-      this.showOptsT = !this.showOptsT;
-      this.$emit('optClicked',this.items[index]['value']);
+      if(!this.disabled){
+        this.actualOptSelected = index;
+        this.showOptsT = !this.showOptsT;
+        this.$emit('optClicked',this.items[index]['value']);
+      }
     },
     optMouseover(index){
-      this.$refs['opts'][index].style['background-color'] = this.cHoverBackgroundColor;
-      this.$refs['opts'][index].style['color'] = this.cHoverFontColor;
+      if(!this.disabled){
+        this.$refs['opts'][index].style['background-color'] = this.cHoverBackgroundColor;
+        this.$refs['opts'][index].style['color'] = this.cHoverFontColor;
+      }
     },
     optMouseout(index){
-      this.$refs['opts'][index].style['background-color'] = this.cBackgroundColor;
-      this.$refs['opts'][index].style['color'] = this.cFontColor;
+      if(!this.disabled){
+        this.$refs['opts'][index].style['background-color'] = this.cBackgroundColor;
+        this.$refs['opts'][index].style['color'] = this.cFontColor;
+      }
     },
     handleOutClick(){
-      this.showOptsT = false;
+      if(!this.disabled){
+        this.showOptsT = false;
+      }
     }
   }
 }

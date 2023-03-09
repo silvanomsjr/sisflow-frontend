@@ -4,20 +4,41 @@
     
     <div id="descBoxTop" v-show="this.pageData && this.pageData['top_inner_html']"></div>
 
-    <div id="uploadsBox" v-if="this.pageData && this.pageData['anexos_solicitados']">
-      <div v-for="(item, index) in this.pageData['anexos_solicitados']" :key="index">
-        <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
-          :titleText="item['label_txt']"
-          :fileDirName="item['file_abs_type']"
-          :uploadEndpoint="this.fileUploadEndpoint"
+    <div id="inputsBox" v-if="this.pageData && this.pageData['inputs_solicitados']">
+      <div v-for="(inputC, index) in this.pageData['inputs_solicitados']" :key="index">
+        <InputCustom :id="'inputc' + index" :name="'inputc' + index" ref="inputc"
+          :type="inputC['input_type']"
+          autocomplete='off'
         />
       </div>
     </div>
 
-    <div id="descBoxMid" v-show="this.pageData && this.pageData['mid_inner_html']"></div>
+    <div id="uploadsBox" v-if="this.pageData && this.pageData['anexos']">
+      <div v-for="(fileU, index) in this.pageData['anexos']" :key="index">
+        <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
+          :titleText="fileU['label_txt']"
+          :fileDirName="fileU['file_abs_type']"
+          :uploadEndpoint="this.fileUploadEndpoint"
+          :disabled="this.pageDisabled"
+        />
+      </div>
+    </div>
 
+    <div id="selectUploadsBox" v-if="this.pageData && this.pageData['select_anexos']">
+      <div v-for="(selFileU, index) in this.pageData['select_anexos']" :key="index">
+        <SelectFileUpload :id="'selFileU' + index" ref="selFileU" class="selFileU"
+          :selectLabel="selFileU['label_txt']"
+          :selectOpts="selFileU['select_opts']"
+          :uploadEndpoint="this.fileUploadEndpoint"
+          :disabled="this.pageDisabled"
+        />
+      </div>
+    </div>
+    
+    <div id="descBoxMid" v-show="this.pageData && this.pageData['mid_inner_html']"></div>
+    
     <div class="sendSolicitationWrapper">
-      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['botao_solicitar']">
+      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['botao_solicitar'] && !this.pageDisabled">
         <ButtonCustom
           id="btnSend"
           label="Solicitar"
@@ -41,6 +62,7 @@
 
 import ButtonCustom from '../components/ButtonCustom.vue'
 import FileUpload from '../components/FileUpload.vue'
+import SelectFileUpload from '../components/SelectFileUpload.vue'
 import Requests from '../js/requests.js'
 
 export default {
@@ -49,7 +71,8 @@ export default {
 
   components: {
     ButtonCustom,
-    FileUpload
+    FileUpload,
+    SelectFileUpload
   },
 
   data() {
@@ -60,7 +83,9 @@ export default {
       fileUploadEndpoint: '',
 
       idSolicitation: null,
-      solicitationStepOrder: null
+      solicitationStepOrder: null,
+
+      pageDisabled: false
     }
   },
 
@@ -110,6 +135,7 @@ export default {
     }
 
     this.$root.pageName = this.pageData['titulo'];
+    this.pageDisabled = this.pageData['decisao'] != 'Em analise';
 
     this.createdDone = true;
   },
@@ -149,13 +175,14 @@ export default {
     },
     async doSolicitation(){
       
-      let solicitationData = { 'attachments' : [] }
+      let solicitationData = { 'inputs' : [], 'attachments' : [], 'select_attachments' : [] }
       let attachmentOk = true;
+      let selAttachmentOk = true;
 
       // verify each attachment 
-      if(this.pageData['anexos_solicitados']){
+      if(this.pageData['anexos']){
 
-        this.pageData['anexos_solicitados'].forEach( (anexo, index) => {
+        this.pageData['anexos'].forEach( (anexo, index) => {
           if(anexo['required'] && (this.$refs['fileu'][index].getFileIHashName() == null || !this.$refs['fileu'][index].isLoaded())){
             this.$root.renderMsg('warn', anexo['missing_msg'], '');
             attachmentOk = false;
@@ -168,16 +195,33 @@ export default {
           }
         });
       }
-
       if(!attachmentOk){
+        return;
+      }
+
+      // verify each select attachment 
+      if(this.pageData['select_anexos']){
+
+        this.pageData['select_anexos'].forEach( (selectAnexo, index) => {
+          if(selectAnexo['required'] && (this.$refs['selFileU'][index].getFileIHashName() == null || !this.$refs['selFileU'][index].isLoaded())){
+            this.$root.renderMsg('warn', selectAnexo['missing_msg'], '');
+            selAttachmentOk = false;
+          }
+          else if(this.$refs['selFileU'][index].getFileIHashName() != null && this.$refs['selFileU'][index].isLoaded()){
+            solicitationData['select_attachments'].push({
+              'file_abs_type' : this.$refs['selFileU'][index].getFileAbsType(),
+              'name' : this.$refs['selFileU'][index].getFileIHashName()
+            })
+          }
+        });
+      }
+      if(!selAttachmentOk){
         return;
       }
 
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
         [this.solicitation, this.solicitationStepOrder, solicitationData]);
-      
-      console.log(vreturn);
 
       if(!vreturn || !vreturn['ok']){
         this.$root.renderRequestErrorMsg(vreturn, [
@@ -226,7 +270,7 @@ export default {
     width: 50%;
   }
 }
-.fileU{
+.fileU, .selFileU{
   margin-top: 10px;
   width: 100%;
 }

@@ -3,9 +3,7 @@
   <div class='fileInputWrapper'>
 
     <div style="text-align: left; margin: 10px 0px">
-      <TextCustom>
-        {{ this.titleText }}
-      </TextCustom>
+      <SelectCustom :ref="'selectfileu' + this.id" :labelValue="this.selectLabel" :items="this.selectOpts" :disabled="this.disabled"/>
     </div>
     
     <div class='fileNLWrapper'>
@@ -15,7 +13,7 @@
 
       <label :id="this.id + '_L'" class='labelInput' :for="this.id"
         @mouseover="mouseLabelOver()"
-        @mouseout="mouseeLabelOut()"> 
+        @mouseout="mouseeLabelOut()">
         <font-awesome-icon :icon="this.tmpIconName"/>
         {{ this.tmpButtonText }}
       </label>
@@ -38,8 +36,7 @@
 
 <script>
 
-
-import TextCustom from '../components/TextCustom.vue'
+import SelectCustom from '../components/SelectCustom.vue'
 import Utils from '../js/utils.js'
 
 export default {
@@ -47,15 +44,15 @@ export default {
   name: 'FileUpload',
 
   components:{
-    TextCustom
+    SelectCustom
   },
 
   props:{
     id: String,
     name: String,
     uploadEndpoint: String,
-    fileDirName: String,
-    titleText: String,
+    selectLabel: String,
+    selectOpts: Array,
     initialFileName:{
       default: '...',
       type: String
@@ -93,7 +90,8 @@ export default {
       fileIName: this.initialFileName,
 
       fileIHashName: null,
-      fileILoaded: false
+      fileILoaded: false,
+      fileIAbsType: ''
     }
   },
 
@@ -124,16 +122,26 @@ export default {
 
   methods:{
     handleFileUpload(event){
-      
+
       // if event element and its file
       if(!this.fileI.disabled && event.target.files && event.target.files[0]){
+        
+        let fileAbsTypeTmp = this.$refs['selectfileu' + this.id].getV();
+        
+        if(!fileAbsTypeTmp){
+          this.$root.renderMsg(
+            'warn',
+            'Não foi selecionado a opção para enviar o arquivo.',
+            '');
+          return;
+        }
 
         let file = event.target.files[0];
         let fileType = file['type'];
         let fileName = file['name'];
         let fileSize = Math.round(file['size'] / 1024 / 1024 * 10) / 10;
         let fileUserNameF = this.$root.userLoggedData['nome'].replaceAll(' ', '');
-        let fileDirName = this.fileDirName;
+        
         let userNameIns = this.$root.userLoggedData['email_ins'];
 
         if(!this.accept.includes(fileType)){
@@ -150,21 +158,22 @@ export default {
         
         this.fileILoaded = false;
         this.fileIHashName = null;
+        this.fileIAbsType = '';
 
         this.fileIName = fileName;
         this.progressE.setAttribute('value', 0);
         this.setLabelDisabled();
-        this.uploadFile(file, fileUserNameF, fileDirName, userNameIns);
+        this.uploadFile(file, fileUserNameF, fileAbsTypeTmp, userNameIns);
       }
     },
 
-    uploadFile(file, fileUserName, fileDirName, userMailIns){
+    uploadFile(file, fileUserName, fileAbsTypeTmp, userMailIns){
       
       let pageContext = this;
       let payload = new FormData();
       payload.append('file', file);
       payload.append('file_user_name', fileUserName);
-      payload.append('file_dir_name', fileDirName);
+      payload.append('file_dir_name', fileAbsTypeTmp);
       payload.append('user_mail_ins', userMailIns);
 
       // create a XMLHttpRequest object to make an request with progress tracking
@@ -180,7 +189,7 @@ export default {
       xhr.addEventListener('load', function(){
         // handle the request in upload component
         if(pageContext.useDefaultRequestHandler){
-          pageContext.handleRequestResponse(xhr);
+          pageContext.handleRequestResponse(xhr, fileAbsTypeTmp);
         }
         // handle the request in upload calling component
         else{
@@ -217,7 +226,7 @@ export default {
       this.fileI.value = '';
     },
 
-    handleRequestResponse(xhrResponse){
+    handleRequestResponse(xhrResponse, fileAbsTypeTmp){
       if(xhrResponse.status != 200){
         let vreturn = 'Erro ao realizar o upload: ' + xhrResponse.status + ': ' + xhrResponse.response;
         this.fileIName = '...';
@@ -228,6 +237,7 @@ export default {
         let response = JSON.parse(xhrResponse.response);
         this.fileIHashName = response['user_file_name'];
         this.fileILoaded = true;
+        this.fileIAbsType = fileAbsTypeTmp;
       }
     },
 
@@ -255,6 +265,9 @@ export default {
     getFileIHashName(){
       return this.fileIHashName;
     },
+    getFileAbsType(){
+      return this.fileIAbsType;
+    },
     isLoaded(){
       return this.fileILoaded;
     }
@@ -274,6 +287,7 @@ export default {
   display: inline-block;
   text-align: center;
   background-color: rgb(242, 241, 241);
+  margin: 10px 0px;
 }
 .fileInputWrapper > *{
   vertical-align: middle;
