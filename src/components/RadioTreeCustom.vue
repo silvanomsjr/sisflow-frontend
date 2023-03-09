@@ -1,22 +1,22 @@
 <template>
   <div class="radioBox">
-    
-    <label v-for="(option, index) in options" :key="index" class="radioBoxLabel">
-      <input type="radio" v-model="selectedOption" :value="option.value" class="radioBoxInput"
-        :id=" treeDepthId == '' ? 'option-' + index : treeDepthId + '-' + index" 
-      >
-      
-      <span class="radioBoxCircle"></span>
-      {{ option.label }}
-      
-      <div v-if="option.suboptions && selectedOption==option.value" class="radioBoxSuboptions">
-        <RadioTreeCustom :options="option.suboptions" v-model="selectedOption"
-          :treeDepthId="treeDepthId == '' ? 'option-' + index : treeDepthId + '-' + index"
-          @optSelected="(newValue) => this.$emit('optSelected', newValue)"
-        />
-      </div>
-
-    </label>
+    <div v-for="(option, index) in options" :key="index">
+      <label class="radioBoxLabel">
+        <input type="radio" v-model="selectedOption" :value="option.value" class="radioBoxInput"
+          :id=" treeDepthId == '' ? 'option-' + index : treeDepthId + '-' + index" 
+        >
+        
+        <span class="radioBoxCircle"></span>
+        {{ option.label }}
+        
+        <div v-if="option.suboptions && selectedOption==option.value" class="radioBoxSuboptions">
+          <RadioTreeCustom :options="option.suboptions" v-model="selectedOption"
+            :treeDepthId="treeDepthId == '' ? 'option-' + index : treeDepthId + '-' + index"
+            @optSelected="(newValue) => this.$emit('optSelected', newValue)"
+          />
+        </div>
+      </label>
+    </div>
   </div>
 </template>
 
@@ -70,7 +70,7 @@ export default {
   width: 100%;
 }
 .radioBoxLabel{
-  display: block;
+  display: inline-block;
   align-items: center;
   margin-right: 1rem;
   cursor: pointer;

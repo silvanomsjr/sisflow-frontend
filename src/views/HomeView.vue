@@ -32,22 +32,26 @@
         customFontSize='title'
         margin='20px 0px 5px 0px'
         display='block'>
-        Realizar solicitações
+        Solicitar início de estágio
       </TextCustom>
 
-      <RadioTreeCustom :options="this.radioOpts" @optSelected="(newValue) => this.handleOptsClick(newValue)"/>
-
+      <RadioTreeCustom ref="radioSolicitation" class="radioSolicitation"
+        :options="this.radioOpts" @optSelected="(newValue) => this.handleOptsClick(newValue)"/>
+      
       <div class='btnWrapper'>
-        <ButtonCustom
-          id="btnSend"
-          label="Solicitar"
-          customTextColor="white"
-          customBackColor="darkblue1"
-          customFontSize="normal"
-          width="90%"
-          padding="3px 20px"
-          @click="doSolicitation"
-        />
+        <div class='btn'>
+          <ButtonCustom
+            id="btnSendSol"
+            label="Solicitar"
+            customTextColor="white"
+            customBackColor="darkblue1"
+            customFontSize="normal"
+            width="98%"
+            padding="3px 20px"
+            :disabled="this.btnSendSolDisabled"
+            @click="doSolicitation"
+          />
+        </div>
       </div>
     </div>
 
@@ -78,22 +82,28 @@ export default {
   data() {
     return {
       userCourse: 'BCC',
-      radioOpts: [
-        { label: 'Option 1', value: 'option1' },
-        { label: 'Option 2', value: 'option2',
-          suboptions: [
-            { label: 'Suboption A', value: 'suboptionA' },
-            { label: 'Suboption B', value: 'suboptionB' }
-          ]
-        },
-        { label: 'Option 3', value: 'option3' }
-      ],
       solicitationsTable: {
         'titles': [ 'Nome', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '15%', '15%', '35%', '10%', '15%', '10%' ],
         'content': []
-      }
+      },
+      radioOptSelected: '',
+      radioOpts: [
+        { label: 'Estágio obrigatório', value: 'eo',
+          suboptions: [
+            { label: 'Estágio externo com vínculo empregatício', value: 1 },
+            { label: 'Estágio externo sem vínculo empregatício', value: 2 }
+          ]
+        },
+        { label: 'Estágio nao obrigatório', value: 'eno',
+          suboptions: [
+            { label: 'Externo', value: 3 },
+            { label: 'Interno', value: 4 }
+          ]
+        }
+      ],
+      btnSendSolDisabled: true
     }
   },
 
@@ -143,20 +153,38 @@ export default {
     },
 
     async handleOptsClick(newValue){
-      console.log(newValue);
+
+      this.radioOptSelected = newValue;
+
+      if(isNaN(this.radioOptSelected)){
+        this.btnSendSolDisabled = true;
+      }
+      else{
+        this.btnSendSolDisabled = false;
+      }
     },
 
     async doSolicitation(){
 
-      let solicitationId = this.$refs.selectc.getV();
+      if(isNaN(this.radioOptSelected) || !this.radioOptSelected){
+        this.$root.renderMsg('warn', 'Solicitação inválida!', '');
+        return;
+      }
+
+      let solicitationOpt = parseInt(this.radioOptSelected);
+      
+      if(solicitationOpt < 0 || solicitationOpt > 4){
+        this.$root.renderMsg('warn', 'Solicitação inválida!', '');
+        return;
+      }
 
       let vreturn = await this.$root.doRequest(
         Requests.putSolicitation,
-        [solicitationId]);
+        [solicitationOpt]);
 
       if(vreturn && vreturn['ok']){
         await this.loadSolicitationsTable();
-        this.$root.renderView('solicitation', { 'solicitation': solicitationId, 'solicitation_step_order': 1 })
+        this.$root.renderView('solicitation', { 'solicitation': solicitationOpt, 'solicitation_step_order': 1 })
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);
@@ -175,19 +203,34 @@ export default {
 .textC, .tableC{
   margin-top: 5px;
 }
+.btnWrapper{
+  display: block;
+  width: 100%;
+}
+.btn, .btnWrapper{
+  border: none;
+  outline: none;
+}
+.radioSolicitation{
+  margin: 20px 0px;
+}
 @media (min-width: 900px) {
-  .selectC, .btnWrapper{
+  .btnWrapper{
+    text-align: left;
+  }
+  .btn{
     display: inline-block;
-    width: 50%;
+    width: 40%;
   }
 }
 @media (max-width: 900px) {
-  .selectC, .btnWrapper{
+  .btnWrapper{
     text-align: center;
+  }
+  .btn{
     width: 100%;
     margin-top: 10px;
   }
 }
-
 
 </style>

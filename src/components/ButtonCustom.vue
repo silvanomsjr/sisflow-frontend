@@ -7,14 +7,16 @@
     @mouseover="mouseover"
     @mouseout="mouseout"
     @click="click"
+    :disabled="this.disabled"
     :style="{
       'color': this.cTextColor,
-      'background-color': this.cBackColor,
+      'background-color': this.disabled ? this.cBackDisabledColor : this.cBackColor,
       'font-size': this.cFontSize,
       'font-weight': 500,
       'width': this.width,
       'padding': this.padding,
-      'margin': this.margin
+      'margin': this.margin,
+      'cursor': this.disabled ? 'auto' : 'pointer'
     }"
   >
 
@@ -43,6 +45,10 @@ export default {
       default: 'white',
       type: String
     },
+    customDisabledBackColor: {
+      default: 'gray2',
+      type: String
+    },
     customFontSize: {
       default: 'normal',
       type: String
@@ -58,6 +64,10 @@ export default {
     margin: {
       default: '0px 0px 0px 0px',
       type: String
+    },
+    disabled: {
+      default: false,
+      type: Boolean
     }
   },
 
@@ -74,12 +84,14 @@ export default {
     this.cTextColor = Utils.handleColorSelection(this.customTextColor);
     this.cBackColor = Utils.handleColorSelection(this.customBackColor);
     this.cBackHoverColor = Utils.handleColorSelection(this.customBackColor);
+    this.cBackDisabledColor = Utils.handleColorSelection(this.customDisabledBackColor);
     this.cFontSize = Utils.handleFontType(this.customFontSize)[0];
 
     // set background hover color transparent
     if(this.cBackHoverColor.indexOf('a') == -1){
       this.cBackHoverColor = this.cBackHoverColor.replace(')', ',0.8)').replace('rgb', 'rgba');
     }
+
   },
 
   mounted(){
@@ -91,10 +103,14 @@ export default {
       this.buttonc.style.fontWeight = 600;
     },
     mouseover(){
-      this.buttonc.style.backgroundColor = this.cBackHoverColor;
+      if(!this.disabled){
+        this.buttonc.style.backgroundColor = this.cBackHoverColor;
+      }
     },
     mouseout(){
-      this.buttonc.style.backgroundColor = this.cBackColor;
+      if(!this.disabled){
+        this.buttonc.style.backgroundColor = this.cBackColor;
+      }
     }
 
   }
@@ -109,7 +125,6 @@ export default {
   border: 1px solid;
   border-radius: 25px;
   border: 2px solid rgba(255,255,255,0);
-  cursor: pointer;
 }
 
 </style>
