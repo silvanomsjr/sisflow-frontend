@@ -15,7 +15,7 @@
       </TextCustom>
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="this.solicitationsTable['content'].length > 0">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'

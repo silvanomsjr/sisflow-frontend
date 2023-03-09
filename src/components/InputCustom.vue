@@ -9,6 +9,7 @@
     :maxlength="this.maxlength"
     :placeholder="this.placeholder"
     :autocomplete="this.autocomplete"
+    :disabled="this.disabled"
     :style="{
       'color': this.cTextColor,
       'background-color': this.cBackColor,
@@ -18,7 +19,8 @@
       'font-size': this.cFontSize,
       'width': this.width,
       'padding': this.padding,
-      'display': this.display
+      'display': this.display,
+      
     }"
     v-mask="this.mask"
     @input="$emit('onChangeAction')"
@@ -33,6 +35,7 @@
     :maxlength="this.maxlength"
     :placeholder="this.placeholder"
     :autocomplete="this.autocomplete"
+    :disabled="this.disabled"
     :style="{
       'color': this.cTextColor,
       'background-color': this.cBackColor,
@@ -110,6 +113,10 @@ export default {
     display: {
       default: 'inline-block',
       type: String
+    },
+    disabled: {
+      default: false,
+      type: Boolean
     }
   },
 

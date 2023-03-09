@@ -4,11 +4,13 @@
     
     <div id="descBoxTop" v-show="this.pageData && this.pageData['top_inner_html']"></div>
 
-    <div id="inputsBox" v-if="this.pageData && this.pageData['inputs_solicitados']">
-      <div v-for="(inputC, index) in this.pageData['inputs_solicitados']" :key="index">
+    <div id="inputsBox" v-if="this.pageData && this.pageData['inputs']">
+      <div v-for="(inputC, index) in this.pageData['inputs']" :key="index">
+        {{ inputC['label_txt'] }}
         <InputCustom :id="'inputc' + index" :name="'inputc' + index" ref="inputc"
           :type="inputC['input_type']"
           autocomplete='off'
+          :disabled="this.pageDisabled"
         />
       </div>
     </div>
@@ -61,6 +63,7 @@
 <script>
 
 import ButtonCustom from '../components/ButtonCustom.vue'
+import InputCustom from '../components/InputCustom.vue'
 import FileUpload from '../components/FileUpload.vue'
 import SelectFileUpload from '../components/SelectFileUpload.vue'
 import Requests from '../js/requests.js'
@@ -71,6 +74,7 @@ export default {
 
   components: {
     ButtonCustom,
+    InputCustom,
     FileUpload,
     SelectFileUpload
   },
@@ -115,8 +119,8 @@ export default {
       return;
     }
 
-    //this.requestData = vreturn['response'];
     this.pageData = vreturn['response']['pagina_dinamica'];
+    this.pageDisabled = vreturn['response']['etapa_solicitacao']['decisao'] != 'Em analise';
     
     // if data is not correct
     if(!this.isCorrectRequiredPageDataFields()){
@@ -135,7 +139,8 @@ export default {
     }
 
     this.$root.pageName = this.pageData['titulo'];
-    this.pageDisabled = this.pageData['decisao'] != 'Em analise';
+
+    console.log(this.pageData);
 
     this.createdDone = true;
   },
@@ -176,8 +181,66 @@ export default {
     async doSolicitation(){
       
       let solicitationData = { 'inputs' : [], 'attachments' : [], 'select_attachments' : [] }
+      let inputOk = true;
       let attachmentOk = true;
       let selAttachmentOk = true;
+
+      // verify each input
+      if(this.pageData['inputs']){
+
+        this.pageData['inputs'].forEach( (input, index) => {
+          
+          let inputV = this.$refs['inputc'][index].getV();
+
+          if(input['required'] && !inputV){
+            this.$root.renderMsg('warn', input['missing_msg'], '');
+            inputOk = false;
+          }
+
+          else if(inputV && input['input_type'] == 'date' && input['input_date_rules']){
+
+            let dateParts = inputV.split("-");
+            let dateInput = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
+
+            input['input_date_rules'].forEach( (rule) => {
+
+              let minDate = new Date();
+              minDate.setDate(minDate.getDate() + rule['min_days_plus_today']);
+              let maxDate = new Date();
+              maxDate.setDate(maxDate.getDate() + rule['max_days_plus_today']);
+
+              console.log('\n'+dateInput);
+              console.log(minDate);
+              console.log(maxDate);
+              console.log(rule);
+
+              if(dateInput.getTime() > minDate.getTime() && dateInput.getTime() <= maxDate.getTime()){
+
+                if(rule['rule_type'] == 'warn'){
+                  this.$root.renderMsg('warn', rule['msg'], '');
+                  solicitationData['inputs'].push({
+                    'label_txt' : input['label_txt'],
+                    'value' : inputV
+                  })
+                }
+                else if(rule['rule_type'] == 'error'){
+                  this.$root.renderMsg('error', rule['msg'], '');
+                  inputOk = false;
+                }
+              }
+              else{
+                solicitationData['inputs'].push({
+                  'label_txt' : input['label_txt'],
+                  'value' : inputV
+                })
+              }
+            });
+          }
+        });
+      }
+      if(!inputOk){
+        return;
+      }
 
       // verify each attachment 
       if(this.pageData['anexos']){
