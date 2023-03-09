@@ -155,6 +155,24 @@ async function getSolicitations(token_jwt, args){
   return vreturn;
 }
 
+async function getSolicitation(token_jwt, args){
+  
+  let solicitation = args[0];
+  let solicitation_step_order = args[1];
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+  var querystring = `?solicitation=${solicitation}&solicitation_step_order=${solicitation_step_order}`;
+
+  let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
+  return vreturn;
+}
+
 async function putSolicitation(token_jwt, args){
   
   let id_solicitacao = args[0];
@@ -175,21 +193,27 @@ async function putSolicitation(token_jwt, args){
   return vreturn;
 }
 
-async function getSolicitation(token_jwt, args){
+async function postSolicitation(token_jwt, args){
   
   let solicitation = args[0];
   let solicitation_step_order = args[1];
+  let solicitation_data = args[2];
 
   var myHeaders = {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Authorization': `Bearer ${token_jwt}`
-    }
+      'Authorization': `Bearer ${token_jwt}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'solicitation': solicitation,
+      'solicitation_step_order': solicitation_step_order,
+      'solicitation_data': solicitation_data
+    })
   }
-  var querystring = `?solicitation=${solicitation}&solicitation_step_order=${solicitation_step_order}`;
 
-  let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
+  let vreturn = await baseRequestFBody(myHeaders, 'solicitation');
   return vreturn;
 }
 
@@ -201,5 +225,6 @@ export default{
   signDoWithCode,
   getSolicitations,
   getSolicitation,
-  putSolicitation
+  putSolicitation,
+  postSolicitation
 }

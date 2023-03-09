@@ -6,7 +6,7 @@
 
     <div id="uploadsBox" v-if="this.pageData && this.pageData['anexos_solicitados']">
       <div v-for="(item, index) in this.pageData['anexos_solicitados']" :key="index">
-        <FileUpload :id="'fileupht' + index" class="fileU"
+        <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
           :titleText="item['label_txt']"
           :fileDirName="item['file_abs_type']"
           :uploadEndpoint="this.fileUploadEndpoint"
@@ -17,7 +17,7 @@
     <div id="descBoxMid" v-show="this.pageData && this.pageData['mid_inner_html']"></div>
 
     <div class="sendSolicitationWrapper">
-      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['enviar_requisicao'] == true">
+      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['botao_solicitar']">
         <ButtonCustom
           id="btnSend"
           label="Solicitar"
@@ -57,7 +57,10 @@ export default {
       createdDone: false,
       mountedDone: false,
       pageData: [],
-      fileUploadEndpoint: ''
+      fileUploadEndpoint: '',
+
+      idSolicitation: null,
+      solicitationStepOrder: null
     }
   },
 
@@ -74,12 +77,12 @@ export default {
         function () { pageContext.$root.renderView('home'); });
       return;
     }
-    let idSolicitation = this.$route.query['solicitation'];
-    let solicitationStepOrder = this.$route.query['solicitation_step_order'];
+    this.solicitation = this.$route.query['solicitation'];
+    this.solicitationStepOrder = this.$route.query['solicitation_step_order'];
 
     let vreturn = await this.$root.doRequest(
       Requests.getSolicitation,
-      [idSolicitation, solicitationStepOrder]);
+      [this.solicitation, this.solicitationStepOrder]);
 
     if(!vreturn || !vreturn['ok']){
       this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!']);
@@ -144,8 +147,57 @@ export default {
       this.descBoxMid.setHTML(this.pageData['mid_inner_html']);
       this.descBoxBot.setHTML(this.pageData['bot_inner_html']);
     },
-    doSolicitation(){
-      alert('solicitacao');
+    async doSolicitation(){
+      
+      let solicitationData = { 'attachments' : [] }
+      let attachmentOk = true;
+
+      // verify each attachment 
+      if(this.pageData['anexos_solicitados']){
+
+        this.pageData['anexos_solicitados'].forEach( (anexo, index) => {
+          if(anexo['required'] && (this.$refs['fileu'][index].getFileIHashName() == null || !this.$refs['fileu'][index].isLoaded())){
+            this.$root.renderMsg('warn', anexo['missing_msg'], '');
+            attachmentOk = false;
+          }
+          else if(this.$refs['fileu'][index].getFileIHashName() != null && this.$refs['fileu'][index].isLoaded()){
+            solicitationData['attachments'].push({
+              'file_abs_type' : anexo['file_abs_type'],
+              'name' : this.$refs['fileu'][index].getFileIHashName()
+            })
+          }
+        });
+      }
+
+      if(!attachmentOk){
+        return;
+      }
+
+      let vreturn = await this.$root.doRequest(
+        Requests.postSolicitation,
+        [this.solicitation, this.solicitationStepOrder, solicitationData]);
+      
+      console.log(vreturn);
+
+      if(!vreturn || !vreturn['ok']){
+        this.$root.renderRequestErrorMsg(vreturn, [
+          'Usuario não possui a etapa de solicitação!',
+          'Esta solicitação está com status Deferido!',
+          'Esta solicitação está com status Indeferido!',
+          'Esta etapa da solicitação já foi realizada aguarde sua conclusão!',
+          'Esta etapa da solicitação foi expirada!',
+          'Anexo da solicitação está faltando!'
+          ]);
+        return;
+      }
+      else{
+        let pageContext = this;
+        this.$root.renderMsg(
+          'ok',
+          'Solicitação realizada!',
+          'Aguarde os prazos e verifique seus e-mails para mais atualizações.',
+          function () { pageContext.$root.renderView('home'); });
+      }
     }
   }
 }

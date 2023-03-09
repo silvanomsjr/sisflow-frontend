@@ -82,7 +82,10 @@ export default {
     return{
       tmpButtonText: '',
       tmpIconName: 'fa-solid fa-cloud-arrow-up',
-      fileIName: '...'
+      fileIName: '...',
+
+      fileIHashName: null,
+      fileILoaded: false
     }
   },
 
@@ -133,6 +136,9 @@ export default {
           return;
         }
         
+        this.fileILoaded = false;
+        this.fileIHashName = null;
+
         this.fileIName = fileName;
         this.progressE.setAttribute('value', 0);
         this.setLabelDisabled();
@@ -196,7 +202,13 @@ export default {
       if(xhrResponse.status != 200){
         let vreturn = 'Erro ao realizar o upload: ' + xhrResponse.status + ': ' + xhrResponse.response;
         this.fileIName = '...';
+        this.fileIHashName = null;
         this.$root.renderRequestErrorMsg(vreturn);
+      }
+      else{
+        let response = JSON.parse(xhrResponse.response);
+        this.fileIHashName = response['user_file_name'];
+        this.fileILoaded = true;
       }
     },
 
@@ -215,6 +227,13 @@ export default {
     },
     mouseeLabelOut(){
       this.fileILabel.style.backgroundColor = this.darkblue1;
+    },
+
+    getFileIHashName(){
+      return this.fileIHashName;
+    },
+    isLoaded(){
+      return this.fileILoaded;
     }
   }
 }
