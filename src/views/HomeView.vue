@@ -93,7 +93,7 @@ export default {
         { label: 'Estágio obrigatório', value: 'eo',
           suboptions: [
             { label: 'Estágio externo com vínculo empregatício', value: 1 },
-            { label: 'Estágio externo sem vínculo empregatício', value: 2 }
+            { label: 'Estágio externo', value: 2 }
           ]
         },
         { label: 'Estágio nao obrigatório', value: 'eno',
