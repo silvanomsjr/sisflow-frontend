@@ -84,17 +84,11 @@
             width="98%"
             padding="3px 20px"
             :disabled="this.btnSendSolDisabled"
-            @click="doSolicitation"
+            @click="createSolicitation"
           />
         </div>
       </div>
     </div>
-
-    <FileDownload id="filed" ref="filed"
-      titleText="Faça o download do seu histórico assinado"
-      fileName="AlunoVitor_HistTextual_0sYa3J5OJD.pdf"
-      downloadEndpoint="http://localhost:5000/file?bearer=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoyLCJlbWFpbF9pbnMiOiJhbHVub0B1ZnUuYnIiLCJlbWFpbF9zZWMiOiJhbHVub0BnbWFpbC5jb20iLCJub21lIjoiQWx1bm8gVml0b3IiLCJzZXhvIjoiTSIsInRlbGVmb25lIjoiMzQyMjIyMjIyMjIiLCJkYXRhX2hvcmFfY3JpYWNhbyI6IjIwMjMtMDMtMTUgMjM6Mzk6NTQiLCJwZXJmaWxfYWx1bm8iOnsibWF0cmljdWxhIjoiMTExMTFCU0kxMTEiLCJjdXJzbyI6IkJTSSJ9LCJwZXJmaXMiOlsiUyJdfQ.kiIJcNE5YGVO97wChpnhMWoMWLE3ATCfYc_1nQy6u1P10WwomNImSVQ8Ibyq8g1MeKGNFYXJbHc8KBPEYFaiSgilnbW-yUZYf7emZxDIhTSJqc20vs-3DysxJC4VOI_Qoh1JmtDQC9wWxwPRIa0BBgQNMHcnkVKQi3Jr-mIsFAOKKoRHSECI3UeMXhYdH1n3zZk1ljQ4SYlLVx8ApHeAtHfNMPL225R16wXrdmsjw2v6RpFV4SHjWTOVeMsEhkuUAOV0gGKg6_qB9h9-Wfyar1QwupOKy2x1uA5FDEjeCPUC1oXRUgXmnhsKmIL322zrs2ZX_Qzek2Tx8kCg7WN2Cw&file_name=AlunoVitor_HistTextual_0sYa3J5OJD.pdf"
-    />
 
   </div>
 
@@ -107,7 +101,6 @@ import Requests from '../js/requests.js'
 import RadioTreeCustom from '../components/RadioTreeCustom.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
-import FileDownload from '../components/FileDownload.vue'
 //import Utils from '../js/utils.js'
 
 export default {
@@ -118,29 +111,28 @@ export default {
     ButtonCustom,
     RadioTreeCustom,
     TableCustom,
-    TextCustom,
-    FileDownload
+    TextCustom
   },
 
   data() {
     return {
       userProfiles: null,
       coordinatorSolTable: {
-        'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
+        'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
-        'colWidths': [ '10%', '10%', '15%', '25%', '10%', '11%', '11%', '8%' ],
+        'colWidths': [ '11%', '10%', '15%', '25%', '10%', '11%', '11%', '7%' ],
         'content': []
       },
       professorSolTable: {
-        'titles': [ 'Aluno', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
+        'titles': [ 'Aluno', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
-        'colWidths': [ '10%', '15%', '30%', '10%', '15%', '12%', '8%' ],
+        'colWidths': [ '11%', '15%', '30%', '10%', '15%', '12%', '7%' ],
         'content': []
       },
       studentSolTable: {
-        'titles': [ 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
+        'titles': [ 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
-        'colWidths': [ '15%', '35%', '15%', '10%', '15%', '10%' ],
+        'colWidths': [ '18%', '35%', '15%', '10%', '15%', '7%' ],
         'content': []
       },
       radioOptSelected: '',
@@ -171,11 +163,11 @@ export default {
       await this.loadCoordinatorSolTable();
     }
 
-    if(this.userProfiles.includes('P')){
+    else if(this.userProfiles.includes('P')){
       await this.loadProfessorSolTable();
     }
 
-    if(this.userProfiles.includes('S')){
+    else if(this.userProfiles.includes('S')){
       await this.loadStudentSolTable();
     }
   },
@@ -206,12 +198,16 @@ export default {
             solicitation['decisao'],
             solicitation['motivo'],
             {
-              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+                'fa-solid fa-pencil' :
+                'fa-solid fa-eye',
               'iconSelFunction' : function(){
                 pageContext.$root.renderView(
                   'solicitation', {
-                    'solicitation': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
+                    'student_id': solicitation['id_aluno'],
+                    'solicitation_id': solicitation['id_solicitacao'],
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
+                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
               }
             }
           ]);
@@ -243,12 +239,16 @@ export default {
             solicitation['decisao'],
             solicitation['motivo'],
             {
-              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+                'fa-solid fa-pencil' :
+                'fa-solid fa-eye',
               'iconSelFunction' : function(){
                 pageContext.$root.renderView(
                   'solicitation', {
-                    'solicitation': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
+                    'student_id': solicitation['id_aluno'],
+                    'solicitation_id': solicitation['id_solicitacao'],
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
+                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
               }
             }
           ]);
@@ -279,12 +279,16 @@ export default {
             solicitation['decisao'],
             solicitation['motivo'],
             {
-              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+                'fa-solid fa-pencil' :
+                'fa-solid fa-eye',
               'iconSelFunction' : function(){
                 pageContext.$root.renderView(
                   'solicitation', {
-                    'solicitation': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
+                    'student_id': pageContext.$root.userLoggedData['id_usuario'],
+                    'solicitation_id': solicitation['id_solicitacao'],
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
+                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
               }
             }
           ]);
@@ -307,7 +311,7 @@ export default {
       }
     },
 
-    async doSolicitation(){
+    async createSolicitation(){
 
       if(isNaN(this.radioOptSelected) || !this.radioOptSelected){
         this.$root.renderMsg('warn', 'Solicitação inválida!', '');
@@ -327,7 +331,13 @@ export default {
 
       if(vreturn && vreturn['ok']){
         await this.loadStudentSolTable();
-        this.$root.renderView('solicitation', { 'solicitation': solicitationOpt, 'solicitation_step_order': 1 })
+        this.$root.renderView(
+          'solicitation', {
+              'student_id': this.$root.userLoggedData['id_usuario'],
+              'solicitation_id': solicitationOpt,
+              'solicitation_step_order': 1,
+              'solicitation_profile': 'S' 
+        })
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);

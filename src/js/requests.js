@@ -189,8 +189,10 @@ async function getStudentSolicitations(token_jwt, args){
 
 async function getSolicitation(token_jwt, args){
   
-  let solicitation = args[0];
-  let solicitation_step_order = args[1];
+  let student_id = args[0];
+  let solicitation_id = args[1];
+  let solicitation_step_order = args[2];
+  let solicitation_profile = args[3];
 
   var myHeaders = {
     method: 'GET',
@@ -199,7 +201,7 @@ async function getSolicitation(token_jwt, args){
       'Authorization': `Bearer ${token_jwt}`
     }
   }
-  var querystring = `?solicitation=${solicitation}&solicitation_step_order=${solicitation_step_order}`;
+  var querystring = `?student_id=${student_id}&solicitation_id=${solicitation_id}&solicitation_step_order=${solicitation_step_order}&solicitation_profile=${solicitation_profile}`;
 
   let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
   return vreturn;
@@ -227,9 +229,10 @@ async function putSolicitation(token_jwt, args){
 
 async function postSolicitation(token_jwt, args){
   
-  let solicitation = args[0];
-  let solicitation_step_order = args[1];
-  let solicitation_data = args[2];
+  let student_id = args[0];
+  let solicitation_id = args[1];
+  let solicitation_step_order = args[2];
+  let solicitation_data = args[3];
 
   var myHeaders = {
     method: 'POST',
@@ -239,7 +242,8 @@ async function postSolicitation(token_jwt, args){
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      'solicitation': solicitation,
+      'student_id': student_id,
+      'solicitation_id': solicitation_id,
       'solicitation_step_order': solicitation_step_order,
       'solicitation_data': solicitation_data
     })

@@ -15,8 +15,18 @@
       </div>
     </div>
 
-    <div id="uploadsBox" v-if="this.pageData && this.pageData['anexos']">
-      <div v-for="(fileU, index) in this.pageData['anexos']" :key="index">
+    <div id="downloadsBox" v-if="this.pageData && this.pageData['downloads']">
+      <div v-for="(fileD, index) in this.pageData['downloads']" :key="index">
+        <FileDownload :id="'filed' + index" ref="filed" class="fileD"
+          :titleText="fileD['label_txt']"
+          fileName="AlunoVitor_HistTextual_1Ok9uqsqIj.pdf"
+          downloadEndpoint="http://localhost:5000/file?bearer=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoyLCJlbWFpbF9pbnMiOiJhbHVub0B1ZnUuYnIiLCJlbWFpbF9zZWMiOiJhbHVub0BnbWFpbC5jb20iLCJub21lIjoiQWx1bm8gVml0b3IiLCJzZXhvIjoiTSIsInRlbGVmb25lIjoiMzQyMjIyMjIyMjIiLCJkYXRhX2hvcmFfY3JpYWNhbyI6IjIwMjMtMDMtMTUgMjM6Mzk6NTQiLCJwZXJmaWxfYWx1bm8iOnsibWF0cmljdWxhIjoiMTExMTFCU0kxMTEiLCJjdXJzbyI6IkJTSSJ9LCJwZXJmaXMiOlsiUyJdfQ.kiIJcNE5YGVO97wChpnhMWoMWLE3ATCfYc_1nQy6u1P10WwomNImSVQ8Ibyq8g1MeKGNFYXJbHc8KBPEYFaiSgilnbW-yUZYf7emZxDIhTSJqc20vs-3DysxJC4VOI_Qoh1JmtDQC9wWxwPRIa0BBgQNMHcnkVKQi3Jr-mIsFAOKKoRHSECI3UeMXhYdH1n3zZk1ljQ4SYlLVx8ApHeAtHfNMPL225R16wXrdmsjw2v6RpFV4SHjWTOVeMsEhkuUAOV0gGKg6_qB9h9-Wfyar1QwupOKy2x1uA5FDEjeCPUC1oXRUgXmnhsKmIL322zrs2ZX_Qzek2Tx8kCg7WN2Cw&file_name=AlunoVitor_HistTextual_1Ok9uqsqIj.pdf"
+        />
+      </div>
+    </div>
+
+    <div id="uploadsBox" v-if="this.pageData && this.pageData['uploads']">
+      <div v-for="(fileU, index) in this.pageData['uploads']" :key="index">
         <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
           :titleText="fileU['label_txt']"
           :fileDirName="fileU['file_abs_type']"
@@ -26,8 +36,8 @@
       </div>
     </div>
 
-    <div id="selectUploadsBox" v-if="this.pageData && this.pageData['select_anexos']">
-      <div v-for="(selFileU, index) in this.pageData['select_anexos']" :key="index">
+    <div id="selectUploadsBox" v-if="this.pageData && this.pageData['select_uploads']">
+      <div v-for="(selFileU, index) in this.pageData['select_uploads']" :key="index">
         <SelectFileUpload :id="'selFileU' + index" ref="selFileU" class="selFileU"
           :selectLabel="selFileU['label_txt']"
           :selectOpts="selFileU['select_opts']"
@@ -64,6 +74,7 @@
 
 import ButtonCustom from '../components/ButtonCustom.vue'
 import InputCustom from '../components/InputCustom.vue'
+import FileDownload from '../components/FileDownload.vue'
 import FileUpload from '../components/FileUpload.vue'
 import SelectFileUpload from '../components/SelectFileUpload.vue'
 import Requests from '../js/requests.js'
@@ -75,6 +86,7 @@ export default {
   components: {
     ButtonCustom,
     InputCustom,
+    FileDownload,
     FileUpload,
     SelectFileUpload
   },
@@ -98,7 +110,12 @@ export default {
     let pageContext = this;
 
     // verify query params
-    if(!this.$route.query || !this.$route.query['solicitation'] || !this.$route.query['solicitation_step_order']){
+    if(!this.$route.query || 
+      !this.$route.query['student_id']|| 
+      !this.$route.query['solicitation_id'] || 
+      !this.$route.query['solicitation_step_order'] || 
+      !this.$route.query['solicitation_profile']){
+
       this.$root.renderMsg(
         'error', 
         'Pagina de solicitação inválida!',
@@ -106,23 +123,30 @@ export default {
         function () { pageContext.$root.renderView('home'); });
       return;
     }
-    this.solicitation = this.$route.query['solicitation'];
+    this.studentId = this.$route.query['student_id'];
+    this.solicitationId = this.$route.query['solicitation_id'];
     this.solicitationStepOrder = this.$route.query['solicitation_step_order'];
+    this.solicitationProfile = this.$route.query['solicitation_profile'];
 
+    // request for dynamic page data
     let vreturn = await this.$root.doRequest(
       Requests.getSolicitation,
-      [this.solicitation, this.solicitationStepOrder]);
+      [this.studentId, this.solicitationId, this.solicitationStepOrder, this.solicitationProfile]);
 
     if(!vreturn || !vreturn['ok']){
-      this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!']);
+      this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!', 'Acesso a solicitação não permitido!']);
       this.$root.renderView('home');
       return;
     }
 
+    this.solicitationStep = vreturn['response']['etapa_solicitacao'];
     this.pageData = vreturn['response']['pagina_dinamica'];
-    this.pageDisabled = vreturn['response']['etapa_solicitacao']['decisao'] != 'Em analise';
+
+    this.pageDisabled = 
+      this.solicitationStep['decisao'] != 'Em analise' || 
+      !this.$root.userLoggedData['perfis'].includes(this.solicitationStep['perfil_editor_atual']);
     
-    // if data is not correct
+    // verify dynamic page data
     if(!this.isCorrectRequiredPageDataFields()){
       this.$root.renderMsg(
         'error',
@@ -133,8 +157,6 @@ export default {
     }
 
     this.$root.pageName = this.pageData['titulo'];
-
-    console.log(this.pageData);
 
     this.createdDone = true;
   },
@@ -164,7 +186,7 @@ export default {
 
   methods:{
     isCorrectRequiredPageDataFields(){
-      return this.pageData && this.pageData['titulo'] && this.pageData['perfis_permitidos'];
+      return this.pageData && this.pageData['titulo'];
     },
     setInnerHtmls(){
       // although the data comes from db, we avoid xss atacks using default sanitizer from setHTML
@@ -203,11 +225,6 @@ export default {
               let maxDate = new Date();
               maxDate.setDate(maxDate.getDate() + rule['max_days_plus_today']);
 
-              console.log('\n'+dateInput);
-              console.log(minDate);
-              console.log(maxDate);
-              console.log(rule);
-
               if(dateInput.getTime() > minDate.getTime() && dateInput.getTime() <= maxDate.getTime()){
 
                 if(rule['rule_type'] == 'warn'){
@@ -237,16 +254,16 @@ export default {
       }
 
       // verify each attachment 
-      if(this.pageData['anexos']){
+      if(this.pageData['uploads']){
 
-        this.pageData['anexos'].forEach( (anexo, index) => {
-          if(anexo['required'] && (this.$refs['fileu'][index].getFileIHashName() == null || !this.$refs['fileu'][index].isLoaded())){
-            this.$root.renderMsg('warn', anexo['missing_msg'], '');
+        this.pageData['uploads'].forEach( (upload, index) => {
+          if(upload['required'] && (this.$refs['fileu'][index].getFileIHashName() == null || !this.$refs['fileu'][index].isLoaded())){
+            this.$root.renderMsg('warn', upload['missing_msg'], '');
             attachmentOk = false;
           }
           else if(this.$refs['fileu'][index].getFileIHashName() != null && this.$refs['fileu'][index].isLoaded()){
             solicitationData['attachments'].push({
-              'file_abs_type' : anexo['file_abs_type'],
+              'file_abs_type' : upload['file_abs_type'],
               'name' : this.$refs['fileu'][index].getFileIHashName()
             })
           }
@@ -257,11 +274,11 @@ export default {
       }
 
       // verify each select attachment 
-      if(this.pageData['select_anexos']){
+      if(this.pageData['select_uploads']){
 
-        this.pageData['select_anexos'].forEach( (selectAnexo, index) => {
-          if(selectAnexo['required'] && (this.$refs['selFileU'][index].getFileIHashName() == null || !this.$refs['selFileU'][index].isLoaded())){
-            this.$root.renderMsg('warn', selectAnexo['missing_msg'], '');
+        this.pageData['select_uploads'].forEach( (selectUpload, index) => {
+          if(selectUpload['required'] && (this.$refs['selFileU'][index].getFileIHashName() == null || !this.$refs['selFileU'][index].isLoaded())){
+            this.$root.renderMsg('warn', selectUpload['missing_msg'], '');
             selAttachmentOk = false;
           }
           else if(this.$refs['selFileU'][index].getFileIHashName() != null && this.$refs['selFileU'][index].isLoaded()){
@@ -278,7 +295,7 @@ export default {
 
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
-        [this.solicitation, this.solicitationStepOrder, solicitationData]);
+        [this.studentId, this.solicitationId, this.solicitationStepOrder, solicitationData]);
 
       if(!vreturn || !vreturn['ok']){
         this.$root.renderRequestErrorMsg(vreturn, [
@@ -327,7 +344,7 @@ export default {
     width: 50%;
   }
 }
-.fileU, .selFileU{
+.fileD, .fileU, .selFileU{
   margin-top: 10px;
   width: 100%;
 }
