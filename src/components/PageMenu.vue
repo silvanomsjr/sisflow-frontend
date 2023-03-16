@@ -150,7 +150,8 @@ export default {
         { label: "Home", faIconName: "home", view: 'home', iSelected: true, iHover: false, subItemsShow: false, subItems: [] },
         { label: "Areas", faIconName: "users", view: '', iSelected: false, iHover: false, subItemsShow: false, subItems: [ 
           { subLabel: "Aluno", view: 'areastudent', sSelected: false, sHover: false }, 
-          { subLabel: "Professor", view: 'areateacher', sSelected: false, sHover: false }
+          { subLabel: "Professor", view: 'areaprofessor', sSelected: false, sHover: false },
+          { subLabel: "Coordenador", view: 'areacoordinator', sSelected: false, sHover: false }
         ]}
       ],
       itemSelected: 0,

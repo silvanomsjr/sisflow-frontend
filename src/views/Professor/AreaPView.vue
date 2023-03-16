@@ -5,14 +5,14 @@
       <TextCustom 
         customColor="black1"
         customFontSize='page_title'>
-        Dados do aluno
+        Dados do professor
       </TextCustom>
     </div>
     <div class="divLine">
       <LineCustom width="90%"/>
     </div>
     <div style="margin-left: 20px;">
-      <p>Matricula : {{this.user['perfil_aluno']['matricula']}}</p>
+      <p>Siape : {{this.user['perfil_professor']['siape']}}</p>
       <p>Perfis : {{this.user['perfis']}}</p>
       <p>Nome : {{this.user['nome']}}</p>
       <p>Telefone : {{this.user['telefone']}}</p>
@@ -38,7 +38,7 @@ import TextCustom from '../../components/TextCustom.vue'
 
 export default {
 
-  name: 'AreaSView',
+  name: 'AreaPView',
 
   components: {
     LineCustom,
@@ -51,7 +51,7 @@ export default {
   },
 
   created(){
-    this.$root.pageName = 'Area de teste do aluno';
+    this.$root.pageName = 'Area de teste do professor';
     this.user = this.$root.userLoggedData;
   },
 }

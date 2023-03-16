@@ -258,21 +258,14 @@ export default {
         return true;
       }
 
-      // if user has only one type (letter)
-      else if(typeof userData['siglas'] === 'string'){
-        return allowedUsers.includes(userData['siglas']);
-      }
-
-      // if user has many types (list of letters)
-      else{
-        // foreach allowed type of user for page verify if user is one
-        allowedUsers.forEach(allowedUser => {
-          if(userData['siglas'].includes(allowedUser)){
-            return true;
-          }
-        });
-      }
-      return false;
+      // foreach allowed type of user for page verify if user is one
+      let allowed = false;
+      allowedUsers.forEach(allowedUser => {
+        if(userData['perfis'].includes(allowedUser)){
+          allowed = true;
+        }
+      });
+      return allowed;
     },
 
     clearLoginData(){

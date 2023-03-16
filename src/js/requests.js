@@ -139,8 +139,8 @@ async function signDoWithCode(_, args){
   return vreturn;
 }
 
-async function getSolicitations(token_jwt, args){
-  
+async function getCoordinatorSolicitations(token_jwt, args){
+
   args;
 
   var myHeaders = {
@@ -151,7 +151,39 @@ async function getSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'solicitations');
+  let vreturn = await baseRequestFBody(myHeaders, '/coordinator/solicitations');
+  return vreturn;
+}
+
+async function getProfessorSolicitations(token_jwt, args){
+
+  args;
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, '/professor/solicitations');
+  return vreturn;
+}
+
+async function getStudentSolicitations(token_jwt, args){
+
+  args;
+
+  var myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, '/student/solicitations');
   return vreturn;
 }
 
@@ -223,7 +255,9 @@ export default{
   signVerifyCodeData,
   signVerifyCodeToken,
   signDoWithCode,
-  getSolicitations,
+  getCoordinatorSolicitations,
+  getProfessorSolicitations,
+  getStudentSolicitations,
   getSolicitation,
   putSolicitation,
   postSolicitation

@@ -132,12 +132,6 @@ export default {
       return;
     }
 
-    // if user not allowed
-    if(!this.$root.isUserAllowedForPage(this.$root.userLoggedData, this.pageData['perfis_permitidos'])){
-      this.$root.renderUserNotAllowedMsg();
-      return;
-    }
-
     this.$root.pageName = this.pageData['titulo'];
 
     console.log(this.pageData);

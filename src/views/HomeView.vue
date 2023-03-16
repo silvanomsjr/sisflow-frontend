@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <div v-if="this.userProfiles!=null">
     
     <div class="pageContentRow">
       <TextCustom
@@ -10,12 +10,47 @@
         <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
           à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
           solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
-        <p>Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
-          solicitações.</p>
+        <p v-if="this.userProfiles.includes('A')">
+          Você está logado com uma conta de perfil administrador, abaixo você pode visualizar as solicitações de alunos ordenadas pela data de criação.
+        </p>
+        <p v-else-if="this.userProfiles.includes('C')">
+          Coordenador, abaixo você pode visualizar solicitações de alunos ordenadas pela data de criação.
+        </p>
+        <p v-else-if="this.userProfiles.includes('P')">
+          Professor, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
+        </p>
+        <p v-else>
+          Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
+          solicitações.
+        </p>
       </TextCustom>
     </div>
 
-    <div class="pageContentRow" v-if="this.solicitationsTable['content'].length > 0">
+    <div class="pageContentRow" v-if="this.coordinatorSolTable['content'].length > 0">
+      <TextCustom
+        customFontSize='title'
+        margin='20px 0px 5px 0px'
+        display='block'>
+        Solicitações
+      </TextCustom>
+
+      <TableCustom class="tableC"
+        :tableData="this.coordinatorSolTable"/>
+    </div>
+
+    <div class="pageContentRow" v-if="this.professorSolTable['content'].length > 0">
+      <TextCustom
+        customFontSize='title'
+        margin='20px 0px 5px 0px'
+        display='block'>
+        Solicitações de seus alunos orientados
+      </TextCustom>
+
+      <TableCustom class="tableC"
+        :tableData="this.professorSolTable"/>
+    </div>
+
+    <div class="pageContentRow" v-if="this.studentSolTable['content'].length > 0">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
@@ -24,10 +59,10 @@
       </TextCustom>
 
       <TableCustom class="tableC"
-        :tableData="this.solicitationsTable"/>
+        :tableData="this.studentSolTable"/>
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="this.userProfiles.includes('S')">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
@@ -81,11 +116,23 @@ export default {
 
   data() {
     return {
-      userCourse: 'BCC',
-      solicitationsTable: {
-        'titles': [ 'Nome', 'Data e hora', 'Descricao', 'Decisao', 'Motivo', 'Visualizar' ],
+      userProfiles: null,
+      coordinatorSolTable: {
+        'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
+        'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
+        'colWidths': [ '10%', '10%', '15%', '25%', '10%', '11%', '11%', '8%' ],
+        'content': []
+      },
+      professorSolTable: {
+        'titles': [ 'Aluno', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
+        'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
+        'colWidths': [ '10%', '15%', '30%', '10%', '15%', '12%', '8%' ],
+        'content': []
+      },
+      studentSolTable: {
+        'titles': [ 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Visualizar' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
-        'colWidths': [ '15%', '15%', '35%', '10%', '15%', '10%' ],
+        'colWidths': [ '15%', '35%', '15%', '10%', '15%', '10%' ],
         'content': []
       },
       radioOptSelected: '',
@@ -108,38 +155,53 @@ export default {
   },
 
   async created() {
+
     this.$root.pageName = 'Home';
-    await this.loadSolicitationsTable();
+    this.userProfiles = this.$root.userLoggedData['perfis'];
+
+    if(this.userProfiles.includes('A') || this.userProfiles.includes('C')){
+      await this.loadCoordinatorSolTable();
+    }
+
+    if(this.userProfiles.includes('P')){
+      await this.loadProfessorSolTable();
+    }
+
+    if(this.userProfiles.includes('S')){
+      await this.loadStudentSolTable();
+    }
   },
 
   mounted() {},
 
   methods:{
 
-    async loadSolicitationsTable(){
+    async loadCoordinatorSolTable(){
 
-      let vreturn = await this.$root.doRequest(
-        Requests.getSolicitations,
+      let vreturnCoor = await this.$root.doRequest(
+        Requests.getCoordinatorSolicitations,
         []);
 
-      if(vreturn && vreturn['ok']){
+      if(vreturnCoor && vreturnCoor['ok']){
 
         let pageContext = this;
 
-        pageContext.solicitationsTable['content'] = [];
+        pageContext.coordinatorSolTable['content'] = [];
 
-        vreturn['response'].forEach(solicitation => {
-          this.solicitationsTable['content'].push([
+        vreturnCoor['response'].forEach(solicitation => {
+          this.coordinatorSolTable['content'].push([
+            solicitation['nome_aluno'],
+            solicitation['nome_orientador'],
             solicitation['nome_solicitacao'],
-            solicitation['data_hora_inicio'].replaceAll('-','/'),
             solicitation['descricao'],
+            solicitation['data_hora_inicio'].replaceAll('-','/'),
             solicitation['decisao'],
             solicitation['motivo'],
             {
               'iconName' : 'fa-solid fa-clock-rotate-left', 
               'iconSelFunction' : function(){
                 pageContext.$root.renderView(
-                  'solicitation', { 
+                  'solicitation', {
                     'solicitation': solicitation['id_solicitacao'],
                     'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
               }
@@ -148,7 +210,80 @@ export default {
         });
       }
       else{
-        this.$root.renderRequestErrorMsg(vreturn);
+        this.$root.renderRequestErrorMsg(vreturnCoor);
+      }
+    },
+
+    async loadProfessorSolTable(){
+
+      let vreturnProf = await this.$root.doRequest(
+        Requests.getProfessorSolicitations,
+        []);
+
+      if(vreturnProf && vreturnProf['ok']){
+
+        let pageContext = this;
+
+        pageContext.professorSolTable['content'] = [];
+
+        vreturnProf['response'].forEach(solicitation => {
+          this.professorSolTable['content'].push([
+            solicitation['nome_aluno'],
+            solicitation['nome_solicitacao'],
+            solicitation['descricao'],
+            solicitation['data_hora_inicio'].replaceAll('-','/'),
+            solicitation['decisao'],
+            solicitation['motivo'],
+            {
+              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconSelFunction' : function(){
+                pageContext.$root.renderView(
+                  'solicitation', {
+                    'solicitation': solicitation['id_solicitacao'],
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
+              }
+            }
+          ]);
+        });
+      }
+      else{
+        this.$root.renderRequestErrorMsg(vreturnProf);
+      }
+    },
+
+    async loadStudentSolTable(){
+
+      let vreturnStud = await this.$root.doRequest(
+        Requests.getStudentSolicitations,
+        []);
+
+      if(vreturnStud && vreturnStud['ok']){
+
+        let pageContext = this;
+
+        pageContext.studentSolTable['content'] = [];
+
+        vreturnStud['response'].forEach(solicitation => {
+          this.studentSolTable['content'].push([
+            solicitation['nome_solicitacao'],
+            solicitation['descricao'],
+            solicitation['data_hora_inicio'].replaceAll('-','/'),
+            solicitation['decisao'],
+            solicitation['motivo'],
+            {
+              'iconName' : 'fa-solid fa-clock-rotate-left', 
+              'iconSelFunction' : function(){
+                pageContext.$root.renderView(
+                  'solicitation', {
+                    'solicitation': solicitation['id_solicitacao'],
+                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'] })
+              }
+            }
+          ]);
+        });
+      }
+      else{
+        this.$root.renderRequestErrorMsg(vreturnStud);
       }
     },
 
@@ -183,7 +318,7 @@ export default {
         [solicitationOpt]);
 
       if(vreturn && vreturn['ok']){
-        await this.loadSolicitationsTable();
+        await this.loadStudentSolTable();
         this.$root.renderView('solicitation', { 'solicitation': solicitationOpt, 'solicitation_step_order': 1 })
       }
       else{

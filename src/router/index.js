@@ -4,7 +4,8 @@ import SignView from '../views/SignView.vue'
 import HomeView from '../views/HomeView.vue'
 import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
-import AreaTView from '../views/Teacher/AreaTView.vue'
+import AreaCView from '../views/Coordinator/AreaCView.vue'
+import AreaPView from '../views/Professor/AreaPView.vue'
 import AreaSView from '../views/Student/AreaSView.vue'
 
 const routes = [
@@ -24,7 +25,7 @@ const routes = [
     path: '/home',
     name: 'home',
     component: HomeView,
-    meta: { allowedUsers: ['A','P'] }
+    meta: { allowedUsers: 'ALL' }
   },
   {
     path: '/solicitation',
@@ -33,16 +34,22 @@ const routes = [
     meta: { allowedUsers: 'DYNAMIC' }
   },
   {
-    path: '/areateacher',
-    name: 'areateacher',
-    component: AreaTView,
+    path: '/areacoordinator',
+    name: 'areacoordinator',
+    component: AreaCView,
+    meta: { allowedUsers: ['C'] }
+  },
+  {
+    path: '/areaprofessor',
+    name: 'areaprofessor',
+    component: AreaPView,
     meta: { allowedUsers: ['P'] }
   },
   {
     path: '/areastudent',
     name: 'areastudent',
     component: AreaSView,
-    meta: { allowedUsers: ['A'] }
+    meta: { allowedUsers: ['S'] }
   }
 ]
 
