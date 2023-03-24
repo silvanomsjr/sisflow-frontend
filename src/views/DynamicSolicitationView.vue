@@ -20,7 +20,7 @@
         <FileDownload :id="'filed' + index" ref="filed" class="fileD"
           :titleText="fileD['label_txt']"
           fileName="AlunoVitor_HistTextual_1Ok9uqsqIj.pdf"
-          downloadEndpoint="http://localhost:5000/file?bearer=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoyLCJlbWFpbF9pbnMiOiJhbHVub0B1ZnUuYnIiLCJlbWFpbF9zZWMiOiJhbHVub0BnbWFpbC5jb20iLCJub21lIjoiQWx1bm8gVml0b3IiLCJzZXhvIjoiTSIsInRlbGVmb25lIjoiMzQyMjIyMjIyMjIiLCJkYXRhX2hvcmFfY3JpYWNhbyI6IjIwMjMtMDMtMTUgMjM6Mzk6NTQiLCJwZXJmaWxfYWx1bm8iOnsibWF0cmljdWxhIjoiMTExMTFCU0kxMTEiLCJjdXJzbyI6IkJTSSJ9LCJwZXJmaXMiOlsiUyJdfQ.kiIJcNE5YGVO97wChpnhMWoMWLE3ATCfYc_1nQy6u1P10WwomNImSVQ8Ibyq8g1MeKGNFYXJbHc8KBPEYFaiSgilnbW-yUZYf7emZxDIhTSJqc20vs-3DysxJC4VOI_Qoh1JmtDQC9wWxwPRIa0BBgQNMHcnkVKQi3Jr-mIsFAOKKoRHSECI3UeMXhYdH1n3zZk1ljQ4SYlLVx8ApHeAtHfNMPL225R16wXrdmsjw2v6RpFV4SHjWTOVeMsEhkuUAOV0gGKg6_qB9h9-Wfyar1QwupOKy2x1uA5FDEjeCPUC1oXRUgXmnhsKmIL322zrs2ZX_Qzek2Tx8kCg7WN2Cw&file_name=AlunoVitor_HistTextual_1Ok9uqsqIj.pdf"
+          downloadEndpoint="http://localhost:5000/file?bearer=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpbnN0aXR1dGlvbmFsX2VtYWlsIjoiYWRtaW5AdWZ1LmJyIiwic2Vjb25kYXJ5X2VtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcl9uYW1lIjoiQWRtaW4iLCJnZW5kZXIiOiJNIiwicGhvbmUiOiIzNDExMTExMTExMSIsImNyZWF0aW9uX2RhdGV0aW1lIjoiMjAyMy0wMy0yNCAxNjo1OTowOCIsInByb2ZpbGVzIjpbeyJwcm9maWxlX25hbWUiOiJhZG1pbiIsInByb2ZpbGVfYWNyb255bSI6IkFETSIsInByb2ZpbGVfZHluYW1pY19maWVsZHNfbWV0YWRhdGEiOm51bGwsInVzZXJfZGluYW15Y19wcm9maWxlX2ZpZWxkc19kYXRhIjpudWxsLCJzdGFydF9kYXRldGltZSI6IjIwMjMtMDMtMjQgMTY6NTk6MDgiLCJlbmRfZGF0ZXRpbWUiOiJOb25lIn1dLCJwcm9maWxlX2Fjcm9ueW1zIjpbIkFETSJdfQ.FXu9N9Y-5Zne0GqbYJ1ADtciuonGIRm2isEjVty946v8ThsytzXuAVaIxxl6UN8TFPIZJz8STHQSK9z8oGOEdCvWPWGBIogVlLP-wisjPYkW3yr6tsDjTC2x_bXLeEw1tsVLlpgf2DOvIAqyUHL3mIl89mujJEMKB05AnO0xgONFcGJAHSFttam7KNsQ1XP8HOdhU4cqF0MvxN3V6LzLrpJC9uh-JKowxyvkLjL_xhK2xnGTcwyxqhjEfO5HxPrQUOBTbr1pQIeKDDvlHmeBNus8opZRCQrJkUFGh9mWMxRI8N2SBOFkTDyQJ2tE7E95butRyAtiP6JsHmvEqZu8NA&file_name=AlexsandroSantosSoares_PACOORDENADOR_FdqEj6B09R.pdf"
         />
       </div>
     </div>
@@ -29,7 +29,7 @@
       <div v-for="(fileU, index) in this.pageData['uploads']" :key="index">
         <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
           :titleText="fileU['label_txt']"
-          :fileContentName="fileU['file_abs_type']"
+          :fileContentName="fileU['file_content_id']"
           :uploadEndpoint="this.fileUploadEndpoint"
           :disabled="this.pageDisabled"
         />
@@ -98,7 +98,7 @@ export default {
       pageData: [],
       fileUploadEndpoint: '',
 
-      idSolicitation: null,
+      solicitationId: null,
       solicitationStepOrder: null,
 
       pageDisabled: false
@@ -123,7 +123,6 @@ export default {
 
     // request for dynamic page data
     let vreturn = await this.$root.doRequest(Requests.getSolicitation, [this.userHasStepId]);
-    console.log(vreturn);
 
     if(!vreturn || !vreturn['ok']){
       this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!', 'Acesso a solicitação não permitido!']);
@@ -188,7 +187,7 @@ export default {
     },
     async doSolicitation(){
       
-      let solicitationData = { 'inputs' : [], 'attachments' : [], 'select_attachments' : [] }
+      let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] }
       let inputOk = true;
       let attachmentOk = true;
       let selAttachmentOk = true;
@@ -224,10 +223,14 @@ export default {
                   solicitationData['inputs'].push({
                     'label_txt' : input['label_txt'],
                     'value' : inputV
-                  })
+                  });
                 }
                 else if(rule['rule_type'] == 'error'){
-                  this.$root.renderMsg('error', rule['msg'], '');
+                  this.$root.renderMsg(
+                    'error',
+                    rule['msg'],
+                    '',
+                    function () { self.$root.renderView('login'); });
                   inputOk = false;
                 }
               }
@@ -235,7 +238,7 @@ export default {
                 solicitationData['inputs'].push({
                   'label_txt' : input['label_txt'],
                   'value' : inputV
-                })
+                });
               }
             });
           }
@@ -254,10 +257,10 @@ export default {
             attachmentOk = false;
           }
           else if(this.$refs['fileu'][index].getFileIHashName() != null && this.$refs['fileu'][index].isLoaded()){
-            solicitationData['attachments'].push({
-              'file_abs_type' : upload['file_abs_type'],
-              'name' : this.$refs['fileu'][index].getFileIHashName()
-            })
+            solicitationData['uploads'].push({
+              'file_content_id' : upload['file_content_id'],
+              'hash_name' : this.$refs['fileu'][index].getFileIHashName()
+            });
           }
         });
       }
@@ -274,10 +277,10 @@ export default {
             selAttachmentOk = false;
           }
           else if(this.$refs['selFileU'][index].getFileIHashName() != null && this.$refs['selFileU'][index].isLoaded()){
-            solicitationData['select_attachments'].push({
-              'file_abs_type' : this.$refs['selFileU'][index].getFileAbsType(),
-              'name' : this.$refs['selFileU'][index].getFileIHashName()
-            })
+            solicitationData['select_uploads'].push({
+              'file_content_id' : this.$refs['selFileU'][index].getFileAbsType(),
+              'hash_name' : this.$refs['selFileU'][index].getFileIHashName()
+            });
           }
         });
       }
@@ -287,17 +290,19 @@ export default {
 
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
-        [this.studentId, this.solicitationId, this.solicitationStepOrder, solicitationData]);
+        [this.solicitationData['user_has_step_id'], 'Deferido', 'Deferido automaticamente pelo sistema', solicitationData]);
 
       if(!vreturn || !vreturn['ok']){
         this.$root.renderRequestErrorMsg(vreturn, [
           'Usuario não possui a etapa de solicitação!',
-          'Esta solicitação está com status Deferido!',
-          'Esta solicitação está com status Indeferido!',
-          'Esta etapa da solicitação já foi realizada aguarde sua conclusão!',
+          'Edição a solicitação não permitida!',
+          'Perfil editor a solicitação inválido!',
+          'Solicitação está fora de ordem!',
+          'Esta etapa da solicitação não foi iniciada!',
           'Esta etapa da solicitação foi expirada!',
-          'Anexo da solicitação está faltando!'
-          ]);
+          'Esta solicitação já foi realizada!',
+          'Input da solicitação está faltando!',
+          'Anexo da solicitação está faltando!']);
         return;
       }
       else{

@@ -257,7 +257,6 @@ export default {
 
         let pageContext = this;
         pageContext.studentSolTable['content'] = [];
-        console.log(vreturnStud);
 
         vreturnStud['response'].forEach(solicitation => {
 
@@ -312,7 +311,6 @@ export default {
       let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationOpt] );
 
       if(vreturn && vreturn['ok']){
-        console.log(vreturn);
         this.$root.renderView( 'solicitation', { 'user_has_step_id': vreturn['response']['user_has_step_id'] })
       }
       else{

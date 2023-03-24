@@ -152,7 +152,6 @@ async function getCoordinatorSolicitations(token_jwt, args){
   }
 
   let vreturn = await baseRequestFBody(myHeaders, '/coordinator/solicitations');
-  console.log(vreturn);
   return vreturn;
 }
 
@@ -227,10 +226,10 @@ async function putSolicitation(token_jwt, args){
 
 async function postSolicitation(token_jwt, args){
   
-  let student_id = args[0];
-  let solicitation_id = args[1];
-  let solicitation_step_order = args[2];
-  let solicitation_data = args[3];
+  let userHasStepId = args[0];
+  let decision = args[1];
+  let reason = args[2];
+  let solicitationUserData = args[3];
 
   var myHeaders = {
     method: 'POST',
@@ -240,10 +239,10 @@ async function postSolicitation(token_jwt, args){
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      'student_id': student_id,
-      'solicitation_id': solicitation_id,
-      'solicitation_step_order': solicitation_step_order,
-      'solicitation_data': solicitation_data
+      'user_has_step_id': userHasStepId,
+      'decision': decision,
+      'reason': reason,
+      'solicitation_user_data': solicitationUserData
     })
   }
 
