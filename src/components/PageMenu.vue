@@ -182,7 +182,7 @@ export default {
     this.iconSize = (parseInt(this.fontSizePageTitle.replace(/px/,""))) +"px";
     this.iconSizeHover = (parseInt(this.fontSizePageTitle.replace(/px/,""))+1) +"px";
 
-    this.userName = Utils.getNameFormated(this.$root.userLoggedData['nome'])
+    this.userName = Utils.getNameFormated(this.$root.userLoggedData['user_name']);
   },
 
   mounted() {

@@ -141,6 +141,19 @@ function getNameFormated(name){
   ).slice(0, 15);
 }
 
+function getUserProfile(userData, profileAcronym){
+  
+  if(userData && userData['profiles']){
+    for(let i=0; i<userData['profiles'].length; i++){
+      if(userData['profiles'][i]['profile_acronym'] == profileAcronym){
+        return userData['profiles'][i];
+      }
+    }
+  }
+
+  return null;
+}
+
 function validateMail(mail){
   let mRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
   return mRegex.test(mail);
@@ -153,5 +166,6 @@ export default{
   getDateTimeString,
   getJsonKeyTree,
   getNameFormated,
+  getUserProfile,
   validateMail
 }

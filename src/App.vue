@@ -134,7 +134,7 @@ export default {
 
     /** Render methods **/
     renderView(viewName, viewQueryParams = null){
-
+      
       // no user data, redirect to login
       if( (this.userLoggedData == null || this.tokenData == null) && viewName != 'login' && viewName != 'sign'){
         this.$router.push({ name: 'login' });
@@ -261,7 +261,7 @@ export default {
       // foreach allowed type of user for page verify if user is one
       let allowed = false;
       allowedUsers.forEach(allowedUser => {
-        if(userData['perfis'].includes(allowedUser)){
+        if(userData['profile_acronyms'].includes(allowedUser)){
           allowed = true;
         }
       });

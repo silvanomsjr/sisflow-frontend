@@ -235,8 +235,8 @@ export default {
         [token]);
 
       if(vreturn && vreturn['ok']){
-        this.mailInsV = vreturn['response']['email_ins'];
-        this.signCode = vreturn['response']['cad_code'];
+        this.mailInsV = vreturn['response']['institutional_email'];
+        this.signCode = vreturn['response']['validation_code'];
         this.signStep = 3;
       }
       else{

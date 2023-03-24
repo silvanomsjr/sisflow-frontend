@@ -10,13 +10,13 @@
         <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
           à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
           solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
-        <p v-if="this.userProfiles.includes('A')">
+        <p v-if="this.userProfiles.includes('ADM')">
           Você está logado com uma conta de perfil administrador, abaixo você pode visualizar as solicitações de alunos ordenadas pela data de criação.
         </p>
-        <p v-else-if="this.userProfiles.includes('C')">
+        <p v-else-if="this.userProfiles.includes('COO')">
           Coordenador, abaixo você pode visualizar solicitações de alunos ordenadas pela data de criação.
         </p>
-        <p v-else-if="this.userProfiles.includes('P')">
+        <p v-else-if="this.userProfiles.includes('PRO')">
           Professor, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
         </p>
         <p v-else>
@@ -62,7 +62,7 @@
         :tableData="this.studentSolTable"/>
     </div>
 
-    <div class="pageContentRow" v-if="this.userProfiles.includes('S')">
+    <div class="pageContentRow" v-if="this.userProfiles.includes('STU')">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
@@ -157,17 +157,17 @@ export default {
   async created() {
 
     this.$root.pageName = 'Home';
-    this.userProfiles = this.$root.userLoggedData['perfis'];
+    this.userProfiles = this.$root.userLoggedData['profile_acronyms'];
 
-    if(this.userProfiles.includes('A') || this.userProfiles.includes('C')){
+    if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
       await this.loadCoordinatorSolTable();
     }
 
-    else if(this.userProfiles.includes('P')){
+    else if(this.userProfiles.includes('PRO')){
       await this.loadProfessorSolTable();
     }
 
-    else if(this.userProfiles.includes('S')){
+    else if(this.userProfiles.includes('STU')){
       await this.loadStudentSolTable();
     }
   },
@@ -185,29 +185,23 @@ export default {
       if(vreturnCoor && vreturnCoor['ok']){
 
         let pageContext = this;
-
         pageContext.coordinatorSolTable['content'] = [];
 
         vreturnCoor['response'].forEach(solicitation => {
           this.coordinatorSolTable['content'].push([
-            solicitation['nome_aluno'],
-            solicitation['nome_orientador'],
-            solicitation['nome_solicitacao'],
-            solicitation['descricao'],
-            solicitation['data_hora_inicio'].replaceAll('-','/'),
-            solicitation['decisao'],
-            solicitation['motivo'],
+            solicitation['student_name'],
+            solicitation['professor_name'],
+            solicitation['solicitation_name'],
+            solicitation['step_description'],
+            solicitation['step_start_datetime'].replaceAll('-','/'),
+            solicitation['step_decision'],
+            solicitation['step_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+              'iconName' : pageContext.userProfiles.includes("COO") && solicitation['step_profile_editor_acronym'] == "COO" && solicitation['step_active'] ?
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView(
-                  'solicitation', {
-                    'student_id': solicitation['id_aluno'],
-                    'solicitation_id': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
-                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
               }
             }
           ]);
@@ -227,28 +221,22 @@ export default {
       if(vreturnProf && vreturnProf['ok']){
 
         let pageContext = this;
-
         pageContext.professorSolTable['content'] = [];
 
         vreturnProf['response'].forEach(solicitation => {
           this.professorSolTable['content'].push([
-            solicitation['nome_aluno'],
-            solicitation['nome_solicitacao'],
-            solicitation['descricao'],
-            solicitation['data_hora_inicio'].replaceAll('-','/'),
-            solicitation['decisao'],
-            solicitation['motivo'],
+            solicitation['student_name'],
+            solicitation['solicitation_name'],
+            solicitation['step_description'],
+            solicitation['step_start_datetime'].replaceAll('-','/'),
+            solicitation['step_decision'],
+            solicitation['step_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+              'iconName' : pageContext.userProfiles.includes("PRO") && solicitation['step_profile_editor_acronym'] == "PRO" && solicitation['step_active'] ? 
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView(
-                  'solicitation', {
-                    'student_id': solicitation['id_aluno'],
-                    'solicitation_id': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
-                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
               }
             }
           ]);
@@ -268,27 +256,23 @@ export default {
       if(vreturnStud && vreturnStud['ok']){
 
         let pageContext = this;
-
         pageContext.studentSolTable['content'] = [];
+        console.log(vreturnStud);
 
         vreturnStud['response'].forEach(solicitation => {
+
           this.studentSolTable['content'].push([
-            solicitation['nome_solicitacao'],
-            solicitation['descricao'],
-            solicitation['data_hora_inicio'].replaceAll('-','/'),
-            solicitation['decisao'],
-            solicitation['motivo'],
+            solicitation['solicitation_name'],
+            solicitation['step_description'],
+            solicitation['step_start_datetime'].replaceAll('-','/'),
+            solicitation['step_decision'],
+            solicitation['step_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes(solicitation['perfil_editor_atual']) ? 
+              'iconName' : pageContext.userProfiles.includes("STU") && solicitation['step_profile_editor_acronym'] == "STU" && solicitation['step_active'] ? 
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView(
-                  'solicitation', {
-                    'student_id': pageContext.$root.userLoggedData['id_usuario'],
-                    'solicitation_id': solicitation['id_solicitacao'],
-                    'solicitation_step_order': solicitation['ordem_etapa_solicitacao'],
-                    'solicitation_profile': solicitation['perfil_editor_pagina'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
               }
             }
           ]);
@@ -325,19 +309,11 @@ export default {
         return;
       }
 
-      let vreturn = await this.$root.doRequest(
-        Requests.putSolicitation,
-        [solicitationOpt]);
+      let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationOpt] );
 
       if(vreturn && vreturn['ok']){
-        await this.loadStudentSolTable();
-        this.$root.renderView(
-          'solicitation', {
-              'student_id': this.$root.userLoggedData['id_usuario'],
-              'solicitation_id': solicitationOpt,
-              'solicitation_step_order': 1,
-              'solicitation_profile': 'S' 
-        })
+        console.log(vreturn);
+        this.$root.renderView( 'solicitation', { 'user_has_step_id': vreturn['response']['user_has_step_id'] })
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);

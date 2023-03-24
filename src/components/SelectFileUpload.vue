@@ -140,9 +140,9 @@ export default {
         let fileType = file['type'];
         let fileName = file['name'];
         let fileSize = Math.round(file['size'] / 1024 / 1024 * 10) / 10;
-        let fileUserNameF = this.$root.userLoggedData['nome'].replaceAll(' ', '');
+        let fileUserNameF = this.$root.userLoggedData['user_name'].replaceAll(' ', '');
         
-        let userNameIns = this.$root.userLoggedData['email_ins'];
+        let userNameIns = this.$root.userLoggedData['institutional_email'];
 
         if(!this.accept.includes(fileType)){
           this.showIncorrectFileType();
@@ -173,8 +173,8 @@ export default {
       let payload = new FormData();
       payload.append('file', file);
       payload.append('file_user_name', fileUserName);
-      payload.append('file_dir_name', fileAbsTypeTmp);
-      payload.append('user_mail_ins', userMailIns);
+      payload.append('file_content_name', fileAbsTypeTmp);
+      payload.append('user_institutional_email', userMailIns);
 
       // create a XMLHttpRequest object to make an request with progress tracking
       let xhr = new XMLHttpRequest();

@@ -12,12 +12,12 @@
       <LineCustom width="90%"/>
     </div>
     <div style="margin-left: 20px;">
-      <p>Siape : {{this.user['perfil_coordenador']['siape']}}</p>
-      <p>Perfis : {{this.user['perfis']}}</p>
-      <p>Nome : {{this.user['nome']}}</p>
-      <p>Telefone : {{this.user['telefone']}}</p>
-      <p>Email institucional : {{this.user['email_ins']}}</p>
-      <p>Email secundário : {{this.user['email_sec']}}</p>
+      <p>Siape : {{this.profileCoordinator['siape']}}</p>
+      <p>Perfis : {{this.user['profile_acronyms']}}</p>
+      <p>Nome : {{this.user['user_name']}}</p>
+      <p>Telefone : {{this.user['phone']}}</p>
+      <p>Email institucional : {{this.user['institutional_email']}}</p>
+      <p>Email secundário : {{this.user['secondary_email']}}</p>
     </div>
 
     <div class="divLine">
@@ -25,7 +25,7 @@
     </div>
 
     <div style="margin-left: 20px;">
-      <p>Usuários permitidos: {{ $route.meta.allowedUsers }}</p>
+      <p>Usuários permitidos: {{ this.$route.meta.allowedUsers }}</p>
     </div>
   </div>
 
@@ -35,6 +35,7 @@
 
 import LineCustom from '../../components/LineCustom.vue'
 import TextCustom from '../../components/TextCustom.vue'
+import Utils from '../../js/utils.js'
 
 export default {
 
@@ -46,13 +47,13 @@ export default {
   },
 
   data(){
-    return {
-    }
+    return {}
   },
 
   created(){
     this.$root.pageName = 'Area de teste do professor';
     this.user = this.$root.userLoggedData;
+    this.profileCoordinator = Utils.getUserProfile(this.$root.userLoggedData, 'COO');
   },
 }
 </script>

@@ -110,7 +110,7 @@ export default {
   },
 
   created() {
-    this.userNameF = Utils.getNameFormated(this.$root.userLoggedData['nome']);
+    this.userNameF = Utils.getNameFormated(this.$root.userLoggedData['user_name']);
 
     this.black1 = Cst.COLOR_BLACK1;
     this.darkblue1 = Cst.COLOR_DARKBLUE1;

@@ -58,7 +58,7 @@ async function loginDo(_, args){
 
 async function signMakeCode(_, args){
   
-  let mailIns = args[0];
+  let insEmail = args[0];
 
   var myHeaders = {
     method: 'POST',
@@ -67,7 +67,7 @@ async function signMakeCode(_, args){
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      'email_ins': mailIns
+      'institutional_email': insEmail
     })
   }
 
@@ -77,8 +77,8 @@ async function signMakeCode(_, args){
 
 async function signVerifyCodeData(_, args){
 
-  let emailIns = args[0];
-  let cadCode = args[1];
+  let insEmail = args[0];
+  let valCode = args[1];
 
   var myHeaders = {
     method: 'GET',
@@ -88,7 +88,7 @@ async function signVerifyCodeData(_, args){
     }
   }
 
-  var querystring = `?email_ins=${emailIns}&cad_code=${cadCode}`;
+  var querystring = `?institutional_email=${insEmail}&validation_code=${valCode}`;
 
   let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
   return vreturn;
@@ -114,11 +114,11 @@ async function signVerifyCodeToken(_, args){
 
 async function signDoWithCode(_, args){
   
-  let emailIns = args[0];
-  let emailSec = args[1];
-  let telefone = args[2]
-  let senha = args[3];
-  let cadCode = args[4];
+  let insEmail = args[0];
+  let secEmail = args[1];
+  let phone = args[2]
+  let plainPass = args[3];
+  let valCode = args[4];
 
   var myHeaders = {
     method: 'PUT',
@@ -127,11 +127,11 @@ async function signDoWithCode(_, args){
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      'email_ins': emailIns,
-      'email_sec': emailSec,
-      'telefone': telefone,
-      'senha': senha,
-      'cad_code': cadCode
+      'institutional_email': insEmail,
+      'secondary_email': secEmail,
+      'phone': phone,
+      'plain_password': plainPass,
+      'validation_code': valCode
     })
   }
 
@@ -152,6 +152,7 @@ async function getCoordinatorSolicitations(token_jwt, args){
   }
 
   let vreturn = await baseRequestFBody(myHeaders, '/coordinator/solicitations');
+  console.log(vreturn);
   return vreturn;
 }
 
@@ -189,11 +190,8 @@ async function getStudentSolicitations(token_jwt, args){
 
 async function getSolicitation(token_jwt, args){
   
-  let student_id = args[0];
-  let solicitation_id = args[1];
-  let solicitation_step_order = args[2];
-  let solicitation_profile = args[3];
-
+  let userHasStepId = args[0];
+  
   var myHeaders = {
     method: 'GET',
     headers: {
@@ -201,15 +199,15 @@ async function getSolicitation(token_jwt, args){
       'Authorization': `Bearer ${token_jwt}`
     }
   }
-  var querystring = `?student_id=${student_id}&solicitation_id=${solicitation_id}&solicitation_step_order=${solicitation_step_order}&solicitation_profile=${solicitation_profile}`;
-
+  
+  var querystring = `?user_has_step_id=${userHasStepId}`;
   let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
   return vreturn;
 }
 
 async function putSolicitation(token_jwt, args){
   
-  let id_solicitacao = args[0];
+  let solicitationId = args[0];
 
   var myHeaders = {
     method: 'PUT',
@@ -219,7 +217,7 @@ async function putSolicitation(token_jwt, args){
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      'id_solicitacao': id_solicitacao
+      'solicitation_id': solicitationId
     })
   }
 

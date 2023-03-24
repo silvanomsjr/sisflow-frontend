@@ -37,19 +37,19 @@ const routes = [
     path: '/areacoordinator',
     name: 'areacoordinator',
     component: AreaCView,
-    meta: { allowedUsers: ['C'] }
+    meta: { allowedUsers: ['COO'] }
   },
   {
     path: '/areaprofessor',
     name: 'areaprofessor',
     component: AreaPView,
-    meta: { allowedUsers: ['P'] }
+    meta: { allowedUsers: ['PRO'] }
   },
   {
     path: '/areastudent',
     name: 'areastudent',
     component: AreaSView,
-    meta: { allowedUsers: ['S'] }
+    meta: { allowedUsers: ['STU'] }
   }
 ]
 

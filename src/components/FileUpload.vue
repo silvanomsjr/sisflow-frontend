@@ -54,7 +54,7 @@ export default {
     id: String,
     name: String,
     uploadEndpoint: String,
-    fileDirName: String,
+    fileContentName: String,
     titleText: String,
     initialFileName:{
       default: '...',
@@ -132,9 +132,9 @@ export default {
         let fileType = file['type'];
         let fileName = file['name'];
         let fileSize = Math.round(file['size'] / 1024 / 1024 * 10) / 10;
-        let fileUserNameF = this.$root.userLoggedData['nome'].replaceAll(' ', '');
-        let fileDirName = this.fileDirName;
-        let userNameIns = this.$root.userLoggedData['email_ins'];
+        let fileUserNameF = this.$root.userLoggedData['user_name'].replaceAll(' ', '');
+        let fileContentName = this.fileContentName;
+        let userNameIns = this.$root.userLoggedData['institutional_email'];
 
         if(!this.accept.includes(fileType)){
           this.showIncorrectFileType();
@@ -154,18 +154,18 @@ export default {
         this.fileIName = fileName;
         this.progressE.setAttribute('value', 0);
         this.setLabelDisabled();
-        this.uploadFile(file, fileUserNameF, fileDirName, userNameIns);
+        this.uploadFile(file, fileUserNameF, fileContentName, userNameIns);
       }
     },
 
-    uploadFile(file, fileUserName, fileDirName, userMailIns){
+    uploadFile(file, fileUserName, fileContentName, userMailIns){
       
       let pageContext = this;
       let payload = new FormData();
       payload.append('file', file);
       payload.append('file_user_name', fileUserName);
-      payload.append('file_dir_name', fileDirName);
-      payload.append('user_mail_ins', userMailIns);
+      payload.append('file_content_name', fileContentName);
+      payload.append('user_institutional_email', userMailIns);
 
       // create a XMLHttpRequest object to make an request with progress tracking
       let xhr = new XMLHttpRequest();

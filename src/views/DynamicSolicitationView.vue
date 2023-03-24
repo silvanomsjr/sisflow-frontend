@@ -29,7 +29,7 @@
       <div v-for="(fileU, index) in this.pageData['uploads']" :key="index">
         <FileUpload :id="'fileu' + index" ref="fileu" class="fileU"
           :titleText="fileU['label_txt']"
-          :fileDirName="fileU['file_abs_type']"
+          :fileContentName="fileU['file_abs_type']"
           :uploadEndpoint="this.fileUploadEndpoint"
           :disabled="this.pageDisabled"
         />
@@ -50,7 +50,7 @@
     <div id="descBoxMid" v-show="this.pageData && this.pageData['mid_inner_html']"></div>
     
     <div class="sendSolicitationWrapper">
-      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['botao_solicitar'] && !this.pageDisabled">
+      <div class="sendSolicitationBtnWrapper" v-if="this.pageData && this.pageData['is_solicitation_button_active'] && !this.pageDisabled">
         <ButtonCustom
           id="btnSend"
           label="Solicitar"
@@ -110,11 +110,7 @@ export default {
     let pageContext = this;
 
     // verify query params
-    if(!this.$route.query || 
-      !this.$route.query['student_id']|| 
-      !this.$route.query['solicitation_id'] || 
-      !this.$route.query['solicitation_step_order'] || 
-      !this.$route.query['solicitation_profile']){
+    if(!this.$route.query || !this.$route.query['user_has_step_id']){
 
       this.$root.renderMsg(
         'error', 
@@ -123,15 +119,11 @@ export default {
         function () { pageContext.$root.renderView('home'); });
       return;
     }
-    this.studentId = this.$route.query['student_id'];
-    this.solicitationId = this.$route.query['solicitation_id'];
-    this.solicitationStepOrder = this.$route.query['solicitation_step_order'];
-    this.solicitationProfile = this.$route.query['solicitation_profile'];
+    this.userHasStepId = this.$route.query['user_has_step_id'];
 
     // request for dynamic page data
-    let vreturn = await this.$root.doRequest(
-      Requests.getSolicitation,
-      [this.studentId, this.solicitationId, this.solicitationStepOrder, this.solicitationProfile]);
+    let vreturn = await this.$root.doRequest(Requests.getSolicitation, [this.userHasStepId]);
+    console.log(vreturn);
 
     if(!vreturn || !vreturn['ok']){
       this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui a etapa de solicitação!', 'Acesso a solicitação não permitido!']);
@@ -139,12 +131,12 @@ export default {
       return;
     }
 
-    this.solicitationStep = vreturn['response']['etapa_solicitacao'];
-    this.pageData = vreturn['response']['pagina_dinamica'];
+    this.solicitationData = vreturn['response']['solicitation'];
+    this.pageData = vreturn['response']['solicitation']['page'];
 
     this.pageDisabled = 
-      this.solicitationStep['decisao'] != 'Em analise' || 
-      !this.$root.userLoggedData['perfis'].includes(this.solicitationStep['perfil_editor_atual']);
+      this.solicitationData['decision'] != 'Em analise' || 
+      !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['step_profile_editor_acronym']);
     
     // verify dynamic page data
     if(!this.isCorrectRequiredPageDataFields()){
@@ -156,7 +148,7 @@ export default {
       return;
     }
 
-    this.$root.pageName = this.pageData['titulo'];
+    this.$root.pageName = this.pageData['title'];
 
     this.createdDone = true;
   },
@@ -186,7 +178,7 @@ export default {
 
   methods:{
     isCorrectRequiredPageDataFields(){
-      return this.pageData && this.pageData['titulo'];
+      return this.pageData && this.pageData['title'];
     },
     setInnerHtmls(){
       // although the data comes from db, we avoid xss atacks using default sanitizer from setHTML
