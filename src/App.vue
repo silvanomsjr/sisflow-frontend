@@ -38,7 +38,7 @@
 
 <script>
 
-import Cst from './js/constants.js';
+import Cst from './js/constants.js'
 import jwt_decode from 'jwt-decode'
 import LoadModal from './components/LoadModal.vue'
 import MsgModal from './components/MsgModal.vue'
