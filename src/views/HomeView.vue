@@ -17,7 +17,7 @@
           Coordenador, abaixo você pode visualizar solicitações de alunos ordenadas pela data de criação.
         </p>
         <p v-else-if="this.userProfiles.includes('PRO')">
-          Professor, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
+          Orientador, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
         </p>
         <p v-else>
           Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
@@ -38,7 +38,7 @@
         :tableData="this.coordinatorSolTable"/>
     </div>
 
-    <div class="pageContentRow" v-if="this.professorSolTable['content'].length > 0">
+    <div class="pageContentRow" v-if="this.advisorSolTable['content'].length > 0">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
@@ -47,7 +47,7 @@
       </TextCustom>
 
       <TableCustom class="tableC"
-        :tableData="this.professorSolTable"/>
+        :tableData="this.advisorSolTable"/>
     </div>
 
     <div class="pageContentRow" v-if="this.studentSolTable['content'].length > 0">
@@ -123,7 +123,7 @@ export default {
         'colWidths': [ '11%', '10%', '15%', '25%', '10%', '11%', '11%', '7%' ],
         'content': []
       },
-      professorSolTable: {
+      advisorSolTable: {
         'titles': [ 'Aluno', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '11%', '15%', '30%', '10%', '15%', '12%', '7%' ],
@@ -164,7 +164,7 @@ export default {
     }
 
     else if(this.userProfiles.includes('PRO')){
-      await this.loadProfessorSolTable();
+      await this.loadAdvisorSolTable();
     }
 
     else if(this.userProfiles.includes('STU')){
@@ -190,18 +190,18 @@ export default {
         vreturnCoor['response'].forEach(solicitation => {
           this.coordinatorSolTable['content'].push([
             solicitation['student_name'],
-            solicitation['professor_name'],
+            solicitation['advisor_name'],
             solicitation['solicitation_name'],
-            solicitation['step_description'],
-            solicitation['step_start_datetime'].replaceAll('-','/'),
-            solicitation['step_decision'],
-            solicitation['step_reason'],
+            solicitation['state_description'],
+            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/'): '' ,
+            solicitation['state_decision'],
+            solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("COO") && solicitation['step_profile_editor_acronym'] == "COO" && solicitation['step_active'] ?
+              'iconName' : pageContext.userProfiles.includes("COO") && solicitation['state_profile_editor_acronym'] == "COO" && solicitation['state_active'] ?
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
               }
             }
           ]);
@@ -212,31 +212,31 @@ export default {
       }
     },
 
-    async loadProfessorSolTable(){
+    async loadAdvisorSolTable(){
 
       let vreturnProf = await this.$root.doRequest(
-        Requests.getProfessorSolicitations,
+        Requests.getAdvisorSolicitations,
         []);
 
       if(vreturnProf && vreturnProf['ok']){
 
         let pageContext = this;
-        pageContext.professorSolTable['content'] = [];
+        pageContext.advisorSolTable['content'] = [];
 
         vreturnProf['response'].forEach(solicitation => {
-          this.professorSolTable['content'].push([
+          this.advisorSolTable['content'].push([
             solicitation['student_name'],
             solicitation['solicitation_name'],
-            solicitation['step_description'],
-            solicitation['step_start_datetime'].replaceAll('-','/'),
-            solicitation['step_decision'],
-            solicitation['step_reason'],
+            solicitation['state_description'],
+            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/'): '',
+            solicitation['state_decision'],
+            solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("PRO") && solicitation['step_profile_editor_acronym'] == "PRO" && solicitation['step_active'] ? 
+              'iconName' : pageContext.userProfiles.includes("ADV") && solicitation['state_profile_editor_acronym'] == "ADV" && solicitation['state_active'] ? 
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
               }
             }
           ]);
@@ -262,16 +262,16 @@ export default {
 
           this.studentSolTable['content'].push([
             solicitation['solicitation_name'],
-            solicitation['step_description'],
-            solicitation['step_start_datetime'].replaceAll('-','/'),
-            solicitation['step_decision'],
-            solicitation['step_reason'],
+            solicitation['state_description'],
+            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/') : '',
+            solicitation['state_decision'],
+            solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("STU") && solicitation['step_profile_editor_acronym'] == "STU" && solicitation['step_active'] ? 
+              'iconName' : pageContext.userProfiles.includes("STU") && solicitation['state_profile_editor_acronym'] == "STU" && solicitation['state_active'] ? 
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView('solicitation', { 'user_has_step_id': solicitation['user_has_step_id'] })
+                pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
               }
             }
           ]);
@@ -311,7 +311,7 @@ export default {
       let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationOpt] );
 
       if(vreturn && vreturn['ok']){
-        this.$root.renderView( 'solicitation', { 'user_has_step_id': vreturn['response']['user_has_step_id'] })
+        this.$root.renderView( 'solicitation', { 'user_has_state_id': vreturn['response']['user_has_state_id'] })
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);

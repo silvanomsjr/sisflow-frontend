@@ -151,11 +151,11 @@ async function getCoordinatorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, '/coordinator/solicitations');
+  let vreturn = await baseRequestFBody(myHeaders, 'coordinator/solicitations');
   return vreturn;
 }
 
-async function getProfessorSolicitations(token_jwt, args){
+async function getAdvisorSolicitations(token_jwt, args){
 
   args;
 
@@ -167,7 +167,7 @@ async function getProfessorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, '/professor/solicitations');
+  let vreturn = await baseRequestFBody(myHeaders, 'advisor/solicitations');
   return vreturn;
 }
 
@@ -183,13 +183,13 @@ async function getStudentSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, '/student/solicitations');
+  let vreturn = await baseRequestFBody(myHeaders, 'student/solicitations');
   return vreturn;
 }
 
 async function getSolicitation(token_jwt, args){
   
-  let userHasStepId = args[0];
+  let userHasStateId = args[0];
   
   var myHeaders = {
     method: 'GET',
@@ -199,7 +199,7 @@ async function getSolicitation(token_jwt, args){
     }
   }
   
-  var querystring = `?user_has_step_id=${userHasStepId}`;
+  var querystring = `?user_has_state_id=${userHasStateId}`;
   let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
   return vreturn;
 }
@@ -226,10 +226,9 @@ async function putSolicitation(token_jwt, args){
 
 async function postSolicitation(token_jwt, args){
   
-  let userHasStepId = args[0];
-  let decision = args[1];
-  let reason = args[2];
-  let solicitationUserData = args[3];
+  let userHasStateId = args[0];
+  let transitionId = args[1];
+  let solicitationUserData = args[2];
 
   var myHeaders = {
     method: 'POST',
@@ -239,9 +238,8 @@ async function postSolicitation(token_jwt, args){
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      'user_has_step_id': userHasStepId,
-      'decision': decision,
-      'reason': reason,
+      'user_has_state_id': userHasStateId,
+      'transition_id': transitionId,
       'solicitation_user_data': solicitationUserData
     })
   }
@@ -257,7 +255,7 @@ export default{
   signVerifyCodeToken,
   signDoWithCode,
   getCoordinatorSolicitations,
-  getProfessorSolicitations,
+  getAdvisorSolicitations,
   getStudentSolicitations,
   getSolicitation,
   putSolicitation,
