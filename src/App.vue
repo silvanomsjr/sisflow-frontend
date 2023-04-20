@@ -63,7 +63,7 @@ export default {
       mountedDone: false,
       userLoggedData: null,
       userAcessAllowed: false,
-      tokenData: null,
+      userJwtToken: null,
       pageName: '',
 
       loadModalEnabled: false,
@@ -77,16 +77,18 @@ export default {
       msgOkFunction: null,
       msgAcceptFunction: null,
       msgRejectFunction: null,
+      renderMsgButtonPressed: false,
+      renderMsgAccepted: true
     }
   },
 
   created(){
 
     // verify token in session cache 
-    this.tokenData = UserStorage.getTokenJwt();
+    this.userJwtToken = UserStorage.getTokenJwt();
 
-    if (this.tokenData != null){
-      this.userLoggedData = jwt_decode(this.tokenData);
+    if (this.userJwtToken != null){
+      this.userLoggedData = jwt_decode(this.userJwtToken);
 
       if(this.$route.meta && this.$route.meta.allowedUsers){
 
@@ -114,7 +116,7 @@ export default {
       let viewName = to.name;
 
       // access non login/sign url without user logged
-      if( (this.tokenData == null || this.userLoggedData == null) && viewName != 'login' && viewName != 'sign' ){
+      if( (this.userJwtToken == null || this.userLoggedData == null) && viewName != 'login' && viewName != 'sign' ){
         this.$router.push({ name: 'login' });
       }
       // verifies if user is allowed to access a page with allowedUsers
@@ -136,7 +138,7 @@ export default {
     renderView(viewName, viewQueryParams = null){
       
       // no user data, redirect to login
-      if( (this.userLoggedData == null || this.tokenData == null) && viewName != 'login' && viewName != 'sign'){
+      if( (this.userLoggedData == null || this.userJwtToken == null) && viewName != 'login' && viewName != 'sign'){
         this.$router.push({ name: 'login' });
         return;
       }
@@ -148,7 +150,20 @@ export default {
         this.$router.push({ name: viewName });
       }
     },
-    renderMsg(msgType, msgTitle, msgInfo, msgOkFunction = null, msgAcceptFunction = null, msgRejectFunction = null){
+    async waitRenderMsgButtonPress() {
+      let timeout = async ms => new Promise(res => setTimeout(res, ms));
+
+      this.renderMsgButtonPressed = false;
+      while (this.renderMsgButtonPressed === false){
+        await timeout(100);
+      }
+      this.renderMsgButtonPressed = false;
+    },
+    async finishWaitRenderMsgButtonPress(isAccepted){
+      this.renderMsgAccepted = isAccepted;
+      this.renderMsgButtonPressed = true;
+    },
+    async renderMsg(msgType, msgTitle, msgInfo, msgOkFunction = null, msgAcceptFunction = null, msgRejectFunction = null, awaitForClick = null){
       this.msgType = msgType;
       this.msgTitle = msgTitle;
       this.msgInfo = msgInfo;
@@ -159,6 +174,11 @@ export default {
       this.msgRejectFunction = msgRejectFunction;
       
       this.msgModalEnabled = true;
+
+      if(awaitForClick){
+        await this.waitRenderMsgButtonPress();
+        return this.renderMsgAccepted;
+      }
     },
     renderUserNotAllowedMsg(){
       let pageContext = this;
@@ -213,8 +233,8 @@ export default {
       if(vreturn && vreturn['ok']){
         let token = vreturn['response'];
         UserStorage.setTokenJwt(token);
-        this.tokenData = token;
-        this.userLoggedData = jwt_decode(this.tokenData);
+        this.userJwtToken = token;
+        this.userLoggedData = jwt_decode(this.userJwtToken);
       }
 
       return vreturn;
@@ -225,7 +245,7 @@ export default {
 
       try{
         this.loadModalEnabled = true;
-        vreturn = await requestF(this.tokenData, requestArgs);
+        vreturn = await requestF(this.userJwtToken, requestArgs);
       }
       catch(error){
         vreturn['method'] = 'Exception in doRequest method: ' + error.message;
@@ -248,7 +268,7 @@ export default {
     },
 
     isUserAllowedForPage(userData, allowedUsers){
-
+      
       if(!userData){
         return false;
       }
@@ -270,7 +290,7 @@ export default {
 
     clearLoginData(){
       UserStorage.removeTokenJwt();
-      this.tokenData = null;
+      this.userJwtToken = null;
       this.userLoggedData = null;
     },
     /**  **/

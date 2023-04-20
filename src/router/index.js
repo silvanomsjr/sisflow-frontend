@@ -5,7 +5,7 @@ import HomeView from '../views/HomeView.vue'
 import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
 import AreaCView from '../views/Coordinator/AreaCView.vue'
-import AreaPView from '../views/Professor/AreaPView.vue'
+import AreaPView from '../views/Advisor/AreaPView.vue'
 import AreaSView from '../views/Student/AreaSView.vue'
 
 const routes = [
@@ -40,10 +40,10 @@ const routes = [
     meta: { allowedUsers: ['COO'] }
   },
   {
-    path: '/areaprofessor',
-    name: 'areaprofessor',
+    path: '/areaadvisor',
+    name: 'areaadvisor',
     component: AreaPView,
-    meta: { allowedUsers: ['PRO'] }
+    meta: { allowedUsers: ['ADV'] }
   },
   {
     path: '/areastudent',

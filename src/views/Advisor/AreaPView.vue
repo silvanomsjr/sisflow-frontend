@@ -5,14 +5,14 @@
       <TextCustom 
         customColor="black1"
         customFontSize='page_title'>
-        Dados do professor
+        Dados do orientador
       </TextCustom>
     </div>
     <div class="divLine">
       <LineCustom width="90%"/>
     </div>
     <div style="margin-left: 20px;">
-      <p>Siape : {{this.profileProfessor['siape']}}</p>
+      <p>Siape : {{this.profileAdvisor['siape']}}</p>
       <p>Perfis : {{this.user['profile_acronyms']}}</p>
       <p>Nome : {{this.user['user_name']}}</p>
       <p>Telefone : {{this.user['phone']}}</p>
@@ -48,13 +48,14 @@ export default {
 
   data(){
     return {
+      profileAdvisor: null
     }
   },
 
   created(){
-    this.$root.pageName = 'Area de teste do professor';
+    this.$root.pageName = 'Area de teste do orientador';
     this.user = this.$root.userLoggedData;
-    this.profileProfessor = Utils.getUserProfile(this.$root.userLoggedData, 'PRO');
+    this.profileAdvisor = Utils.getUserProfile(this.$root.userLoggedData, 'ADV');
   },
 }
 </script>

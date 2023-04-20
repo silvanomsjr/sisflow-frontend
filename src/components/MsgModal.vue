@@ -80,7 +80,7 @@
           customBackColor="darkblue1"
           padding="2px 20px"
           margin="0px 5px"
-          @click="this.$root.msgModalEnabled = false; this.$emit('accept')"
+          @click="this.$root.msgModalEnabled = false; this.$root.finishWaitRenderMsgButtonPress(true); this.$emit('accept')"
         />
         <ButtonCustom v-if="this.msgReject"
           id="btnmsgrej"
@@ -88,7 +88,7 @@
           customBackColor="gray2"
           padding="2px 20px"
           margin="0px 5px"
-          @click="this.$root.msgModalEnabled = false; this.$emit('reject')"
+          @click="this.$root.msgModalEnabled = false; this.$root.finishWaitRenderMsgButtonPress(false); this.$emit('reject')"
         />
         <ButtonCustom v-if="!this.msgAccept && !this.msgReject"
           id="btnmsgok"
@@ -97,7 +97,7 @@
           customBackColor="darkblue1"
           padding="2px 20px"
           margin="0px 5px"
-          @click="this.$root.msgModalEnabled = false; this.$emit('ok')"
+          @click="this.$root.msgModalEnabled = false; this.$root.finishWaitRenderMsgButtonPress(true); this.$emit('ok')"
         />
       </div>
 

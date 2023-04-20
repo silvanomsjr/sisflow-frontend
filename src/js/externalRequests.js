@@ -8,7 +8,6 @@ async function getNationalHolidays(year){
 
   try{
     fResp['response'] = await fetch(`${brasilApi}feriados/v1/${year}`);
-    console.log(fResp);
     fResp['status'] = fResp['response'].status;
 
     let fRespOk = fResp['response'].ok;

@@ -71,7 +71,7 @@ export default {
   },
 
   async created(){
-    this.$root.pageName = 'Area de teste do professor';
+    this.$root.pageName = 'Area de teste do coordenador';
     this.user = this.$root.userLoggedData;
     this.profileCoordinator = Utils.getUserProfile(this.$root.userLoggedData, 'COO');
 

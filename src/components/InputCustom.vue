@@ -6,6 +6,7 @@
     :name="this.name"
     :ref="this.id + '_PC'"
     :type="this.type"
+    :value="this.inputValue"
     :maxlength="this.maxlength"
     :placeholder="this.placeholder"
     :autocomplete="this.autocomplete"
@@ -20,7 +21,6 @@
       'width': this.width,
       'padding': this.padding,
       'display': this.display,
-      
     }"
     v-mask="this.mask"
     @input="$emit('onChangeAction')"
@@ -32,6 +32,7 @@
     :name="this.name"
     :ref="this.id + '_PC'"
     :type="this.type"
+    :value="this.inputValue"
     :maxlength="this.maxlength"
     :placeholder="this.placeholder"
     :autocomplete="this.autocomplete"
@@ -66,6 +67,7 @@ export default {
     name: String,
     maxlength: String,
     mask: [ Array, String ],
+    inputValue: [ Number, String ],
     type: {
       default: 'text',
       type: String

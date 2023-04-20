@@ -17,6 +17,7 @@
           ref="pageComp"
           :name="component['input_name']"
           :type="component['input_type']"
+          :inputValue="component['input_value']"
           :disabled="this.pageDisabled"
           autocomplete='off'
         />
@@ -49,8 +50,8 @@
           ref="pageComp"
           class="fileD"
           :titleText="component['download_label']"
-          fileName="AlunoVitor_HistTextual_1Ok9uqsqIj.pdf"
-          downloadEndpoint="http://localhost:5000/file?bearer=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpbnN0aXR1dGlvbmFsX2VtYWlsIjoiYWRtaW5AdWZ1LmJyIiwic2Vjb25kYXJ5X2VtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidXNlcl9uYW1lIjoiQWRtaW4iLCJnZW5kZXIiOiJNIiwicGhvbmUiOiIzNDExMTExMTExMSIsImNyZWF0aW9uX2RhdGV0aW1lIjoiMjAyMy0wMy0yNCAxNjo1OTowOCIsInByb2ZpbGVzIjpbeyJwcm9maWxlX25hbWUiOiJhZG1pbiIsInByb2ZpbGVfYWNyb255bSI6IkFETSIsInByb2ZpbGVfZHluYW1pY19maWVsZHNfbWV0YWRhdGEiOm51bGwsInVzZXJfZGluYW15Y19wcm9maWxlX2ZpZWxkc19kYXRhIjpudWxsLCJzdGFydF9kYXRldGltZSI6IjIwMjMtMDMtMjQgMTY6NTk6MDgiLCJlbmRfZGF0ZXRpbWUiOiJOb25lIn1dLCJwcm9maWxlX2Fjcm9ueW1zIjpbIkFETSJdfQ.FXu9N9Y-5Zne0GqbYJ1ADtciuonGIRm2isEjVty946v8ThsytzXuAVaIxxl6UN8TFPIZJz8STHQSK9z8oGOEdCvWPWGBIogVlLP-wisjPYkW3yr6tsDjTC2x_bXLeEw1tsVLlpgf2DOvIAqyUHL3mIl89mujJEMKB05AnO0xgONFcGJAHSFttam7KNsQ1XP8HOdhU4cqF0MvxN3V6LzLrpJC9uh-JKowxyvkLjL_xhK2xnGTcwyxqhjEfO5HxPrQUOBTbr1pQIeKDDvlHmeBNus8opZRCQrJkUFGh9mWMxRI8N2SBOFkTDyQJ2tE7E95butRyAtiP6JsHmvEqZu8NA&file_name=AlexsandroSantosSoares_PACOORDENADOR_FdqEj6B09R.pdf"
+          :fileName="component['download_name']"
+          :downloadEndpoint="component['download_endpoint']"
         />
       </div>
 
@@ -122,20 +123,21 @@ export default {
       return;
     }
 
-    console.log(vreturn);
-
     this.solicitationData = vreturn['response']['solicitation'];
     this.pageData = vreturn['response']['solicitation']['page'];
+    this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
 
     this.pageDisabled = 
       this.solicitationData['decision'] != 'Em analise' || 
       !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['state_profile_editor_acronym']);
-    
+
     // verify dynamic page data
     if(!this.isCorrectRequiredPageDataFields()){
       this.$root.renderMsg('error','Pagina de solicitação inválida!','Verifique com a coordenação se o erro persistir!', function () { pageContext.$root.renderView('home'); });
       return;
     }
+
+    this.parsePageUserData();
 
     this.$root.pageName = this.pageData['title'];
     this.createdDone = true;
@@ -149,84 +151,186 @@ export default {
     isCorrectRequiredPageDataFields(){
       return this.pageData && this.pageData['title'];
     },
-    async doSolicitation(transitionId){
-      
-      let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
+    parsePageInput(component){
 
-      for(let i = 0; i < this.pageData['components'].length; i++){
-        let component = this.pageData['components'][i];
-        let pageComponent = this.$refs['pageComp'][i];
+      if(this.pageDisabled && this.solicitationUserData && this.solicitationUserData['inputs'] && this.solicitationUserData['inputs'][component['input_name']]){
+        component['input_value'] = this.solicitationUserData['inputs'][component['input_name']]['input_value'];
+      }
+    },
+    parsePageUpload(component){
 
-          console.log(component);
-          console.log(pageComponent);
+      if(this.pageDisabled && this.solicitationUserData && this.solicitationUserData['uploads'] && this.solicitationUserData['uploads'][component['upload_name']]){
+        component['component_type'] = 'download';
+        component['download_label'] = component['upload_label'];
+        component['download_name'] = this.solicitationUserData['uploads'][component['upload_name']]['upload_hash_name'];
+        component['download_endpoint'] = `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${this.solicitationUserData['uploads'][component['upload_name']]['upload_hash_name']}`;
+      }
+    },
+    parsePageSelectUpload(component){
+      if(this.pageDisabled && this.solicitationUserData && this.solicitationUserData['select_uploads'] && this.solicitationUserData['select_uploads'][component['select_upload_name']]){
+        component['component_type'] = 'download';
+        component['download_label'] = component['select_upload_label'];
+        component['download_name'] = this.solicitationUserData['select_uploads'][component['select_upload_name']]['select_upload_hash_name'];
+        component['download_endpoint'] = `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${this.solicitationUserData['select_uploads'][component['select_upload_name']]['select_upload_hash_name']}`;
+      }
+    },
+    parsePageDownload(component){
 
-        if(component['component_type'] == 'input'){
+      if(component['download_from'] == 'internal_from_upload'){
+        if(this.solicitationUserData && this.solicitationUserData['uploads'] && this.solicitationUserData['uploads'][component['internal_upload_name']]){
+          component['download_name'] = this.solicitationUserData['uploads'][component['internal_upload_name']]['upload_hash_name'];
+          component['download_endpoint'] = `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${this.solicitationUserData['uploads'][component['internal_upload_name']]['upload_hash_name']}`;
+        }
+      }
+      else if(component['download_from'] == 'internal_from_select_upload'){
+        if(this.solicitationUserData && this.solicitationUserData['select_uploads'] && this.solicitationUserData['select_uploads'][component['internal_select_upload_name']]){
+          component['download_name'] = this.solicitationUserData['select_uploads'][component['internal_select_upload_name']]['select_upload_hash_name'];
+          component['download_endpoint'] = `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${this.solicitationUserData['select_uploads'][component['internal_select_upload_name']]['select_upload_hash_name']}`;
+        }
+      }
+    },
+    parsePageUserData(){
 
-          let inputV = pageComponent.getV();
+      // parse page components based on solicitationUserData
+      if(this.pageData && this.pageData['components']){
+        for(let i = 0; i < this.pageData['components'].length; i++){
 
-          if(component['input_required'] && !inputV){
-            this.$root.renderMsg('warn', component['input_missing_message'], '');
-            return;
+          let component = this.pageData['components'][i];
+
+          if(component['component_type'] == 'input'){
+            this.parsePageInput(component);
           }
-          else if(inputV && component['input_type'] == 'date'){
-            let dateParts = inputV.split("-");
-            let dateInput = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
+          else if(component['component_type'] == 'upload'){
+            this.parsePageUpload(component);
+          }
+          else if(component['component_type'] == 'select_upload'){
+            this.parsePageSelectUpload(component);
+          }
+          else if(component['component_type'] == 'download'){
+            this.parsePageDownload(component);
+          }
+        }
+      }
+    },
+    
+    // compares input from query and its value from page
+    async isInputValid(queryInput, pageInput){
 
-            for(let j = 0; j < component['input_date_rules'].length; j++){
-              let rule = component['input_date_rules'][j];
+      let pageInputValue = pageInput.getV();
+      
+      if(queryInput['input_required'] && !pageInputValue){
+        this.$root.renderMsg('warn', queryInput['input_missing_message'], '');
+        return false;
+      }
+      else if(pageInputValue && queryInput['input_type'] == 'date'){
 
-              let startDate = new Date();
-              let endDate = new Date();
-              startDate.setDate(startDate.getDate() + rule['rule_start_days']);
-              endDate.setDate(endDate.getDate() + rule['rule_end_days']);
+        let dateParts = pageInputValue.split("-");
+        let dateInput = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
 
-              if(
-                (rule['rule_type'] == 'must-be-from-today' && (dateInput.getTime() < startDate.getTime() || dateInput.getTime() > endDate.getTime()))
-                || (rule['rule_type'] == 'must-not-be-from-today' && dateInput.getTime() >= startDate.getTime() && dateInput.getTime() < endDate.getTime())
-              ){
-                if(rule['rule_message_type'] == 'warn'){
-                  this.$root.renderMsg('warn', rule['rule_missing_message'], '');
-                }
-                else{
-                  this.$root.renderMsg('error', rule['rule_missing_message'],'');
-                }
-                return;
-              }
+        for(let i = 0; i < queryInput['input_date_rules'].length; i++){
+          let rule = queryInput['input_date_rules'][i];
+
+          let startDate = null;
+          let endDate = null;
+          if(rule['rule_start_days']){
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() + rule['rule_start_days']);
+          }
+          if(rule['rule_end_days']){
+            endDate = new Date();
+            endDate.setDate(endDate.getDate() + rule['rule_end_days']);
+          }
+
+          if(
+            (rule['rule_type'] == 'must-be-from-today' && 
+              ( (startDate ? dateInput.getTime() < startDate.getTime() : false) || (endDate ? dateInput.getTime() > endDate.getTime() : false) ))
+            || 
+            (rule['rule_type'] == 'must-not-be-from-today' && 
+              (startDate ? dateInput.getTime() >= startDate.getTime() : true) && (endDate ? dateInput.getTime() < endDate.getTime() : true) )
+          ){
+            if(rule['rule_message_type'] == 'warn'){
+              return await this.$root.renderMsg('warn', rule['rule_missing_message'], '', null, function(){}, function(){}, true);
+            }
+            else{
+              return this.$root.renderMsg('error', rule['rule_missing_message'],'');
             }
           }
+        }
+      }
+      return true;
+    },
+    isUploadValid(queryUpload, pageUpload){
+      
+      if(queryUpload['upload_required'] && (pageUpload.getFileIHashName() == null || !pageUpload.isLoaded())){
+        this.$root.renderMsg('warn', queryUpload['upload_missing_message'], '');
+        return false;
+      }
+      return true;
+    },
+    isSelectUploadValid(querySelectUpload, pageSelectUpload){
+      
+      if(querySelectUpload['select_upload_required'] && (pageSelectUpload.getFileIHashName() == null || !pageSelectUpload.isLoaded())){
+        this.$root.renderMsg('warn', querySelectUpload['select_upload_missing_message'], '');
+        return false;
+      }
+      return true;
+    },
+    async isComponentsValid(){
 
+      // foreach query component from page
+      for(let i = 0; i < this.pageData['components'].length; i++){
+        let queryComponent = this.pageData['components'][i];
+        let pageComponent = this.$refs['pageComp'][i];
+
+        // verify if page component data is valid
+        if(queryComponent['component_type'] == 'input'){
+          if(!await this.isInputValid(queryComponent, pageComponent)){
+            return false;
+          }
+        }
+        else if(queryComponent['component_type'] == 'upload'){
+          if(!this.isUploadValid(queryComponent, pageComponent)){
+            return false;
+          }
+        }
+        else if(queryComponent['component_type'] == 'select_upload'){
+          if(!this.isSelectUploadValid(queryComponent, pageComponent)){
+            return false;
+          }
+        }
+      }
+      return true;
+    },
+    async doSolicitation(transitionId){
+      
+      if(!await this.isComponentsValid()){
+        return;
+      }
+
+      let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
+
+      // add all valided component data to solicitationData
+      for(let i = 0; i < this.pageData['components'].length; i++){
+        let queryComponent = this.pageData['components'][i];
+        let pageComponent = this.$refs['pageComp'][i];
+
+        if(queryComponent['component_type'] == 'input'){
           solicitationData['inputs'].push({
-            'input_name' : component['input_name'],
-            'input_value' : inputV
+            'input_name' : queryComponent['input_name'],
+            'input_value' : pageComponent.getV()
           });
-          
         }
-        else if(component['component_type'] == 'upload'){
-          
-          if(component['upload_required'] && (pageComponent.getFileIHashName() == null || !pageComponent.isLoaded())){
-            this.$root.renderMsg('warn', component['upload_missing_message'], '');
-            return;
-          }
-          else if(pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
-            solicitationData['uploads'].push({
-              'upload_name' : component['upload_name'],
-              'upload_hash_name' : pageComponent.getFileIHashName()
-            });
-          }
-
+        else if(queryComponent['component_type'] == 'upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
+          solicitationData['uploads'].push({
+            'upload_name' : queryComponent['upload_name'],
+            'upload_hash_name' : pageComponent.getFileIHashName()
+          });
         }
-        else if(component['component_type'] == 'select_upload'){
-
-          if(component['select_upload_required'] && (pageComponent.getFileIHashName() == null || !pageComponent.isLoaded())){
-            this.$root.renderMsg('warn', component['select_upload_missing_message'], '');
-            return;
-          }
-          else if(pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
-            solicitationData['select_uploads'].push({
-              'select_upload_name' : component['select_upload_name'],
-              'select_upload_hash_name' : pageComponent.getFileIHashName()
-            });
-          }
+        else if(queryComponent['component_type'] == 'select_upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
+          solicitationData['select_uploads'].push({
+            'select_upload_name' : queryComponent['select_upload_name'],
+            'select_upload_hash_name' : pageComponent.getFileIHashName()
+          });
         }
       }
 
@@ -248,12 +352,12 @@ export default {
         return;
       }
       else{
-        //let pageContext = this;
+        let pageContext = this;
         this.$root.renderMsg(
           'ok',
           'Solicitação realizada!',
           'Aguarde os prazos e verifique seus e-mails para mais atualizações.',
-          function () { /*pageContext.$root.renderView('home');*/ }
+          function () { pageContext.$root.renderView('home'); }
         );
       }
     }
