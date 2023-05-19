@@ -201,7 +201,10 @@ export default {
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
+                pageContext.$root.renderView(
+                  solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
+                  { 'user_has_state_id': solicitation['user_has_state_id'] 
+                });
               }
             }
           ]);
@@ -236,7 +239,10 @@ export default {
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
               'iconSelFunction' : function(){
-                pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
+                pageContext.$root.renderView(
+                  solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
+                  { 'user_has_state_id': solicitation['user_has_state_id'] 
+                });
               }
             }
           ]);
@@ -271,7 +277,10 @@ export default {
                 'fa-solid fa-pencil' :
                 'fa-solid fa-eye',
                 'iconSelFunction' : function(){
-                  pageContext.$root.renderView('solicitation', { 'user_has_state_id': solicitation['user_has_state_id'] })
+                  pageContext.$root.renderView(
+                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
+                    { 'user_has_state_id': solicitation['user_has_state_id'] 
+                  });
               }
             }
           ]);

@@ -4,6 +4,8 @@ import SignView from '../views/SignView.vue'
 import HomeView from '../views/HomeView.vue'
 import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
+import IntBeginAdvisorSelection from '../views/IntershipBeginning/AdvisorSelection.vue'
+
 import AreaCView from '../views/Coordinator/AreaCView.vue'
 import AreaPView from '../views/Advisor/AreaPView.vue'
 import AreaSView from '../views/Student/AreaSView.vue'
@@ -32,6 +34,12 @@ const routes = [
     name: 'solicitation',
     component: DSolicitationView,
     meta: { allowedUsers: 'DYNAMIC' }
+  },
+  {
+    path: '/interbegin/advisorselection',
+    name: 'interbegin-advisorselection',
+    component: IntBeginAdvisorSelection,
+    meta: { allowedUsers: 'ALL' }
   },
   {
     path: '/areacoordinator',

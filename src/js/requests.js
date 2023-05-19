@@ -36,6 +36,27 @@ async function baseRequestFBody(headers, endpoint){
   }
 }
 
+// return parsed query string to use directly in url
+function parseQueryStrFromObj(queryObj){
+
+  let queryString = '?';
+  let keyList = Object.keys(queryObj);
+  let started = false;
+
+  keyList.forEach((key) => {
+    if(queryObj[key]!==null && queryObj[key]!==undefined && queryObj[key]!==''){
+      if(started){
+        queryString += `&${key}=${queryObj[key]}`
+      }
+      else{
+        started = true;
+        queryString += `${key}=${queryObj[key]}`
+      }
+    }
+  });
+  return queryString;
+}
+
 // do auth with user login mail password
 async function loginDo(_, args){
 
@@ -136,6 +157,26 @@ async function signDoWithCode(_, args){
   }
 
   let vreturn = await baseRequestFBody(myHeaders, 'sign');
+  return vreturn;
+}
+
+async function getAdvisors(token_jwt, args){
+
+  let myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+
+  let querystring = parseQueryStrFromObj({
+    'start_row': args[0],
+    'quantity_rows': args[1],
+    'advisor_name': args[2]
+  });
+
+  let vreturn = await baseRequestFBody(myHeaders, `advisors${querystring}`);
   return vreturn;
 }
 
@@ -254,6 +295,7 @@ export default{
   signVerifyCodeData,
   signVerifyCodeToken,
   signDoWithCode,
+  getAdvisors,
   getCoordinatorSolicitations,
   getAdvisorSolicitations,
   getStudentSolicitations,

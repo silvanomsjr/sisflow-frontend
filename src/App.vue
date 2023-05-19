@@ -239,12 +239,14 @@ export default {
 
       return vreturn;
     },
-    async doRequest(requestF, requestArgs) {
+    async doRequest(requestF, requestArgs, enableLadingModal=true) {
 
       var vreturn = {};
 
       try{
-        this.loadModalEnabled = true;
+        if(enableLadingModal){
+          this.loadModalEnabled = true;
+        }
         vreturn = await requestF(this.userJwtToken, requestArgs);
       }
       catch(error){
