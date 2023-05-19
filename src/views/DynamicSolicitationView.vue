@@ -65,7 +65,7 @@
           customFontSize="normal"
           width="100%"
           padding="3px 20px"
-          @click="doSolicitation(component['transition_id'])"
+          @click="doSolicitation(`Button-${component['button_transation_type']}`)"
           />
       </div>
     </div>
@@ -301,9 +301,26 @@ export default {
       }
       return true;
     },
-    async doSolicitation(transitionId){
+    getTransitionId(dynamicPageComponent){
+      console.log(dynamicPageComponent);
+      if(this.solicitationData.transitions){
+        for(let i = 0; i < this.solicitationData.transitions.length; i++){
+          let transition = this.solicitationData.transitions[i];
+          if(transition["type"] == "from_dynamic_page" && transition["dynamic_page_component"] == dynamicPageComponent){
+            return transition["id"];
+          }
+        }
+      }
+      return null;
+    },
+    async doSolicitation(dynamicPageComponent){
       
       if(!await this.isComponentsValid()){
+        return;
+      }
+      let transitionId = this.getTransitionId(dynamicPageComponent);
+      if(transitionId == null){
+        this.$root.renderMsg('warn', 'Tipo de transação inválido', 'Caso o erro persista contate a coordenação');
         return;
       }
 
