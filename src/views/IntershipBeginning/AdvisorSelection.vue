@@ -99,6 +99,7 @@ export default {
       startRow: 0,
       quantityRows: 2,
       advisorName: '',
+      cleanIfLessThan3: false,
       pageDisabled: false
     }
   },
@@ -173,12 +174,21 @@ export default {
       this.loadAdvisorsTable();
     },
     advisorInputChange(){
-      this.actualPage = 1;
-      this.maxPages = 2;
-      this.startRow = 0;
-      this.quantityRows = 2;
       this.advisorName = this.$refs.advisorName.getV();
-      this.loadAdvisorsTable();
+
+      if(this.advisorName.length >= 3 || this.cleanIfLessThan3){
+        this.actualPage = 1;
+        this.maxPages = 2;
+        this.startRow = 0;
+        this.quantityRows = 2;
+        this.loadAdvisorsTable();
+        if(this.advisorName.length < 3){
+          this.cleanIfLessThan3 = false;
+        }
+        else{
+          this.cleanIfLessThan3 = true;
+        }
+      }
     },
     async doSolicitation(){
 
