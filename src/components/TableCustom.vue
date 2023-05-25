@@ -39,7 +39,7 @@
           'font-weight': this.cFontWeightBold,
           'font-size': this.cFontSizeBold,
           'border-color': this.gray2,
-          'background-color': this.gray2,
+          'background-color': this.gray2
         }">
 
         <div v-for="(title, indexT) in this.tableData['titles']" :key="indexT"
@@ -123,8 +123,7 @@
           :style="{
             'font-weight': this.cFontWeight,
             'font-size': this.cFontSize,
-            'border-color': this.gray2,
-            'background-color': this.gray2
+            'border-color': this.gray2
           }">
 
           <div v-for="(content, indexC) in contentBox" :key="indexC"
@@ -159,15 +158,15 @@
             <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox'"
               :ref="'tableContent' + indexR"
               class="tableCheckBox"
-              :id="'tableCheckBox' + indexR + '_' + indexC"
-              :name="'tableCheckBox' + indexR + '_' + indexC"
+              :id="'tableCheckBoxM' + indexR + '_' + indexC"
+              :name="'tableCheckBoxM' + indexR + '_' + indexC"
             />
 
             <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox-single'"
               :ref="'tableContent' + indexR"
               class="tableCheckBox"
-              :id="'tableCheckBoxS' + indexR + '_' + indexC"
-              :name="'tableCheckBox' + indexR + '_' + indexC"
+              :id="'tableCheckBoxMS' + indexR + '_' + indexC"
+              :name="'tableCheckBoxMS' + indexR + '_' + indexC"
               @checkBoxClicked="this.cleanOtherCheckboxItems(indexR, indexC)"
             />
             
