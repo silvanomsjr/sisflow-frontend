@@ -102,9 +102,9 @@
             <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox-single'"
               :ref="'tableContent' + indexR"
               class="tableCheckBox"
-              :id="'tableCheckBox' + indexR + '_' + indexC"
+              :id="'tableCheckBoxS' + indexR + '_' + indexC"
               :name="'tableCheckBox' + indexR + '_' + indexC"
-              @checkBoxClicked=this.cleanOtherCheckboxItems(indexC)
+              @checkBoxClicked="this.cleanOtherCheckboxItems(indexR, indexC)"
             />
 
           </div>
@@ -161,6 +161,14 @@
               class="tableCheckBox"
               :id="'tableCheckBox' + indexR + '_' + indexC"
               :name="'tableCheckBox' + indexR + '_' + indexC"
+            />
+
+            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox-single'"
+              :ref="'tableContent' + indexR"
+              class="tableCheckBox"
+              :id="'tableCheckBoxS' + indexR + '_' + indexC"
+              :name="'tableCheckBox' + indexR + '_' + indexC"
+              @checkBoxClicked="this.cleanOtherCheckboxItems(indexR, indexC)"
             />
             
           </div>
@@ -221,6 +229,56 @@ export default {
     tmp = Utils.handleFontType('normal_bold');
     this.cFontSizeBold = tmp[0];
     this.cFontWeightBold = tmp[1];
+  },
+
+  methods: {
+
+    parseTableCell(cell, row, col){
+      
+      if(cell.name && (cell.name.includes('tableInput') || cell.name.includes('tableSelect') || cell.name.includes('tableCheckBox')) ){
+        return cell.getV();
+      }
+
+      if(this.tableData['colTypes'][col] == 'string'){
+        return this.tableData['content'][row][col];
+      }
+
+      return '';
+    },
+
+    getV(row=null, col=null){
+
+      let tableV = [];
+
+      if(row!=null && col!=null){
+        return this.parseTableCell(this.$refs['tableContent' + row][col], row, col);
+      }
+
+      for(let i = 0; i < this.tableData['content'].length; i++){
+
+        let line = [];
+        for(let j = 0; j < this.tableData['colTypes'].length; j++){
+          line.push( this.parseTableCell(this.$refs['tableContent' + i][j], i, j) );
+        }
+        
+        tableV.push(line);
+      }
+
+      return tableV;
+    },
+
+    setV(row, col, value){
+      this.$refs['tableContent' + row][col].setV(value);
+    },
+    
+    cleanOtherCheckboxItems(selectedRow, col) {
+      this.tableData['content'].forEach((rowData, row) => {
+        if(selectedRow != row){
+          this.$refs['tableContent' + row][col].setV(false);
+        }
+      });
+    }
+
   }
 }
 

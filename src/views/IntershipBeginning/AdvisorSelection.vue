@@ -33,7 +33,8 @@
         />
       </div>
 
-      <TableCustom class="tableC"
+      <TableCustom :key="tblAdvisorKey"
+        class="tableC"
         :showPrevNextButtons="true"
         :actualPage="this.actualPage"
         :maxPages="this.maxPages"
@@ -90,7 +91,7 @@ export default {
       userProfiles: null,
       advisorsTableData: {
         'titles': [ 'Selecionar', 'Nome', 'Email', 'Quantidade de Orientados' ],
-        'colTypes': [ 'checkbox', 'string', 'string', 'string' ],
+        'colTypes': [ 'checkbox-single', 'string', 'string', 'string' ],
         'colWidths': [ '10%', '35%', '35%', '20%' ],
         'content': []
       },
@@ -100,7 +101,8 @@ export default {
       quantityRows: 2,
       advisorName: '',
       cleanIfLessThan3: false,
-      pageDisabled: false
+      pageDisabled: false,
+      tblAdvisorKey: 0
     }
   },
 
@@ -149,7 +151,6 @@ export default {
         this.maxPages = Math.max(Math.ceil(vreturn['response']['count']/this.quantityRows), 1);
 
         this.advisorsTableData['content'] = [];
-        console.log(this.advisorsTableData);
         console.log(vreturn);
 
         vreturn['response']['advisors'].forEach(solicitation => {
@@ -160,6 +161,7 @@ export default {
             3
           ]);
         });
+        this.tblAdvisorKey++;
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn);
