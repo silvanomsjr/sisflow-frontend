@@ -92,6 +92,21 @@
               />
             </span>
 
+            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox'"
+              :ref="'tableContent' + indexR"
+              class="tableCheckBox"
+              :id="'tableCheckBox' + indexR + '_' + indexC"
+              :name="'tableCheckBox' + indexR + '_' + indexC"
+            />
+
+            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox-single'"
+              :ref="'tableContent' + indexR"
+              class="tableCheckBox"
+              :id="'tableCheckBox' + indexR + '_' + indexC"
+              :name="'tableCheckBox' + indexR + '_' + indexC"
+              @checkBoxClicked=this.cleanOtherCheckboxItems(indexC)
+            />
+
           </div>
         </div>
       </div>
@@ -140,6 +155,13 @@
                 @click="content['iconSelFunction']"
               />
             </span>
+
+            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox'"
+              :ref="'tableContent' + indexR"
+              class="tableCheckBox"
+              :id="'tableCheckBox' + indexR + '_' + indexC"
+              :name="'tableCheckBox' + indexR + '_' + indexC"
+            />
             
           </div>
         </div>
@@ -150,6 +172,7 @@
 
 <script>
 
+import CheckboxC from "../components/CheckboxC.vue"
 import Utils from "../js/utils.js"
 import TextCustom from "../components/TextCustom.vue"
 
@@ -158,6 +181,7 @@ export default {
   name: 'TableCustom',
 
   components: {
+    CheckboxC,
     TextCustom
   },
 
@@ -267,6 +291,9 @@ export default {
   display: block;
   width: 100%;
   margin-top: 7px;
+}
+.tableCheckBox, .tableCheckBox > *{
+  text-align: center;
 }
 
 </style>

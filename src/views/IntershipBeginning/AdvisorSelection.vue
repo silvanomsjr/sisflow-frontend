@@ -89,9 +89,9 @@ export default {
     return {
       userProfiles: null,
       advisorsTableData: {
-        'titles': [ 'Nome', 'Email', 'Quantidade de Orientados' ],
-        'colTypes': [ 'string', 'string', 'string' ],
-        'colWidths': [ '40%', '40%', '20%' ],
+        'titles': [ 'Selecionar', 'Nome', 'Email', 'Quantidade de Orientados' ],
+        'colTypes': [ 'checkbox', 'string', 'string', 'string' ],
+        'colWidths': [ '10%', '35%', '35%', '20%' ],
         'content': []
       },
       actualPage: 1,
@@ -149,10 +149,12 @@ export default {
         this.maxPages = Math.max(Math.ceil(vreturn['response']['count']/this.quantityRows), 1);
 
         this.advisorsTableData['content'] = [];
+        console.log(this.advisorsTableData);
         console.log(vreturn);
 
         vreturn['response']['advisors'].forEach(solicitation => {
           this.advisorsTableData['content'].push([
+            '',
             solicitation['user_name'],
             solicitation['institutional_email'],
             3
