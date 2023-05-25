@@ -302,7 +302,6 @@ export default {
       return true;
     },
     getTransitionId(dynamicPageComponent){
-      console.log(dynamicPageComponent);
       if(this.solicitationData.transitions){
         for(let i = 0; i < this.solicitationData.transitions.length; i++){
           let transition = this.solicitationData.transitions[i];

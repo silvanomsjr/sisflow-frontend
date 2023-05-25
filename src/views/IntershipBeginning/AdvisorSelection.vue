@@ -34,6 +34,7 @@
       </div>
 
       <TableCustom :key="tblAdvisorKey"
+        ref="advisorsTable"
         class="tableC"
         :showPrevNextButtons="true"
         :actualPage="this.actualPage"
@@ -102,6 +103,7 @@ export default {
       advisorName: '',
       cleanIfLessThan3: false,
       pageDisabled: false,
+      transitionManualId: null,
       tblAdvisorKey: 0
     }
   },
@@ -124,14 +126,15 @@ export default {
       this.$root.renderView('home');
       return;
     }
+
     this.solicitationData = vreturn['response']['solicitation'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
+    this.transitionManualId = this.solicitationData['transitions'].find(tr => tr['type'] == 'manual')['id'];
 
     this.pageDisabled = 
       this.solicitationData['decision'] != 'Em analise' || 
       !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['state_profile_editor_acronym']);
 
-    console.log(vreturn);
     await this.loadAdvisorsTable();
     this.$root.pageName = 'Seleção de Orientador';
 
@@ -151,14 +154,15 @@ export default {
         this.maxPages = Math.max(Math.ceil(vreturn['response']['count']/this.quantityRows), 1);
 
         this.advisorsTableData['content'] = [];
-        console.log(vreturn);
+        this.advisorsTableData['siapes'] = [];
 
-        vreturn['response']['advisors'].forEach(solicitation => {
+        vreturn['response']['advisors'].forEach(advisor => {
+          this.advisorsTableData['siapes'].push(advisor['siape']);
           this.advisorsTableData['content'].push([
             '',
-            solicitation['user_name'],
-            solicitation['institutional_email'],
-            3
+            advisor['user_name'],
+            advisor['institutional_email'],
+            advisor['advisor_students']
           ]);
         });
         this.tblAdvisorKey++;
@@ -196,25 +200,57 @@ export default {
     },
     async doSolicitation(){
 
-      if(isNaN(this.radioOptSelected) || !this.radioOptSelected){
-        this.$root.renderMsg('warn', 'Solicitação inválida!', '');
+      let advisorTableD = this.$refs['advisorsTable'].getV();
+      let advisorSelected = advisorTableD ? advisorTableD.findIndex(advisor => advisor[0] == true) : -1;
+
+      if(advisorSelected == -1){
+        this.$root.renderMsg('warn', 'Selecione um orientador', '');
         return;
       }
 
-      let solicitationOpt = parseInt(this.radioOptSelected);
+      // put solicitation advisor
+      let vreturn = await this.$root.doRequest( 
+        Requests.putSolicitationAdvisor,
+        [ this.solicitationData['user_has_solicitation_id'], this.advisorsTableData['siapes'][advisorSelected] ]);
+
+      if(!vreturn || !vreturn['ok']){
+        this.$root.renderRequestErrorMsg(vreturn, []);
+        return;
+      }
       
-      if(solicitationOpt < 0 || solicitationOpt > 4){
-        this.$root.renderMsg('warn', 'Solicitação inválida!', '');
+      // do Solicitation
+      vreturn = await this.$root.doRequest(
+        Requests.postSolicitation,
+        [
+          this.solicitationData['user_has_state_id'],
+          this.transitionManualId,
+          null,
+          'Solicitado',
+          'O aluno solicitou a orientação ao orientador: ' + advisorTableD[advisorSelected][1]
+        ]);
+
+      if(!vreturn || !vreturn['ok']){
+        this.$root.renderRequestErrorMsg(vreturn, [
+          'Usuario não possui o estado da solicitação!',
+          'Edição a solicitação não permitida!',
+          'Perfil editor a solicitação inválido!',
+          'Edição do estado da solicitação não permitido!',
+          'Esta etapa da solicitação não foi iniciada!',
+          'Esta etapa da solicitação foi expirada!',
+          'Esta solicitação já foi realizada!',
+          'Input da solicitação está faltando!',
+          'Anexo da solicitação está faltando!',
+          'Transição não encontrada para este estado!']);
         return;
-      }
-
-      let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationOpt] );
-
-      if(vreturn && vreturn['ok']){
-        this.$root.renderView( 'solicitation', { 'user_has_state_id': vreturn['response']['user_has_state_id'] })
       }
       else{
-        this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);
+        let pageContext = this;
+        this.$root.renderMsg(
+          'ok',
+          'Solicitação realizada!',
+          'Aguarde a aprovação do orientador para iniciar o processo de colet de assinaturas.',
+          function () { pageContext.$root.renderView('home'); }
+        );
       }
     }
   }

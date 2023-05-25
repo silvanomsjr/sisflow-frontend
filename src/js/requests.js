@@ -269,7 +269,9 @@ async function postSolicitation(token_jwt, args){
   
   let userHasStateId = args[0];
   let transitionId = args[1];
-  let solicitationUserData = args[2];
+  let solicitationUserData = args[2] ? args[2] : { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
+  let transitionDecision = args[3] ? args[3] : null
+  let transitionReason = args[4] ? args[4] : null
 
   var myHeaders = {
     method: 'POST',
@@ -281,11 +283,35 @@ async function postSolicitation(token_jwt, args){
     body: JSON.stringify({
       'user_has_state_id': userHasStateId,
       'transition_id': transitionId,
-      'solicitation_user_data': solicitationUserData
+      'solicitation_user_data': solicitationUserData,
+      'transition_decision': transitionDecision,
+      'transition_reason': transitionReason
     })
   }
 
   let vreturn = await baseRequestFBody(myHeaders, 'solicitation');
+  return vreturn;
+}
+
+async function putSolicitationAdvisor(token_jwt, args){
+  
+  let userHasSolicitationId = args[0];
+  let advisorSiape = args[1];
+
+  var myHeaders = {
+    method: 'PUT',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'user_has_solicitation_id': userHasSolicitationId,
+      'advisor_siape': advisorSiape
+    })
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, 'solicitation/advisor');
   return vreturn;
 }
 
@@ -301,5 +327,6 @@ export default{
   getStudentSolicitations,
   getSolicitation,
   putSolicitation,
-  postSolicitation
+  postSolicitation,
+  putSolicitationAdvisor
 }
