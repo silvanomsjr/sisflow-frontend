@@ -5,11 +5,14 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         display='block'>
-        Para continuar com a solicitação você deve escolher um orientador.
+        {{ !this.pageDisabled ? 
+          "Para continuar com a solicitação você deve escolher um orientador." : 
+          "Aguarde o orientador aceitar a sua solicitação "
+        }}
       </TextCustom>
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="!this.pageDisabled">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
@@ -45,8 +48,20 @@
       />
     </div>
 
-    <div class="pageContentRow">
-      
+    <div class="pageContentRow" v-else>
+      <TextCustom
+        margin='15px 10px 15px 0px'
+        display='inline-block'>
+        Orientador solicitado: 
+      </TextCustom>
+      <TableCustom
+        ref="advisorSelectedTable"
+        class="tableC"
+        :tableData="this.advisorSelectedTableData"
+      />
+    </div>
+
+    <div class="pageContentRow" v-if="!this.pageDisabled">
       <div class='btnWrapper'>
         <div class='btn'>
           <ButtonCustom
@@ -57,7 +72,6 @@
             customFontSize="normal"
             width="98%"
             padding="3px 20px"
-            :disabled="this.pageDisabled"
             @click="doSolicitation"
           />
         </div>
@@ -96,6 +110,12 @@ export default {
         'colWidths': [ '10%', '35%', '35%', '20%' ],
         'content': []
       },
+      advisorSelectedTableData: {
+        'titles': [ 'Nome', 'Email', 'Quantidade de Orientados' ],
+        'colTypes': [ 'string', 'string', 'string' ],
+        'colWidths': [ '40%', '40%', '20%' ],
+        'content': []
+      },
       actualPage: 1,
       maxPages: 1,
       startRow: 0,
@@ -129,15 +149,22 @@ export default {
 
     this.solicitationData = vreturn['response']['solicitation'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
-    this.transitionManualId = this.solicitationData['transitions'].find(tr => tr['type'] == 'manual')['id'];
-
+    this.advisorData = vreturn['response']['advisor'];
     this.pageDisabled = 
       this.solicitationData['decision'] != 'Em analise' || 
       !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['state_profile_editor_acronym']);
 
-    await this.loadAdvisorsTable();
+    if(!this.pageDisabled){
+      this.transitionManualId = this.solicitationData['transitions'].find(tr => tr['type'] == 'manual')['id'];
+      await this.loadAdvisorsTable();
+    }
+    else{
+      this.advisorSelectedTableData['content'].push([
+        this.advisorData['user_name'], this.advisorData['institutional_email'], this.advisorData['advisor_students']
+      ]);
+    }
+    
     this.$root.pageName = 'Seleção de Orientador';
-
   },
 
   methods:{
@@ -261,7 +288,7 @@ export default {
 <style scoped>
 
 .pageContentRow{
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 .textC, .tableC{
   margin-top: 5px;
