@@ -62,7 +62,7 @@ export default {
 .detailsWrapper{
   display: block;
   padding: 10px;
-  margin: 10px;
+  margin: 10px 0px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   cursor: pointer;

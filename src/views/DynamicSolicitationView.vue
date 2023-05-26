@@ -10,6 +10,21 @@
         v-html="component['inner_html']">
       </div>
 
+      <div v-if="component['component_type'] == 'details'">
+        <DetailsCard v-if="component['details_type']=='student'"
+          id="stuDetails"
+          title="Dados do aluno"
+          :showItemsOnStart="true"
+          :items="this.studentDetailsCardItems"
+        />
+        <DetailsCard v-if="component['details_type']=='advisor'"
+          id="advDetails"
+          title="Dados do orientador"
+          :showItemsOnStart="true"
+          :items="this.advisorDetailsCardItems"
+        />
+      </div>
+
       <div v-if="component['component_type'] == 'input'">
         {{ component['input_label'] }}
 
@@ -76,6 +91,7 @@
 <script>
 
 import ButtonCustom from '../components/ButtonCustom.vue'
+import DetailsCard from '../components/DetailsCard.vue'
 import InputCustom from '../components/InputCustom.vue'
 import FileDownload from '../components/FileDownload.vue'
 import FileUpload from '../components/FileUpload.vue'
@@ -88,6 +104,7 @@ export default {
 
   components: {
     ButtonCustom,
+    DetailsCard,
     InputCustom,
     FileDownload,
     FileUpload,
@@ -99,7 +116,9 @@ export default {
       createdDone: false,
       pageData: [],
       fileUploadEndpoint: '',
-      pageDisabled: false
+      pageDisabled: false,
+      studentDetailsCardItems: [],
+      advisorDetailsCardItems: []
     }
   },
 
@@ -124,6 +143,8 @@ export default {
     }
 
     this.solicitationData = vreturn['response']['solicitation'];
+    this.studentData = vreturn['response']['student'];
+    this.advisorData = vreturn['response']['advisor'];
     this.pageData = vreturn['response']['solicitation']['page'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
 
@@ -150,6 +171,7 @@ export default {
     }
 
     this.parsePageUserData();
+    this.loadDetailCards();
 
     this.$root.pageName = this.pageData['title'];
     this.createdDone = true;
@@ -162,6 +184,22 @@ export default {
   methods:{
     isCorrectRequiredPageDataFields(){
       return this.pageData && this.pageData['title'];
+    },
+    loadDetailCards(){
+      this.studentDetailsCardItems = [
+        { "label": "Nome", "value": this.studentData["user_name"] },
+        { "label": "Email institucional", "value": this.studentData["institutional_email"] },
+        { "label": "Curso", "value": this.studentData["course"] },
+        { "label": "Matricula", "value": this.studentData["matricula"] },
+        { "label": "Telefone", "value": this.studentData["phone"] }
+      ];
+      this.advisorDetailsCardItems = [
+        { "label": "Nome", "value": this.advisorData["user_name"] },
+        { "label": "Email institucional", "value": this.advisorData["institutional_email"] },
+        { "label": "Alunos orientados", "value": this.advisorData["advisor_students"] },
+        { "label": "Siape", "value": this.advisorData["siape"] },
+        { "label": "Telefone", "value": this.advisorData["phone"] }
+      ];
     },
     parsePageInput(component){
 
