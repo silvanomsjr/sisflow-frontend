@@ -5,23 +5,23 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         display='block'>
-        {{
-          "O aluno nomedoaluno solicitou a sua orientação para o estágio na modalidade modalidadeestagio." + !this.pageDisabled ? "" :
-          "Você já respondeu a esta solicitação."
-        }}
+        O aluno realizou a solicitação de sua orientação para o estágio na modalidade modalidadeestagio.
       </TextCustom>
-    </div>
-
-    <div class="pageContentRow">
-      <TextCustom
-        customFontSize='title'
-        margin='20px 0px 5px 0px'
+      <TextCustom v-if="this.pageDisabled"
+        margin='0px 0px 15px 0px'
         display='block'>
-        Dados do aluno
+        Esta solicitação já foi respondida.
       </TextCustom>
     </div>
 
-    <div class="pageContentRow">
+    <DetailsCard
+      id="stuDetails"
+      title="Dados do aluno solicitante"
+      :showItemsOnStart="true"
+      :items="this.studentDetailsCardItems"
+    />
+
+    <div class="pageContentRow" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnConfirm"
         ref="btnConfirm"
@@ -35,7 +35,7 @@
       />
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnReject"
         ref="btnReject"
@@ -49,7 +49,7 @@
       />
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnCancel"
         ref="btnCancel"
@@ -69,6 +69,7 @@
 <script>
 
 import ButtonCustom from '../../components/ButtonCustom.vue'
+import DetailsCard from '../../components/DetailsCard.vue'
 import Requests from '../../js/requests.js'
 import TextCustom from '../../components/TextCustom.vue'
 
@@ -78,11 +79,13 @@ export default {
 
   components: {
     ButtonCustom,
+    DetailsCard,
     TextCustom
   },
 
   data() {
     return {
+      studentDetailsCardItems: [],
       pageDisabled: false
     }
   },
@@ -106,10 +109,33 @@ export default {
       return;
     }
     this.solicitationData = vreturn['response']['solicitation'];
+    this.studentData = vreturn['response']['student'];
     this.advisorData = vreturn['response']['advisor'];
     this.transitions = vreturn['response']['solicitation']['transitions'];
     
-    console.log(this.transitions);
+    this.studentDetailsCardItems = [
+      { "label": "Nome", "value": this.studentData["user_name"] },
+      { "label": "Email institucional", "value": this.studentData["institutional_email"] },
+      { "label": "Curso", "value": this.studentData["course"] },
+      { "label": "Matricula", "value": this.studentData["matricula"] },
+      { "label": "Telefone", "value": this.studentData["phone"] }
+    ];
+
+    this.pageDisabled = false;
+    if(this.solicitationData['decision'] != 'Em analise'){
+      this.pageDisabled = true;
+    }
+    else if(this.solicitationData['state_profile_editor_acronyms']){
+      let tmpBool = true;
+      let acronyms = this.solicitationData['state_profile_editor_acronyms'].split(',');
+      acronyms.forEach(acronym => {
+        if(this.$root.userLoggedData['profile_acronyms'].includes(acronym)){
+          tmpBool = false;
+        }
+      });
+      this.pageDisabled = tmpBool;
+    }
+
     this.$root.pageName = 'Aceite de aluno pelo orientador';
   },
 
@@ -177,7 +203,8 @@ export default {
 <style scoped>
 
 .pageContentRow{
-  margin-bottom: 20px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 .textC, .tableC{
   margin-top: 5px;

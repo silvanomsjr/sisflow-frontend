@@ -80,7 +80,7 @@
             </span>
 
             <span v-if="this.tableData['colTypes'][indexC] == 'iconfunction'">
-              <font-awesome-icon
+              <font-awesome-icon v-if="content['iconName']"
                 :icon="content['iconName']"
                 class="tableIcon"
                 :style="{
@@ -142,7 +142,7 @@
             </span>
             
             <span v-if="this.tableData['colTypes'][indexC] == 'iconfunction'">
-              <font-awesome-icon
+              <font-awesome-icon v-if="content['iconName']"
                 :icon="content['iconName']"
                 class="tableIcon"
                 :style="{

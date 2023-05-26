@@ -35,12 +35,22 @@ export default {
   props: {
     id: String,
     title: String,
-    items: Array
+    items: Array,
+    showItemsOnStart: {
+      default: false,
+      type: Boolean
+    }
   },
 
   data(){
     return{
       showItems: false
+    }
+  },
+
+  created() {
+    if(this.showItemsOnStart){
+      this.showItems = true;
     }
   }
 }
