@@ -280,7 +280,6 @@ export default {
         Requests.getStudentSolicitations,
         []);
 
-      console.log(vreturnStud);
       if(vreturnStud && vreturnStud['ok']){
 
         let pageContext = this;
