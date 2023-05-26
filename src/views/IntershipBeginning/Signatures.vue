@@ -12,12 +12,23 @@
       </TextCustom>
     </div>
 
+    <DetailsCard
+      id="stuDetails"
+      title="Dados do aluno"
+      :items="this.studentDetailsCardItems"
+    />
+
+    <DetailsCard
+      id="advDetails"
+      title="Dados do orientador"
+      :items="this.advisorDetailsCardItems"
+    />
+
     <div class="pageContentRow">
       <TextCustom
         customFontSize='title'
         margin='20px 0px 5px 0px'
         display='block'>
-        Dados do aluno
       </TextCustom>
     </div>
 
@@ -69,6 +80,7 @@
 <script>
 
 import ButtonCustom from '../../components/ButtonCustom.vue'
+import DetailsCard from '../../components/DetailsCard.vue'
 import Requests from '../../js/requests.js'
 import TextCustom from '../../components/TextCustom.vue'
 
@@ -78,11 +90,14 @@ export default {
 
   components: {
     ButtonCustom,
+    DetailsCard,
     TextCustom
   },
 
   data() {
     return {
+      studentDetailsCardItems: [],
+      advisorDetailsCardItems: [],
       pageDisabled: false
     }
   },
@@ -105,16 +120,34 @@ export default {
       this.$root.renderView('home');
       return;
     }
+    console.log(vreturn);
     this.solicitationData = vreturn['response']['solicitation'];
+    this.studentData = vreturn['response']['student'];
     this.advisorData = vreturn['response']['advisor'];
     this.transitions = vreturn['response']['solicitation']['transitions'];
     
-    console.log(this.transitions);
+    this.loadDetailCards();
     this.$root.pageName = 'Aceite de aluno pelo orientador';
   },
 
   methods:{
 
+    loadDetailCards(){
+      this.studentDetailsCardItems = [
+        { "label": "Nome", "value": this.studentData["user_name"] },
+        { "label": "Email institucional", "value": this.studentData["institutional_email"] },
+        { "label": "Curso", "value": this.studentData["course"] },
+        { "label": "Matricula", "value": this.studentData["matricula"] },
+        { "label": "Telefone", "value": this.studentData["phone"] }
+      ];
+      this.advisorDetailsCardItems = [
+        { "label": "Nome", "value": this.advisorData["user_name"] },
+        { "label": "Email institucional", "value": this.advisorData["institutional_email"] },
+        { "label": "Alunos orientados", "value": this.advisorData["advisor_students"] },
+        { "label": "Siape", "value": this.advisorData["siape"] },
+        { "label": "Telefone", "value": this.advisorData["phone"] }
+      ];
+    },
     // accept solicitation by advisor
     async doAccept(){
       let vreturn = await this.$root.doRequest( 
