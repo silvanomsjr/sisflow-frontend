@@ -188,6 +188,16 @@ export default {
         pageContext.coordinatorSolTable['content'] = [];
 
         vreturnCoor['response'].forEach(solicitation => {
+
+          let iconName = null;
+          if(pageContext.userProfiles.includes("COO") && solicitation['profile_acronyms'].includes("COO") && 
+            solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
+            iconName = 'fa-solid fa-pencil';
+          }
+          else if(!solicitation['state_active']){
+            iconName = 'fa-solid fa-eye';
+          }
+
           this.coordinatorSolTable['content'].push([
             solicitation['student_name'],
             solicitation['advisor_name'],
@@ -197,14 +207,14 @@ export default {
             solicitation['state_decision'],
             solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("COO") && solicitation['state_profile_editor_acronym'] == "COO" && solicitation['state_active'] && solicitation['state_decision'] == 'Em analise' ?
-                'fa-solid fa-pencil' :
-                'fa-solid fa-eye',
+              'iconName' : iconName,
               'iconSelFunction' : function(){
-                pageContext.$root.renderView(
-                  solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
-                  { 'user_has_state_id': solicitation['user_has_state_id'] 
-                });
+                if(iconName){
+                  pageContext.$root.renderView(
+                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
+                    { 'user_has_state_id': solicitation['user_has_state_id'] 
+                  });
+                }
               }
             }
           ]);
@@ -227,6 +237,17 @@ export default {
         pageContext.advisorSolTable['content'] = [];
 
         vreturnAdv['response'].forEach(solicitation => {
+
+          let iconName = null;
+          if(pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV")){
+            if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
+              iconName = 'fa-solid fa-pencil';
+            }
+            else{
+              iconName = 'fa-solid fa-eye';
+            }
+          }
+
           this.advisorSolTable['content'].push([
             solicitation['student_name'],
             solicitation['solicitation_name'],
@@ -235,14 +256,14 @@ export default {
             solicitation['state_decision'],
             solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("ADV") && solicitation['state_profile_editor_acronym'] == "ADV" && solicitation['state_active'] && solicitation['state_decision'] == 'Em analise' ? 
-                'fa-solid fa-pencil' :
-                'fa-solid fa-eye',
+              'iconName' : iconName,
               'iconSelFunction' : function(){
-                pageContext.$root.renderView(
-                  solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
-                  { 'user_has_state_id': solicitation['user_has_state_id'] 
-                });
+                if(iconName){
+                  pageContext.$root.renderView(
+                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
+                    { 'user_has_state_id': solicitation['user_has_state_id'] 
+                  });
+                }
               }
             }
           ]);
@@ -259,12 +280,23 @@ export default {
         Requests.getStudentSolicitations,
         []);
 
+      console.log(vreturnStud);
       if(vreturnStud && vreturnStud['ok']){
 
         let pageContext = this;
         pageContext.studentSolTable['content'] = [];
 
         vreturnStud['response'].forEach(solicitation => {
+
+          let iconName = null;
+          if(pageContext.userProfiles.includes("STU") && solicitation['profile_acronyms'].includes("STU")){
+            if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
+              iconName = 'fa-solid fa-pencil';
+            }
+            else{
+              iconName = 'fa-solid fa-eye';
+            }
+          }
 
           this.studentSolTable['content'].push([
             solicitation['solicitation_name'],
@@ -273,14 +305,14 @@ export default {
             solicitation['state_decision'],
             solicitation['state_reason'],
             {
-              'iconName' : pageContext.userProfiles.includes("STU") && solicitation['state_profile_editor_acronym'] == "STU" && solicitation['state_active'] && solicitation['state_decision'] == 'Em analise' ? 
-                'fa-solid fa-pencil' :
-                'fa-solid fa-eye',
-                'iconSelFunction' : function(){
+              'iconName' : iconName,
+              'iconSelFunction' : function(){
+                if(iconName){
                   pageContext.$root.renderView(
                     solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
                     { 'user_has_state_id': solicitation['user_has_state_id'] 
                   });
+                }
               }
             }
           ]);

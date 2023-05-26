@@ -127,9 +127,21 @@ export default {
     this.pageData = vreturn['response']['solicitation']['page'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
 
-    this.pageDisabled = 
-      this.solicitationData['decision'] != 'Em analise' || 
-      !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['state_profile_editor_acronym']);
+    // verify if page is disabled
+    this.pageDisabled = false;
+    if(this.solicitationData['decision'] != 'Em analise'){
+      this.pageDisabled = true;
+    }
+    else if(this.solicitationData['state_profile_editor_acronyms']){
+      let tmpBool = true;
+      let acronyms = this.solicitationData['state_profile_editor_acronyms'].split(',');
+      acronyms.forEach(acronym => {
+        if(this.$root.userLoggedData['profile_acronyms'].includes(acronym)){
+          tmpBool = false;
+        }
+      });
+      this.pageDisabled = tmpBool;
+    }
 
     // verify dynamic page data
     if(!this.isCorrectRequiredPageDataFields()){

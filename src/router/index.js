@@ -6,6 +6,7 @@ import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
 import IntBeginAdvisorSelection from '../views/IntershipBeginning/AdvisorSelection.vue'
 import IntBeginAdvisorAcception from '../views/IntershipBeginning/AdvisorAcception.vue'
+import IntBeginSignatures from '../views/IntershipBeginning/Signatures.vue'
 
 import AreaCView from '../views/Coordinator/AreaCView.vue'
 import AreaPView from '../views/Advisor/AreaPView.vue'
@@ -46,6 +47,12 @@ const routes = [
     path: '/interbegin/advisoracception',
     name: 'interbegin-advisoracception',
     component: IntBeginAdvisorAcception,
+    meta: { allowedUsers: 'ALL' }
+  },
+  {
+    path: '/interbegin/signatures',
+    name: 'interbegin-signatures',
+    component: IntBeginSignatures,
     meta: { allowedUsers: 'ALL' }
   },
   {

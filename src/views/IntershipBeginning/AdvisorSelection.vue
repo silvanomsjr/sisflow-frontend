@@ -149,9 +149,21 @@ export default {
     this.solicitationData = vreturn['response']['solicitation'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
     this.advisorData = vreturn['response']['advisor'];
-    this.pageDisabled = 
-      this.solicitationData['decision'] != 'Em analise' || 
-      !this.$root.userLoggedData['profile_acronyms'].includes(this.solicitationData['state_profile_editor_acronym']);
+    
+    this.pageDisabled = false;
+    if(this.solicitationData['decision'] != 'Em analise'){
+      this.pageDisabled = true;
+    }
+    else if(this.solicitationData['state_profile_editor_acronyms']){
+      let tmpBool = true;
+      let acronyms = this.solicitationData['state_profile_editor_acronyms'].split(',');
+      acronyms.forEach(acronym => {
+        if(this.$root.userLoggedData['profile_acronyms'].includes(acronym)){
+          tmpBool = false;
+        }
+      });
+      this.pageDisabled = tmpBool;
+    }
 
     if(!this.pageDisabled){
       this.transitionManualId = this.solicitationData['transitions'].find(tr => tr['type'] == 'manual')['id'];
