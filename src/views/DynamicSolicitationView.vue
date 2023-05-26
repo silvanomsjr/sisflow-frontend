@@ -1,6 +1,6 @@
 <template>
 
-  <div v-show="this.createdDone && this.pageData && this.pageData['components']">
+  <div class="dynamicPageWrapper" v-show="this.createdDone && this.pageData && this.pageData['components']">
 
     <div v-for="(component) in this.pageData['components']" :key="component['component_order']">
 
@@ -384,6 +384,9 @@ export default {
 <!-- style applies only to this component -->
 <style scoped>
 
+.dynamicPageWrapper{
+  font-size: var(--font-size-normal);
+}
 .sendSolicitationWrapper{
   display: block;
   width: 100%;

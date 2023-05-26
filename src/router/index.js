@@ -5,6 +5,7 @@ import HomeView from '../views/HomeView.vue'
 import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
 import IntBeginAdvisorSelection from '../views/IntershipBeginning/AdvisorSelection.vue'
+import IntBeginAdvisorAcception from '../views/IntershipBeginning/AdvisorAcception.vue'
 
 import AreaCView from '../views/Coordinator/AreaCView.vue'
 import AreaPView from '../views/Advisor/AreaPView.vue'
@@ -39,6 +40,12 @@ const routes = [
     path: '/interbegin/advisorselection',
     name: 'interbegin-advisorselection',
     component: IntBeginAdvisorSelection,
+    meta: { allowedUsers: 'ALL' }
+  },
+  {
+    path: '/interbegin/advisoracception',
+    name: 'interbegin-advisoracception',
+    component: IntBeginAdvisorAcception,
     meta: { allowedUsers: 'ALL' }
   },
   {

@@ -92,7 +92,7 @@ import TextCustom from '../../components/TextCustom.vue'
 
 export default {
   
-  name: 'HomeView',
+  name: 'AdvisorSelectionView',
 
   components: {
     ButtonCustom,
@@ -103,7 +103,6 @@ export default {
 
   data() {
     return {
-      userProfiles: null,
       advisorsTableData: {
         'titles': [ 'Selecionar', 'Nome', 'Email', 'Quantidade de Orientados' ],
         'colTypes': [ 'checkbox-single', 'string', 'string', 'string' ],
@@ -251,9 +250,7 @@ export default {
         [
           this.solicitationData['user_has_state_id'],
           this.transitionManualId,
-          null,
-          'Solicitado',
-          'O aluno solicitou a orientação ao orientador: ' + advisorTableD[advisorSelected][1]
+          null
         ]);
 
       if(!vreturn || !vreturn['ok']){
@@ -275,7 +272,7 @@ export default {
         this.$root.renderMsg(
           'ok',
           'Solicitação realizada!',
-          'Aguarde a aprovação do orientador para iniciar o processo de colet de assinaturas.',
+          'Aguarde a aprovação do orientador para iniciar o processo de coleta de assinaturas.',
           function () { pageContext.$root.renderView('home'); }
         );
       }

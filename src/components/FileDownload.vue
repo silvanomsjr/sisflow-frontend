@@ -89,6 +89,7 @@ export default {
 <style scoped>
 
 .fileDownloadWrapper{
+  font-size: var(--font-size-normal);
   width: 100%;
   border-radius: 1px;
   border: 2px solid rgb(203,203,203);

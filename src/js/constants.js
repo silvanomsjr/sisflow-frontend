@@ -9,6 +9,7 @@ const DYNAMIC_CSS_VARS = [
   { 'label': '--color-gray3', 'value': 'rgb(167,167,167)' }, 
   { 'label': '--color-lightblue', 'value': 'rgb(33,150,243)' }, 
   { 'label': '--color-white', 'value': 'rgb(255,255,255)' }, 
+  { 'label': '--font-size-normal', 'value': '17px' }
 ]
 
 // must refactor and remove this vars
@@ -23,15 +24,15 @@ const COLOR_LIGHTBLUE = "rgb(33,150,243)";
 const COLOR_WHITE = "rgb(255,255,255)";
 
 // text font sizes, normal screens
-const TEXT_PAGE_TITLE = "27px";
-const TEXT_TITLE = "22px";
-const TEXT_NORMAL = "18px";
-const TEXT_SMALL = "15px";
+const TEXT_PAGE_TITLE = "22px";
+const TEXT_TITLE = "17px";
+const TEXT_NORMAL = "15px";
+const TEXT_SMALL = "13px";
 
 // text font sizes, small screens
-const SMTEXT_PAGE_TITLE = "25px";
-const SMTEXT_TITLE = "21px";
-const SMTEXT_NORMAL = "17px";
+const SMTEXT_PAGE_TITLE = "23px";
+const SMTEXT_TITLE = "18px";
+const SMTEXT_NORMAL = "16px";
 const SMTEXT_SMALL = "14px";
 
 // interval normal screens to small, used in responsivity

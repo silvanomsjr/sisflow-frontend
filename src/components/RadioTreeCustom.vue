@@ -66,6 +66,7 @@ export default {
 <style scoped>
 
 .radioBox{
+  font-size: var(--font-size-normal);
   display: block;
   width: 100%;
 }

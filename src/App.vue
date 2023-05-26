@@ -305,7 +305,7 @@ export default {
 #pageWrapper {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   font-weight: 500;
-  font-size: 18px;
+  font-size: var(--font-size-normal);
 }
 @media (min-width: 900px) {
   .shownOnlyOnMobile{
