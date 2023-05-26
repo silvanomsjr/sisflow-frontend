@@ -158,6 +158,7 @@ export default {
 
     this.$root.pageName = 'Home';
     this.userProfiles = this.$root.userLoggedData['profile_acronyms'];
+    this.user = this.$root.userLoggedData;
 
     if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
       await this.loadCoordinatorSolTable();
@@ -195,7 +196,8 @@ export default {
             iconName = 'fa-solid fa-pencil';
           }
           else if(pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV") && 
-            solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
+            this.user['user_name'] == solicitation['advisor_name'] && solicitation['state_active'] && 
+            solicitation['state_decision'] == 'Em analise'){
             iconName = 'fa-solid fa-pencil';
           }
           else if(!solicitation['state_active']){
@@ -204,7 +206,7 @@ export default {
 
           this.coordinatorSolTable['content'].push([
             solicitation['student_name'],
-            solicitation['advisor_name'],
+            solicitation['is_accepted_by_advisor'] ? solicitation['advisor_name'] : '---',
             solicitation['solicitation_name'],
             solicitation['state_description'],
             solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/'): '' ,
