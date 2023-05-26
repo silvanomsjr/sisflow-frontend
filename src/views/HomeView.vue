@@ -194,6 +194,10 @@ export default {
             solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
             iconName = 'fa-solid fa-pencil';
           }
+          else if(pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV") && 
+            solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
+            iconName = 'fa-solid fa-pencil';
+          }
           else if(!solicitation['state_active']){
             iconName = 'fa-solid fa-eye';
           }

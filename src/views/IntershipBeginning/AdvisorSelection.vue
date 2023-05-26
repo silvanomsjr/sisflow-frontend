@@ -118,7 +118,7 @@ export default {
       actualPage: 1,
       maxPages: 1,
       startRow: 0,
-      quantityRows: 2,
+      quantityRows: 5,
       advisorName: '',
       cleanIfLessThan3: false,
       pageDisabled: false,
@@ -224,16 +224,16 @@ export default {
 
       if(this.advisorName.length >= 3 || this.cleanIfLessThan3){
         this.actualPage = 1;
-        this.maxPages = 2;
+        this.maxPages = 1;
         this.startRow = 0;
-        this.quantityRows = 2;
-        this.loadAdvisorsTable();
         if(this.advisorName.length < 3){
+          this.advisorName = '';
           this.cleanIfLessThan3 = false;
         }
         else{
           this.cleanIfLessThan3 = true;
         }
+        this.loadAdvisorsTable();
       }
     },
     async doSolicitation(){
