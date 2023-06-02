@@ -48,22 +48,49 @@
       :items="this.advisorDetailsCardItems"
     />
 
-    <div class="pageContentRow">
+    <div class="pageContentRow" v-if="this.historyItems.length > 0">
       <TextCustom
-        margin='0px 0px 15px 0px'
         customFontSize='title'
         display='inline'>
         Documentos
       </TextCustom>
 
-      <div v-for="(tce, index) in tces" :key="index">
-        <FileDownload
-          :id="'download_' + tce['component_id']"
-          ref="pageComp"
-          class="fileD"
-          :titleText="tce['download_label']"
-          :fileName="tce['download_name']"
-          :downloadEndpoint="tce['download_endpoint']"
+      <div v-for="(history, index) in this.historyItems" :key="index">
+        
+        <div v-if="(this.historyItems[0]['download_name'].includes('TcePa') && index == 0) || 
+          (!this.historyItems[0]['download_name'].includes('TcePa') && (index == 0 || index == 1))">
+          <FileDownload
+            :id="'download_' + index"
+            ref="pageDownload"
+            class="fileD"
+            :titleText="history['download_label']"
+            :fileName="history['download_name']"
+            :downloadEndpoint="history['download_endpoint']"
+          />
+        </div>
+        <div v-else-if="this.showHistory">
+          <FileDownload
+            :id="'download_' + index"
+            ref="pageDownload"
+            class="fileD"
+            :titleText="history['download_label']"
+            :fileName="history['download_name']"
+            :downloadEndpoint="history['download_endpoint']"
+          />
+        </div>
+        
+      </div>
+      <div class="center">
+        <ButtonCustom
+          id="btnShowHistory"
+          ref="btnShowHistory"
+          :label="this.showHistory ? 'Esconder histórico' : 'Mostrar histórico'"
+          customTextColor="white"
+          customBackColor="darkblue1"
+          customFontSize="normal"
+          width="50%"
+          padding="3px 20px"
+          @click="this.showHistory = !this.showHistory"
         />
       </div>
       
@@ -179,6 +206,7 @@
 import ButtonCustom from '../../components/ButtonCustom.vue'
 import DetailsCard from '../../components/DetailsCard.vue'
 import HrefCustom from '../../components/HrefCustom.vue'
+import FileDownload from '../../components/FileDownload.vue'
 import FileUpload from '../../components/FileUpload.vue'
 import Requests from '../../js/requests.js'
 import SelectCustom from '../../components/SelectCustom.vue'
@@ -192,6 +220,7 @@ export default {
     ButtonCustom,
     DetailsCard,
     HrefCustom,
+    FileDownload,
     FileUpload,
     SelectCustom,
     TextCustom
@@ -206,6 +235,9 @@ export default {
         { "label": "Sim", "value": true },
         { "label": "Não", "value": false }
       ],
+      historyItems: [],
+      actualHistoryVersion: 1,
+      showHistory: false,
       fileUploadEndpoint: '',
       tcePaTogether: true,
       pageDisabled: false
@@ -238,6 +270,7 @@ export default {
     this.transitions = vreturn['response']['solicitation']['transitions'];
     
     this.loadDetailCards();
+    this.loadHistory();
     this.$root.pageName = 'Processo de assinaturas para início de estágio';
   },
 
@@ -264,6 +297,38 @@ export default {
       ];
     },
 
+    loadHistory(){
+
+      this.historyItems = [];
+      this.actualHistoryVersion = 1;
+      
+      if(this.solicitationData['solicitation_user_data'] && this.solicitationData['solicitation_user_data']['uploads']){
+        let uploads = this.solicitationData['solicitation_user_data']['uploads'];
+        Object.keys(uploads).forEach(uploadName => {
+          if(uploadName.includes('Tce') || uploadName.includes('Pa')){
+
+            let upload = uploads[uploadName];
+            let splitHashTmp = upload['upload_hash_name'].split('_');
+            let splitNameTmp = upload['upload_name'].split('_');
+
+
+            this.historyItems.push({
+              'download_label': `${splitNameTmp[1] == "TcePa" ? "TCE com PA" : splitNameTmp[1].toUpperCase()} enviado por ${splitHashTmp[0].replace(/([A-Z])/g, ' $1').trim()}`,
+              'download_name': `${upload['upload_name']}_${splitHashTmp[0]}`,
+              'download_endpoint': `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${upload['upload_hash_name']}`
+            });
+
+            let version = uploadName.split('_')[0];
+            let versionNumber = Number.parseInt(version.replace('v',''));
+            if(versionNumber + 1 > this.actualHistoryVersion){
+              this.actualHistoryVersion = versionNumber + 1;
+            }
+          }
+        });
+      }
+      this.historyItems.sort((a, b) => b['download_name'].localeCompare(a['download_name']));
+    },
+
     async sendDocs(){
       
       // checks if uploads are valid
@@ -282,20 +347,21 @@ export default {
         }
       }
 
+      // create solicitation data
       let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
       if(this.tcePaTogether){
         solicitationData['uploads'].push({
-          'upload_name' : 'v1_TcePa',
+          'upload_name' : `v${this.actualHistoryVersion}_TcePa`,
           'upload_hash_name' : this.$refs['uploadTcePa'].getFileIHashName()
         });
       }
       else{
         solicitationData['uploads'].push({
-          'upload_name' : 'v1_Tce',
+          'upload_name' : `v${this.actualHistoryVersion}_Tce`,
           'upload_hash_name' : this.$refs['uploadTce'].getFileIHashName()
         });
         solicitationData['uploads'].push({
-          'upload_name' : 'v1_Pa',
+          'upload_name' : `v${this.actualHistoryVersion}_Pa`,
           'upload_hash_name' : this.$refs['uploadPa'].getFileIHashName()
         });
       }
@@ -316,6 +382,7 @@ export default {
         return;
       }
 
+      // send solicitation
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
         [this.solicitationData['user_has_state_id'], transitionId, solicitationData]);
@@ -424,6 +491,11 @@ export default {
 }
 .fileU{
   margin: 10px 0px;
+}
+.center{
+  text-align: center;
+  margin: auto;
+  margin-top: 5px;
 }
 .btnWrapper{
   display: block;
