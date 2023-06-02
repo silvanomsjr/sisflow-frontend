@@ -61,21 +61,17 @@
       />
     </div>
 
-    <div class="pageContentRow" v-if="!this.pageDisabled">
-      <div class='btnWrapper'>
-        <div class='btn'>
-          <ButtonCustom
-            id="btnSendSol"
-            label="Solicitar"
-            customTextColor="white"
-            customBackColor="darkblue1"
-            customFontSize="normal"
-            width="98%"
-            padding="3px 20px"
-            @click="doSolicitation"
-          />
-        </div>
-      </div>
+    <div class="pageContentRow center" v-if="!this.pageDisabled">
+      <ButtonCustom
+        id="btnSendSol"
+        label="Solicitar"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        width="98%"
+        padding="3px 20px"
+        @click="doSolicitation"
+      />
     </div>
   </div>
 
@@ -104,9 +100,9 @@ export default {
   data() {
     return {
       advisorsTableData: {
-        'titles': [ 'Selecionar', 'Nome', 'Email', 'Quantidade de Orientados' ],
-        'colTypes': [ 'checkbox-single', 'string', 'string', 'string' ],
-        'colWidths': [ '10%', '35%', '35%', '20%' ],
+        'titles': [ 'Selecionar', 'Nome', 'Email' ],
+        'colTypes': [ 'checkbox-single', 'string', 'string' ],
+        'colWidths': [ '20%', '40%', '40%' ],
         'content': []
       },
       advisorSelectedTableData: {
@@ -199,8 +195,7 @@ export default {
           this.advisorsTableData['content'].push([
             '',
             advisor['user_name'],
-            advisor['institutional_email'],
-            advisor['advisor_students']
+            advisor['institutional_email']
           ]);
         });
         this.tblAdvisorKey++;
@@ -312,6 +307,11 @@ export default {
 }
 .radioSolicitation{
   margin: 20px 0px;
+}
+.center{
+  text-align: center;
+  margin: auto;
+  margin-top: 5px;
 }
 @media (min-width: 900px) {
   .btnWrapper{

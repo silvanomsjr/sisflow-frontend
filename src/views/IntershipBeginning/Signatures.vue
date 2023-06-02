@@ -203,7 +203,7 @@
         width="30%"
         padding="3px 20px"
         margin="0px 5px"
-        @click="this.$root.renderView('home');"
+        @click="this.$root.renderView('home')"
       />
     </div>
   </div>

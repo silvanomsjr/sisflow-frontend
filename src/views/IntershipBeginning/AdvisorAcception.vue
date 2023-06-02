@@ -21,47 +21,45 @@
       :items="this.studentDetailsCardItems"
     />
 
-    <div class="pageContentRow" v-if="!this.pageDisabled">
+    <div class="pageContentRow center" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnConfirm"
         ref="btnConfirm"
-        label="Confirmar"
+        label="Aceitar"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="100%"
+        width="30%"
         padding="3px 20px"
+        margin="0px 5px"
         @click="doAccept()"
       />
-    </div>
-
-    <div class="pageContentRow" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnReject"
         ref="btnReject"
-        label="Rejeitar"
+        label="Recusar"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="100%"
+        width="30%"
         padding="3px 20px"
+        margin="0px 5px"
         @click="doReject()"
+      />
+      <ButtonCustom v-if="!this.pageDisabled"
+        id="btnCancel"
+        ref="btnCancel"
+        label="Voltar"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        width="30%"
+        padding="3px 20px"
+        margin="0px 5px"
+        @click="this.$root.renderView('home')"
       />
     </div>
 
-    <div class="pageContentRow" v-if="!this.pageDisabled">
-      <ButtonCustom
-        id="btnCancel"
-        ref="btnCancel"
-        label="Cancelar"
-        customTextColor="white"
-        customBackColor="darkblue1"
-        customFontSize="normal"
-        width="100%"
-        padding="3px 20px"
-        @click="doCancel()"
-      />
-    </div>
   </div>
 
 </template>
@@ -157,10 +155,6 @@ export default {
     async doReject(){
       await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Indeferido')['id']);
     },
-    // cancel solicitation by advisor
-    async doCancel(){
-      await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Cancelado pelo orientador')['id']);
-    },
     // do Solicitation
     async doSolicitation(transitionId){
       let vreturn = await this.$root.doRequest(
@@ -207,6 +201,11 @@ export default {
   margin-bottom: 15px;
 }
 .textC, .tableC{
+  margin-top: 5px;
+}
+.center{
+  text-align: center;
+  margin: auto;
   margin-top: 5px;
 }
 .btnWrapper{
