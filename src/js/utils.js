@@ -65,6 +65,10 @@ function handleFontType(fontType){
     fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_NORMAL : Cst.SMTEXT_NORMAL;
     fontWeight = '600';
   }
+  else if(fontType == 'title_bold'){
+    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_TITLE : Cst.SMTEXT_TITLE;
+    fontWeight = '600';
+  }
   else{
     fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_NORMAL : Cst.SMTEXT_NORMAL;
     fontWeight = '500';

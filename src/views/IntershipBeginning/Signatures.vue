@@ -48,9 +48,9 @@
       :items="this.advisorDetailsCardItems"
     />
 
-    <div class="pageContentRow" v-if="this.historyItems.length > 0">
+    <div class="pageContentRow boxWrapper" v-if="this.historyItems.length > 0">
       <TextCustom
-        customFontSize='title'
+        customFontSize='title_bold'
         display='inline'>
         Documentos
       </TextCustom>
@@ -96,95 +96,103 @@
       
     </div>
 
-    <div class="pageContentRow">
+    <div class="pageContentRow boxWrapper">
       <TextCustom
         margin='0px 0px 15px 0px'
-        customFontSize='title'
+        customFontSize='title_bold'
         display='inline'>
         Enviar documentos
       </TextCustom>
+
+      <SelectCustom 
+        ref="selectTcePa"
+        class="selectC"
+        labelValue="TCE com PA incluso?" 
+        :items="this.selectTcePaItems"
+        @optClicked="(optValue) => this.tcePaTogether = optValue"
+      />
+
+      <div v-if="this.tcePaTogether">
+        <FileUpload 
+          id="tcepa" 
+          ref="uploadTcePa"
+          class="fileU"
+          titleText="Envie o TCE com PA"
+          fileContentName="TCEPA"
+          :uploadEndpoint="this.fileUploadEndpoint"
+        />
+      </div>
+      <div v-else>
+        <FileUpload 
+          id="tce" 
+          ref="uploadTce"
+          class="fileU"
+          titleText="Envie o TCE"
+          fileContentName="TCE"
+          :uploadEndpoint="this.fileUploadEndpoint"
+        />
+        <FileUpload 
+          id="pa" 
+          ref="uploadPa"
+          class="fileU"
+          titleText="Envie o PA"
+          fileContentName="PA"
+          :uploadEndpoint="this.fileUploadEndpoint"
+        />
+      </div>
+
+      <div class="pageContentRow center">
+        <ButtonCustom
+          id="btnSendDocs"
+          ref="btnSendDocs"
+          label="Enviar documentos"
+          customTextColor="white"
+          customBackColor="darkblue1"
+          customFontSize="normal"
+          width="45%"
+          padding="3px 20px"
+          margin="0px 20px"
+          @click="sendDocs()"
+        />
+        <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
+          id="btnSendDocsSesta"
+          ref="btnSendDocsSesta"
+          label="SESTA: Enviar e deferir"
+          customTextColor="white"
+          customBackColor="darkblue1"
+          customFontSize="normal"
+          width="45%"
+          padding="3px 20px"
+          @click="sendDocs(true)"
+        />
+      </div>
     </div>
 
-    <SelectCustom 
-      ref="selectTcePa"
-      class="selectC"
-      labelValue="TCE com PA incluso?" 
-      :items="this.selectTcePaItems"
-      @optClicked="(optValue) => this.tcePaTogether = optValue"
-    />
-
-    <div v-if="this.tcePaTogether">
-      <FileUpload 
-        id="tcepa" 
-        ref="uploadTcePa"
-        class="fileU"
-        titleText="Envie o TCE com PA"
-        fileContentName="TCEPA"
-        :uploadEndpoint="this.fileUploadEndpoint"
-      />
-    </div>
-    <div v-else>
-      <FileUpload 
-        id="tce" 
-        ref="uploadTce"
-        class="fileU"
-        titleText="Envie o TCE"
-        fileContentName="TCE"
-        :uploadEndpoint="this.fileUploadEndpoint"
-      />
-      <FileUpload 
-        id="pa" 
-        ref="uploadPa"
-        class="fileU"
-        titleText="Envie o PA"
-        fileContentName="PA"
-        :uploadEndpoint="this.fileUploadEndpoint"
-      />
-    </div>
-
-    <div class="pageContentRow">
-      <ButtonCustom
-        id="btnSendDocs"
-        ref="btnSendDocs"
-        label="Enviar documentos"
-        customTextColor="white"
-        customBackColor="darkblue1"
-        customFontSize="normal"
-        width="100%"
-        padding="3px 20px"
-        @click="sendDocs()"
-      />
-    </div>
-
-    <div class="pageContentRow">
+    <div class="pageContentRow center">
       <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
-        id="btnConfirm"
-        ref="btnConfirm"
-        label="Confirmar"
+        id="btnDefer"
+        ref="btnDefer"
+        label="Deferir"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="100%"
+        width="30%"
         padding="3px 20px"
-        @click="doAccept()"
+        margin="0px 5px"
+        @click="doDeferWithoutSend()"
       />
-    </div>
-
-    <div class="pageContentRow">
       <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
         id="btnReject"
         ref="btnReject"
-        label="Rejeitar"
+        label="Indeferir"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="100%"
+        width="30%"
         padding="3px 20px"
+        margin="0px 5px"
         @click="doReject()"
       />
-    </div>
-
-    <div class="pageContentRow">
       <ButtonCustom
         id="btnReturn"
         ref="btnReturn"
@@ -192,10 +200,19 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="100%"
+        width="30%"
         padding="3px 20px"
+        margin="0px 5px"
         @click="doReturn()"
       />
+    </div>
+
+    <div class="pageContentRow" >
+      
+    </div>
+
+    <div class="pageContentRow">
+      
     </div>
   </div>
 
@@ -329,7 +346,7 @@ export default {
       this.historyItems.sort((a, b) => b['download_name'].localeCompare(a['download_name']));
     },
 
-    async sendDocs(){
+    async sendDocs(sestaProfile = false){
       
       // checks if uploads are valid
       if(this.tcePaTogether && this.$refs['uploadTcePa'].getFileIHashName() == null){
@@ -368,7 +385,10 @@ export default {
 
       // parse transition id
       let transitionId = null;
-      if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
+      if(sestaProfile){
+        transitionId = this.transitions.find(tr => tr['transition_name'] == 'SESTA: send docs and defer')['id'];
+      }
+      else if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
         transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: send docs loopback')['id'];
       }
       else if(this.userProfiles.includes('ADV')){
@@ -382,10 +402,24 @@ export default {
         return;
       }
 
+      await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId, solicitationData);
+    },
+
+    async doDeferWithoutSend(){
+      let transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: defer')['id'];
+      await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId);
+    },
+
+    async doReject(){
+      let transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: reject')['id'];
+      await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId);
+    },
+
+    async sendSolicitation(userHasStateId, transitionId, solicitationData=null){
       // send solicitation
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
-        [this.solicitationData['user_has_state_id'], transitionId, solicitationData]);
+        [userHasStateId, transitionId, solicitationData]);
 
       if(!vreturn || !vreturn['ok']){
         this.$root.renderRequestErrorMsg(vreturn, [
@@ -411,64 +445,6 @@ export default {
           function () { pageContext.$root.renderView('home'); }
         );
       }
-    },
-
-    // accept solicitation by advisor
-    async doAccept(){
-      let vreturn = await this.$root.doRequest( 
-        Requests.patchSolicitationAdvisor,
-        [ this.solicitationData['user_has_solicitation_id'], this.advisorData['siape'] ]);
-
-      if(!vreturn || !vreturn['ok']){
-        this.$root.renderRequestErrorMsg(vreturn, []);
-        return;
-      }
-      await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Deferido')['id']);
-    },
-    // reject solicitation by advisor
-    async doReject(){
-      await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Indeferido')['id']);
-    },
-    // cancel solicitation by advisor
-    async doCancel(){
-      await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Cancelado pelo orientador')['id']);
-    },
-    async doReturn(){
-      this.$root.renderView('home');
-    },
-    // do Solicitation
-    async doSolicitation(transitionId){
-      let vreturn = await this.$root.doRequest(
-        Requests.postSolicitation,
-        [
-          this.solicitationData['user_has_state_id'],
-          transitionId,
-          null
-        ]);
-
-      if(!vreturn || !vreturn['ok']){
-        this.$root.renderRequestErrorMsg(vreturn, [
-          'Usuario não possui o estado da solicitação!',
-          'Edição a solicitação não permitida!',
-          'Perfil editor a solicitação inválido!',
-          'Edição do estado da solicitação não permitido!',
-          'Esta etapa da solicitação não foi iniciada!',
-          'Esta etapa da solicitação foi expirada!',
-          'Esta solicitação já foi realizada!',
-          'Input da solicitação está faltando!',
-          'Anexo da solicitação está faltando!',
-          'Transição não encontrada para este estado!']);
-        return;
-      }
-      else{
-        let pageContext = this;
-        this.$root.renderMsg(
-          'ok',
-          'Solicitação realizada!',
-          'O aluno agora pode iniciar o processo de assinaturas.',
-          function () { pageContext.$root.renderView('home'); }
-        );
-      }
     }
   }
 }
@@ -479,6 +455,11 @@ export default {
 
 .pageContentRow{
   margin: 10px 0px;
+}
+.boxWrapper{
+  margin: 15px;
+  padding: 20px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .textC, .tableC{
   margin-top: 5px;
