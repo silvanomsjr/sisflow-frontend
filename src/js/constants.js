@@ -9,7 +9,7 @@ const DYNAMIC_CSS_VARS = [
   { 'label': '--color-gray3', 'value': 'rgb(167,167,167)' }, 
   { 'label': '--color-lightblue', 'value': 'rgb(33,150,243)' }, 
   { 'label': '--color-white', 'value': 'rgb(255,255,255)' }, 
-  { 'label': '--font-size-normal', 'value': '17px' },
+  { 'label': '--font-size-normal', 'value': '16px' },
   { 'label': '--font-size-title', 'value': '20px' }
 ]
 
@@ -26,9 +26,9 @@ const COLOR_WHITE = "rgb(255,255,255)";
 
 // text font sizes, normal screens
 const TEXT_PAGE_TITLE = "22px";
-const TEXT_TITLE = "19px";
-const TEXT_NORMAL = "17px";
-const TEXT_SMALL = "15px";
+const TEXT_TITLE = "20px";
+const TEXT_NORMAL = "16px";
+const TEXT_SMALL = "14px";
 
 // text font sizes, small screens
 const SMTEXT_PAGE_TITLE = "23px";
