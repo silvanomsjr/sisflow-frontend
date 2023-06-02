@@ -48,15 +48,45 @@
       :items="this.advisorDetailsCardItems"
     />
 
+    <div class="pageContentRow">
+      <TextCustom
+        margin='0px 0px 15px 0px'
+        customFontSize='title'
+        display='inline'>
+        Documentos
+      </TextCustom>
+
+      <div v-for="(tce, index) in tces" :key="index">
+        <FileDownload
+          :id="'download_' + tce['component_id']"
+          ref="pageComp"
+          class="fileD"
+          :titleText="tce['download_label']"
+          :fileName="tce['download_name']"
+          :downloadEndpoint="tce['download_endpoint']"
+        />
+      </div>
+      
+    </div>
+
+    <div class="pageContentRow">
+      <TextCustom
+        margin='0px 0px 15px 0px'
+        customFontSize='title'
+        display='inline'>
+        Enviar documentos
+      </TextCustom>
+    </div>
+
     <SelectCustom 
       ref="selectTcePa"
       class="selectC"
       labelValue="TCE com PA incluso?" 
       :items="this.selectTcePaItems"
-      @optClicked="(optValue) => this.showTcePaTogether = optValue"
+      @optClicked="(optValue) => this.tcePaTogether = optValue"
     />
 
-    <div v-if="this.showTcePaTogether">
+    <div v-if="this.tcePaTogether">
       <FileUpload 
         id="tcepa" 
         ref="uploadTcePa"
@@ -69,7 +99,7 @@
     <div v-else>
       <FileUpload 
         id="tce" 
-        ref="uploadTcePa"
+        ref="uploadTce"
         class="fileU"
         titleText="Envie o TCE"
         fileContentName="TCE"
@@ -77,7 +107,7 @@
       />
       <FileUpload 
         id="pa" 
-        ref="uploadTcePa"
+        ref="uploadPa"
         class="fileU"
         titleText="Envie o PA"
         fileContentName="PA"
@@ -87,6 +117,20 @@
 
     <div class="pageContentRow">
       <ButtonCustom
+        id="btnSendDocs"
+        ref="btnSendDocs"
+        label="Enviar documentos"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        width="100%"
+        padding="3px 20px"
+        @click="sendDocs()"
+      />
+    </div>
+
+    <div class="pageContentRow">
+      <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
         id="btnConfirm"
         ref="btnConfirm"
         label="Confirmar"
@@ -100,7 +144,7 @@
     </div>
 
     <div class="pageContentRow">
-      <ButtonCustom
+      <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
         id="btnReject"
         ref="btnReject"
         label="Rejeitar"
@@ -115,15 +159,15 @@
 
     <div class="pageContentRow">
       <ButtonCustom
-        id="btnCancel"
-        ref="btnCancel"
-        label="Cancelar"
+        id="btnReturn"
+        ref="btnReturn"
+        label="Voltar"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
         width="100%"
         padding="3px 20px"
-        @click="doCancel()"
+        @click="doReturn()"
       />
     </div>
   </div>
@@ -163,7 +207,7 @@ export default {
         { "label": "Não", "value": false }
       ],
       fileUploadEndpoint: '',
-      showTcePaTogether: true,
+      tcePaTogether: true,
       pageDisabled: false
     }
   },
@@ -187,6 +231,7 @@ export default {
       this.$root.renderView('home');
       return;
     }
+    console.log(vreturn);
     this.solicitationData = vreturn['response']['solicitation'];
     this.studentData = vreturn['response']['student'];
     this.advisorData = vreturn['response']['advisor'];
@@ -218,6 +263,89 @@ export default {
         { "label": "Telefone", "value": this.advisorData["phone"] }
       ];
     },
+
+    async sendDocs(){
+      
+      // checks if uploads are valid
+      if(this.tcePaTogether && this.$refs['uploadTcePa'].getFileIHashName() == null){
+        this.$root.renderMsg('warn', 'Anexo TCE com PA está faltando', '');
+        return;
+      }
+      else if(!this.tcePaTogether){
+        if(this.$refs['uploadTce'].getFileIHashName() == null){
+          this.$root.renderMsg('warn', 'Anexo TCE está faltando', '');
+          return;
+        }
+        else if(this.$refs['uploadPa'].getFileIHashName() == null){
+          this.$root.renderMsg('warn', 'Anexo Pa está faltando', '');
+          return;
+        }
+      }
+
+      let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
+      if(this.tcePaTogether){
+        solicitationData['uploads'].push({
+          'upload_name' : 'v1_TcePa',
+          'upload_hash_name' : this.$refs['uploadTcePa'].getFileIHashName()
+        });
+      }
+      else{
+        solicitationData['uploads'].push({
+          'upload_name' : 'v1_Tce',
+          'upload_hash_name' : this.$refs['uploadTce'].getFileIHashName()
+        });
+        solicitationData['uploads'].push({
+          'upload_name' : 'v1_Pa',
+          'upload_hash_name' : this.$refs['uploadPa'].getFileIHashName()
+        });
+      }
+
+      // parse transition id
+      let transitionId = null;
+      if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
+        transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: send docs loopback')['id'];
+      }
+      else if(this.userProfiles.includes('ADV')){
+        transitionId = this.transitions.find(tr => tr['transition_name'] == 'ADV: send docs loopback')['id'];
+      }
+      else if(this.userProfiles.includes('STU')){
+        transitionId = this.transitions.find(tr => tr['transition_name'] == 'STU: send docs loopback')['id'];
+      }
+      if(!transitionId){
+        this.$root.renderMsg('warn', 'Id de transição inválido, se o erro persisitir contatar a coordenação de estágios', '');
+        return;
+      }
+
+      let vreturn = await this.$root.doRequest(
+        Requests.postSolicitation,
+        [this.solicitationData['user_has_state_id'], transitionId, solicitationData]);
+
+      if(!vreturn || !vreturn['ok']){
+        this.$root.renderRequestErrorMsg(vreturn, [
+          'Usuario não possui o estado da solicitação!',
+          'Edição a solicitação não permitida!',
+          'Perfil editor a solicitação inválido!',
+          'Edição do estado da solicitação não permitido!',
+          'Esta etapa da solicitação não foi iniciada!',
+          'Esta etapa da solicitação foi expirada!',
+          'Esta solicitação já foi realizada!',
+          'Input da solicitação está faltando!',
+          'Anexo da solicitação está faltando!']);
+        return;
+      }
+      else{
+        let pageContext = this;
+        this.$root.renderMsg(
+          'ok',
+          'Documentos enviados!',
+          this.userProfiles.includes('ADM') ? 
+            'Aguarde as outras partes envolvidas ou finalize o processo de assinaturas' :
+            'Aguarde a assinatura e validação dos documentos',
+          function () { pageContext.$root.renderView('home'); }
+        );
+      }
+    },
+
     // accept solicitation by advisor
     async doAccept(){
       let vreturn = await this.$root.doRequest( 
@@ -237,6 +365,9 @@ export default {
     // cancel solicitation by advisor
     async doCancel(){
       await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Cancelado pelo orientador')['id']);
+    },
+    async doReturn(){
+      this.$root.renderView('home');
     },
     // do Solicitation
     async doSolicitation(transitionId){
@@ -280,7 +411,7 @@ export default {
 <style scoped>
 
 .pageContentRow{
-  margin-bottom: 20px;
+  margin: 10px 0px;
 }
 .textC, .tableC{
   margin-top: 5px;
