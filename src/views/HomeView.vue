@@ -191,16 +191,16 @@ export default {
         vreturnCoor['response'].forEach(solicitation => {
 
           let iconName = null;
-          if(pageContext.userProfiles.includes("COO") && solicitation['profile_acronyms'].includes("COO") && 
+          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("COO") && solicitation['profile_acronyms'].includes("COO") && 
             solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
             iconName = 'fa-solid fa-pencil';
           }
-          else if(pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV") && 
+          else if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV") && 
             this.user['user_name'] == solicitation['advisor_name'] && solicitation['state_active'] && 
             solicitation['state_decision'] == 'Em analise'){
             iconName = 'fa-solid fa-pencil';
           }
-          else if(!solicitation['state_active']){
+          else if(!solicitation['state_active'] || !solicitation['profile_acronyms']){
             iconName = 'fa-solid fa-eye';
           }
 
@@ -245,13 +245,16 @@ export default {
         vreturnAdv['response'].forEach(solicitation => {
 
           let iconName = null;
-          if(pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV")){
+          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV")){
             if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
               iconName = 'fa-solid fa-pencil';
             }
             else{
               iconName = 'fa-solid fa-eye';
             }
+          }
+          else if(!solicitation['profile_acronyms']){
+            iconName = 'fa-solid fa-eye';
           }
 
           this.advisorSolTable['content'].push([
@@ -294,13 +297,16 @@ export default {
         vreturnStud['response'].forEach(solicitation => {
 
           let iconName = null;
-          if(pageContext.userProfiles.includes("STU") && solicitation['profile_acronyms'].includes("STU")){
+          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("STU") && solicitation['profile_acronyms'].includes("STU")){
             if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
               iconName = 'fa-solid fa-pencil';
             }
             else{
               iconName = 'fa-solid fa-eye';
             }
+          }
+          else if(!solicitation['profile_acronyms']){
+            iconName = 'fa-solid fa-eye';
           }
 
           this.studentSolTable['content'].push([

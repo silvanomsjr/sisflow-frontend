@@ -96,7 +96,7 @@
       
     </div>
 
-    <div class="pageContentRow boxWrapper">
+    <div class="pageContentRow boxWrapper" v-if="!this.pageDisabled">
       <TextCustom
         margin='0px 0px 15px 0px'
         customFontSize='title_bold'
@@ -169,7 +169,7 @@
     </div>
 
     <div class="pageContentRow center">
-      <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
+      <ButtonCustom v-if="!this.pageDisabled && (this.userProfiles.includes('ADM') || this.userProfiles.includes('COO'))"
         id="btnDefer"
         ref="btnDefer"
         label="Deferir"
@@ -181,7 +181,7 @@
         margin="0px 5px"
         @click="doDeferWithoutSend()"
       />
-      <ButtonCustom v-if="this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')"
+      <ButtonCustom v-if="!this.pageDisabled && (this.userProfiles.includes('ADM') || this.userProfiles.includes('COO'))"
         id="btnReject"
         ref="btnReject"
         label="Indeferir"
@@ -203,16 +203,8 @@
         width="30%"
         padding="3px 20px"
         margin="0px 5px"
-        @click="doReturn()"
+        @click="this.$root.renderView('home');"
       />
-    </div>
-
-    <div class="pageContentRow" >
-      
-    </div>
-
-    <div class="pageContentRow">
-      
     </div>
   </div>
 
@@ -280,11 +272,25 @@ export default {
       this.$root.renderView('home');
       return;
     }
-    console.log(vreturn);
     this.solicitationData = vreturn['response']['solicitation'];
     this.studentData = vreturn['response']['student'];
     this.advisorData = vreturn['response']['advisor'];
     this.transitions = vreturn['response']['solicitation']['transitions'];
+
+    this.pageDisabled = false;
+    if(this.solicitationData['decision'] != 'Em analise'){
+      this.pageDisabled = true;
+    }
+    else if(this.solicitationData['state_profile_editor_acronyms']){
+      let tmpBool = true;
+      let acronyms = this.solicitationData['state_profile_editor_acronyms'].split(',');
+      acronyms.forEach(acronym => {
+        if(this.$root.userLoggedData['profile_acronyms'].includes(acronym)){
+          tmpBool = false;
+        }
+      });
+      this.pageDisabled = tmpBool;
+    }
     
     this.loadDetailCards();
     this.loadHistory();
