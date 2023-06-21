@@ -4,6 +4,7 @@ import SignView from '../views/SignView.vue'
 import HomeView from '../views/HomeView.vue'
 import DSolicitationView from '../views/DynamicSolicitationView.vue'
 
+import IntBeginCoordinatorAcception from '../views/IntershipBeginning/CoordinatorAcception.vue'
 import IntBeginAdvisorSelection from '../views/IntershipBeginning/AdvisorSelection.vue'
 import IntBeginAdvisorAcception from '../views/IntershipBeginning/AdvisorAcception.vue'
 import IntBeginSignatures from '../views/IntershipBeginning/Signatures.vue'
@@ -35,7 +36,13 @@ const routes = [
     path: '/solicitation',
     name: 'solicitation',
     component: DSolicitationView,
-    meta: { allowedUsers: 'DYNAMIC' }
+    meta: { allowedUsers: 'ALL' }
+  },
+  {
+    path: '/interbegin/coordinatoracception',
+    name: 'interbegin-coordinatoracception',
+    component: IntBeginCoordinatorAcception,
+    meta: { allowedUsers: 'ALL' }
   },
   {
     path: '/interbegin/advisorselection',

@@ -334,7 +334,6 @@ export default {
             let splitHashTmp = upload['upload_hash_name'].split('_');
             let splitNameTmp = upload['upload_name'].split('_');
 
-
             this.historyItems.push({
               'download_label': `${splitNameTmp[1] == "TcePa" ? "TCE com PA" : splitNameTmp[1].toUpperCase()} enviado por ${splitHashTmp[0].replace(/([A-Z])/g, ' $1').trim()}`,
               'download_name': `${upload['upload_name']}_${splitHashTmp[0]}`,
