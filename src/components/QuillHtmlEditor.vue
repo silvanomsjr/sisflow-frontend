@@ -31,6 +31,9 @@ export default {
   },
 
   methods: {
+    getBodyHTML(){
+      return this.$refs.quillEditor.getHTML();
+    },
     setBodyHTML(htmlString){
       this.$refs.quillEditor.setHTML(htmlString);
     }

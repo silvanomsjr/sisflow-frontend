@@ -30,7 +30,7 @@
       :fileName="this.vinculoE['download_name']" :downloadEndpoint="this.vinculoE['download_endpoint']"
     />
 
-    <ReasonBox v-if="this.pageLoaded" :userHasStateId="this.userHasStateId"/>
+    <ReasonBox v-if="this.pageLoaded" :userHasStateId="this.userHasStateId" ref='reasonBox'/>
 
     <div class="pageContentRow center" v-if="!this.pageDisabled">
       <ButtonCustom id="btnConfirm" ref="btnConfirm" 
@@ -190,7 +190,31 @@ export default {
     },
     // reject solicitation by coordinator
     async doReject(){
+
+      let mailBody = this.$refs.reasonBox.getMailTemplateHtml();
+
+      if(mailBody && mailBody != "" && mailBody != "<p><br></p>"){
+        await this.sendMail(mailBody);
+      }
       await this.doSolicitation(this.transitions.find(ts => ts['transition_decision'] == 'Indeferido')['id']);
+    },
+    // send mail
+    async sendMail(mailBody){
+      let vreturn = await this.$root.doRequest(
+        Requests.postSendMail,
+        [
+          this.solicitationData['user_has_state_id'],
+          'Solicitação de inicio de estágio indeferida',
+          mailBody,
+          true,
+          false,
+          false
+        ]);
+
+      if(!vreturn || !vreturn['ok']){
+        this.$root.renderRequestErrorMsg(vreturn, []);
+        return;
+      }
     },
     // do Solicitation
     async doSolicitation(transitionId){

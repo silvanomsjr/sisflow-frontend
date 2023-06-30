@@ -349,9 +349,38 @@ async function getReasons(token_jwt, args){
     'class_names': args[2],
     'reason_id': args[3]
   });
-  console.log(querystring);
 
   let vreturn = await baseRequestFBody(myHeaders, `reasons${querystring}`);
+  return vreturn;
+}
+
+async function postSendMail(token_jwt, args){
+  
+  let userHasStateId = args[0];
+  let mailSubject = args[1];
+  let mailBody = args[2];
+  let isSentToStudent = args[3];
+  let isSentToAdvisor = args[4];
+  let isSentToCoordinator = args[5];
+
+  var myHeaders = {
+    method: 'POST',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'user_has_state_id': userHasStateId,
+      'mail_subject': mailSubject,
+      'mail_body': mailBody,
+      'is_sent_to_student': isSentToStudent,
+      'is_sent_to_advisor': isSentToAdvisor,
+      'is_sent_to_coordinator': isSentToCoordinator
+    })
+  }
+
+  let vreturn = await baseRequestFBody(myHeaders, 'sendmail');
   return vreturn;
 }
 
@@ -370,5 +399,6 @@ export default{
   postSolicitation,
   putSolicitationAdvisor,
   patchSolicitationAdvisor,
-  getReasons
+  getReasons,
+  postSendMail
 }

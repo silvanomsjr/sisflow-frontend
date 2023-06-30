@@ -70,6 +70,9 @@ export default {
   mounted(){},
 
   methods: {
+    getMailBodyHTML(){
+      return this.$refs.quillHtml.getBodyHTML();
+    },
     setMailBodyHTML(htmlString){
       this.$refs.quillHtml.setBodyHTML(htmlString);
     }

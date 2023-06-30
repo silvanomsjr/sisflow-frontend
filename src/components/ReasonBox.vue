@@ -215,6 +215,10 @@ export default {
       });
     },
 
+    getMailTemplateHtml(){
+      return this.$refs.mailTemplateEditor.getMailBodyHTML();
+    },
+
     setMailTemplateHtml(reasonId, checkValue){
       
       // set reason check value
