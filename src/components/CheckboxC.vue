@@ -24,6 +24,14 @@ export default {
   props: {
     id: String,
     name: String,
+    initialValue: {
+      default: false,
+      type: Boolean
+    }
+  },
+
+  mounted() {
+    document.getElementById(this.id).checked = this.initialValue;
   },
 
   methods: {

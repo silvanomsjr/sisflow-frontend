@@ -26,6 +26,14 @@ export default {
     return {}
   },
 
-  mounted(){}
+  mounted(){
+    this.setBodyHTML(this.initialHtmlString);
+  },
+
+  methods: {
+    setBodyHTML(htmlString){
+      this.$refs.quillEditor.setHTML(htmlString);
+    }
+  }
 }
 </script>

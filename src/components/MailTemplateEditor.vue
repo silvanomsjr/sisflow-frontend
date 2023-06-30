@@ -16,7 +16,7 @@
                     <tr>
                       <td>
                         <h1>Sisges</h1>
-                        <QuillHtmlEditor/>
+                        <QuillHtmlEditor ref='quillHtml'/>
                       </td>
                     </tr>
                   </table>
@@ -50,11 +50,11 @@
 
 <script>
 
-import QuillHtmlEditor from '../components/QuillHtmlEditor.vue'
+import QuillHtmlEditor from './QuillHtmlEditor.vue'
 
 export default {
 
-  name: 'MailBodyEditor',
+  name: 'MailTemplateEditor',
 
   components: {
     QuillHtmlEditor
@@ -67,7 +67,13 @@ export default {
     return {}
   },
 
-  mounted(){}
+  mounted(){},
+
+  methods: {
+    setMailBodyHTML(htmlString){
+      this.$refs.quillHtml.setBodyHTML(htmlString);
+    }
+  }
 }
 </script>
 

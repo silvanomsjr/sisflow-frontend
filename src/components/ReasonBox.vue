@@ -44,6 +44,8 @@
           :name="this.id + 'reasonCheckbox' + index"
           class="boxReasonElementCheck"
           ref='reasonCheckbox'
+          :initialValue="reason['reason_selected'] == true"
+          @checkBoxClicked="(checkValue) => this.setMailTemplateHtml(reason['reason_id'], checkValue)"
         />
         <span v-html="reason['reason_inner_html']"/>
       </div>
@@ -58,7 +60,7 @@
       </TextCustom>
     </div>
 
-    <MailBodyEditor/>
+    <MailTemplateEditor ref='mailTemplateEditor'/>
 
   </div>
 
@@ -68,7 +70,7 @@
 
 import CheckboxC from './CheckboxC.vue'
 import InputCustom from './InputCustom.vue'
-import MailBodyEditor from './MailBodyEditor.vue'
+import MailTemplateEditor from './MailTemplateEditor.vue'
 import SelectMultipleC from './SelectMultipleC.vue'
 import TextCustom from './TextCustom.vue'
 import Requests from '../js/requests.js'
@@ -80,7 +82,7 @@ export default {
   components: {
     CheckboxC,
     InputCustom,
-    MailBodyEditor,
+    MailTemplateEditor,
     SelectMultipleC,
     TextCustom
   },
@@ -123,7 +125,8 @@ export default {
       rawReasons: [],
       reasons: [],
       selectedContent: '',
-      selectedReasonClasses: ''
+      selectedReasonClasses: '',
+      selectedReasons: {}
     }
   },
 
@@ -204,6 +207,33 @@ export default {
       }
       else{
         this.reasons = this.rawReasons;
+      }
+
+      // set checkbox values
+      this.reasons.forEach( (reason) => {
+        reason['reason_selected'] = this.selectedReasons[reason['reason_id']] == true;
+      });
+    },
+
+    setMailTemplateHtml(reasonId, checkValue){
+      
+      // set reason check value
+      this.selectedReasons[reasonId] = checkValue;
+
+      // foreach possible reason inserts to email if it is checked
+      let mailHTML = "";
+      this.rawReasons.forEach( (reason) => {
+        if(this.selectedReasons[reason['reason_id']]){
+          mailHTML += `<li>${reason['reason_inner_html']}</li>`;
+        }
+      });
+
+      // set mail body html
+      if(mailHTML != ""){
+        this.$refs.mailTemplateEditor.setMailBodyHTML(`<p>Solicitação <b>indeferida</b> pelos seguintes motivos:</p><p><ul>${mailHTML}</ul></p>`);
+      }
+      else{
+        this.$refs.mailTemplateEditor.setMailBodyHTML("");
       }
     }
   }
