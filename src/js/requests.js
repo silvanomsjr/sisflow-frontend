@@ -333,6 +333,28 @@ async function patchSolicitationAdvisor(token_jwt, args){
   return vreturn;
 }
 
+async function getReasons(token_jwt, args){
+
+  let myHeaders = {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${token_jwt}`
+    }
+  }
+
+  let querystring = parseQueryStrFromObj({
+    'user_has_state_id': args[0],
+    'reason_content': args[1],
+    'class_names': args[2],
+    'reason_id': args[3]
+  });
+  console.log(querystring);
+
+  let vreturn = await baseRequestFBody(myHeaders, `reasons${querystring}`);
+  return vreturn;
+}
+
 export default{
   loginDo,
   signMakeCode,
@@ -347,5 +369,6 @@ export default{
   putSolicitation,
   postSolicitation,
   putSolicitationAdvisor,
-  patchSolicitationAdvisor
+  patchSolicitationAdvisor,
+  getReasons
 }
