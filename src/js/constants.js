@@ -10,8 +10,8 @@ const DYNAMIC_CSS_VARS = [
   { 'label': '--color-gray3', 'value': 'rgb(167,167,167)' }, 
   { 'label': '--color-lightblue', 'value': 'rgb(33,150,243)' }, 
   { 'label': '--color-white', 'value': 'rgb(255,255,255)' }, 
-  { 'label': '--font-size-normal', 'value': '16px' },
-  { 'label': '--font-size-title', 'value': '20px' }
+  { 'label': '--font-size-normal', 'value': '14px' },
+  { 'label': '--font-size-title', 'value': '18px' }
 ]
 
 // must refactor and remove this vars
@@ -26,16 +26,16 @@ const COLOR_LIGHTBLUE = "rgb(33,150,243)";
 const COLOR_WHITE = "rgb(255,255,255)";
 
 // text font sizes, normal screens
-const TEXT_PAGE_TITLE = "22px";
-const TEXT_TITLE = "20px";
-const TEXT_NORMAL = "16px";
-const TEXT_SMALL = "14px";
+const TEXT_PAGE_TITLE = "20px";
+const TEXT_TITLE = "18px";
+const TEXT_NORMAL = "14px";
+const TEXT_SMALL = "12px";
 
 // text font sizes, small screens
-const SMTEXT_PAGE_TITLE = "23px";
-const SMTEXT_TITLE = "20px";
-const SMTEXT_NORMAL = "18px";
-const SMTEXT_SMALL = "16px";
+const SMTEXT_PAGE_TITLE = "21px";
+const SMTEXT_TITLE = "18px";
+const SMTEXT_NORMAL = "16px";
+const SMTEXT_SMALL = "14px";
 
 // interval normal screens to small, used in responsivity
 const SM_VIEWPORT_SIZE = 900;

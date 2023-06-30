@@ -49,6 +49,17 @@
       </div>
     </div>
 
+    <div class="boxMailHeader">
+      <TextCustom customFontSize='title_bold' display="block">
+        {{ this.boxMailTitle }}
+      </TextCustom>
+      <TextCustom customFontSize='small' display="block" padding="10px" customColor="black2">
+        {{ this.boxInnerMailTitle }}
+      </TextCustom>
+    </div>
+
+    <MailBodyEditor/>
+
   </div>
 
 </template>
@@ -57,6 +68,7 @@
 
 import CheckboxC from './CheckboxC.vue'
 import InputCustom from './InputCustom.vue'
+import MailBodyEditor from './MailBodyEditor.vue'
 import SelectMultipleC from './SelectMultipleC.vue'
 import TextCustom from './TextCustom.vue'
 import Requests from '../js/requests.js'
@@ -68,6 +80,7 @@ export default {
   components: {
     CheckboxC,
     InputCustom,
+    MailBodyEditor,
     SelectMultipleC,
     TextCustom
   },
@@ -92,6 +105,14 @@ export default {
     },
     boxInnerTitle: {
       default: 'Selecione os motivos abaixo. Você pode filtrar os motivos que aparecem pela sua classe ou pelo seu conteúdo.',
+      type: String
+    },
+    boxMailTitle: {
+      default: 'E-mail',
+      type: String
+    },
+    boxInnerMailTitle: {
+      default: 'Visualize o e-mail resultante abaixo. Você pode editar o corpo do template antes de enviar.',
       type: String
     }
   },
@@ -202,11 +223,14 @@ export default {
   text-align: left;
   width: 100%;
 }
-.boxHeader{
+.boxHeader, .boxMailHeader{
   background-color: var(--color-gray1);
   border-bottom: 0.5px solid var(--color-gray2);
   color: var(--color-black2);
   padding: 15px;
+}
+.boxMailHeader{
+  border-top: 0.5px solid var(--color-gray2);
 }
 .boxFilters{
   border-bottom: 0.5px solid var(--color-gray2);
