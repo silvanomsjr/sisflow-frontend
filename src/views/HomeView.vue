@@ -24,6 +24,11 @@
           solicitações.
         </p>
       </TextCustom>
+      <ReasonBox id="selectMultiple"
+        :userHasStateId="1"
+        ref="selectMultiple"
+        :items="this.typeSelectItems"
+      />
     </div>
 
     <div class="pageContentRow" v-if="this.coordinatorSolTable['content'].length > 0">
@@ -99,6 +104,7 @@
 import ButtonCustom from '../components/ButtonCustom.vue'
 import Requests from '../js/requests.js'
 import RadioTreeCustom from '../components/RadioTreeCustom.vue'
+import ReasonBox from '../components/ReasonBox.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
 //import Utils from '../js/utils.js'
@@ -110,6 +116,7 @@ export default {
   components: {
     ButtonCustom,
     RadioTreeCustom,
+    ReasonBox,
     TableCustom,
     TextCustom
   },
@@ -150,7 +157,21 @@ export default {
           ]
         }
       ],
-      btnSendSolDisabled: true
+      btnSendSolDisabled: true,
+      typeSelectItems: [
+        {'label': 'lbl1', 'value': 'val1'},
+        {'label': 'lbl2', 'value': 'val2'},
+        {'label': 'lbl3', 'value': 'val3'},
+        {'label': 'lbl4', 'value': 'val4'},
+        {'label': 'lbl5', 'value': 'val5'},
+        {'label': 'lbl6', 'value': 'val6'},
+        {'label': 'lbl7', 'value': 'val7'},
+        {'label': 'lbl8', 'value': 'val8'},
+        {'label': 'lbl9', 'value': 'val9'},
+        {'label': 'lbl10', 'value': 'val10'},
+        {'label': 'lbl11', 'value': 'val11'},
+        {'label': 'lbl12', 'value': 'val12'}
+      ]
     }
   },
 

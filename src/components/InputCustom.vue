@@ -155,10 +155,18 @@ export default {
       }
     },
     getV(){
-      return this.$refs[this.id + '_PC'].value;
+      if(this.$refs[this.id + '_PC'].value != this.placeholder){
+        return this.$refs[this.id + '_PC'].value;
+      }
+      return "";
     },
     setV(value){
-      this.$refs[this.id + '_PC'].value = value;
+      if(value){
+        this.$refs[this.id + '_PC'].value = value;
+      }
+      else{
+        this.$refs[this.id + '_PC'].value = "";
+      }
     }
   }
 }
@@ -169,10 +177,13 @@ export default {
 <style scoped>
 
 .inputcustom{
-  border-radius: 5px;
+  border-radius: 2px;
 }
 .inputcustom:focus{
   outline-width: 0;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--color-black-placeholder);
 }
 
 </style>
