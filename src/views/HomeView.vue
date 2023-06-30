@@ -24,11 +24,6 @@
           solicitações.
         </p>
       </TextCustom>
-      <ReasonBox id="selectMultiple"
-        :userHasStateId="1"
-        ref="selectMultiple"
-        :items="this.typeSelectItems"
-      />
     </div>
 
     <div class="pageContentRow" v-if="this.coordinatorSolTable['content'].length > 0">
@@ -104,7 +99,6 @@
 import ButtonCustom from '../components/ButtonCustom.vue'
 import Requests from '../js/requests.js'
 import RadioTreeCustom from '../components/RadioTreeCustom.vue'
-import ReasonBox from '../components/ReasonBox.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
 //import Utils from '../js/utils.js'
@@ -116,7 +110,6 @@ export default {
   components: {
     ButtonCustom,
     RadioTreeCustom,
-    ReasonBox,
     TableCustom,
     TextCustom
   },

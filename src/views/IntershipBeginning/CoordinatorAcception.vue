@@ -30,6 +30,8 @@
       :fileName="this.vinculoE['download_name']" :downloadEndpoint="this.vinculoE['download_endpoint']"
     />
 
+    <ReasonBox v-if="this.pageLoaded" :userHasStateId="this.userHasStateId"/>
+
     <div class="pageContentRow center" v-if="!this.pageDisabled">
       <ButtonCustom id="btnConfirm" ref="btnConfirm" 
         label="Deferir" customTextColor="white" customBackColor="darkblue1" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px" 
@@ -52,6 +54,7 @@
 import ButtonCustom from '../../components/ButtonCustom.vue'
 import DetailsCard from '../../components/DetailsCard.vue'
 import FileDownload from '../../components/FileDownload.vue'
+import ReasonBox from '../../components/ReasonBox.vue'
 import Requests from '../../js/requests.js'
 import TextCustom from '../../components/TextCustom.vue'
 
@@ -63,6 +66,7 @@ export default {
     ButtonCustom,
     DetailsCard,
     FileDownload,
+    ReasonBox,
     TextCustom
   },
 
@@ -72,7 +76,9 @@ export default {
       histVisual: null,
       vinculoE: null,
       studentDetailsCardItems: [],
-      pageDisabled: false
+      pageDisabled: false,
+      userHasStateId: 0,
+      pageLoaded: false
     }
   },
 
@@ -85,10 +91,10 @@ export default {
       this.$root.renderMsg('error', 'Pagina de solicitação inválida!','', function () { pageContext.$root.renderView('home'); });
       return;
     }
-    let userHasStateId = this.$route.query['user_has_state_id'];
+    this.userHasStateId = this.$route.query['user_has_state_id'];
 
     // request for solicitation data
-    let vreturn = await this.$root.doRequest(Requests.getSolicitation, [userHasStateId]);
+    let vreturn = await this.$root.doRequest(Requests.getSolicitation, [this.userHasStateId]);
     if(!vreturn || !vreturn['ok']){
       this.$root.renderRequestErrorMsg(vreturn, ['Usuario não possui o estado da solicitação!', 'Acesso a solicitação não permitido!']);
       this.$root.renderView('home');
@@ -124,6 +130,7 @@ export default {
 
     this.loadDocs();
     this.$root.pageName = 'Solicitação de inicio de estágio - Verificação de documentação do aluno pela coordenação';
+    this.pageLoaded = true;
   },
 
   methods:{
