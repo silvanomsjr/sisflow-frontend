@@ -2,6 +2,7 @@
 const DYNAMIC_CSS_VARS = [
   { 'label': '--color-black1', 'value': 'rgb(0,0,0)' },
   { 'label': '--color-black2', 'value': 'rgb(54,52,52)' }, 
+  { 'label': '--color-black-placeholder', 'value': 'rgba(0,0,0,0.8)' }, 
   { 'label': '--color-darkblue1', 'value': 'rgb(28,34,86)' }, 
   { 'label': '--color-darkblue2', 'value': 'rgb(39,46,112)' }, 
   { 'label': '--color-gray1', 'value': 'rgb(242,241,241)' }, 

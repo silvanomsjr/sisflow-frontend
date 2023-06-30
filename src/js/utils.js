@@ -28,6 +28,9 @@ function handleColorSelection(colorType){
   if(colorType == 'gray2'){
     return Cst.COLOR_GRAY2;
   }
+  if(colorType == 'gray3'){
+    return Cst.COLOR_GRAY3;
+  }
   if(colorType == 'lightblue'){
     return Cst.COLOR_LIGHTBLUE;
   }
