@@ -325,7 +325,7 @@ export default {
 #pageBackground {
   width: 100%;
   height: 100%;
-  position: absolute;
+  position: fixed;
   background-color: #F0F2F5;
   z-index: -1;
 }

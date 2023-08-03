@@ -2,9 +2,11 @@
 
   <div class="dynamicPageWrapper" v-show="this.createdDone && this.pageData && this.pageData['components']">
 
-    <div v-for="(component) in this.pageData['components']" :key="component['component_order']">
+    <div v-for="(component) in this.pageData['components']" :key="component['component_order']"
+      :class="component['component_type'] == 'button' ? 'buttonComponentWrapper' : ''"
+    >
 
-      <div v-if="component['component_type'] == 'inner_html'"
+      <div v-if="component['component_type'] == 'inner_html'" class="innerHtmlWrapper"
         :id="'inner_html_' + component['component_id']"
         ref="pageComp"
         v-html="component['inner_html']">
@@ -436,6 +438,15 @@ export default {
 
 .dynamicPageWrapper{
   font-size: var(--font-size-normal);
+  text-align: center;
+}
+.innerHtmlWrapper{
+  text-align: left;
+}
+.buttonComponentWrapper{
+  display: inline-block;
+  margin-right: 1%;
+  width: 30%;
 }
 .sendSolicitationWrapper{
   display: block;
@@ -462,4 +473,10 @@ export default {
   width: 100%;
 }
 
+</style>
+
+<style>
+.innerHtmlWrapper, .innerHtmlWrapper > *{
+  list-style-type: circle;
+}
 </style>
