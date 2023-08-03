@@ -6,7 +6,7 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         display='block'>
-        <p>Bem vindo ao Sisges, o sistema de gestão de estagios supervisionados.</p>
+        <p>Bem vindo ao <b>Nome do Sistema</b>, o sistema de gestão do fluxo de estágios supervisionados.</p>
         <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
           à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
           solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
@@ -18,6 +18,9 @@
         </p>
         <p v-else-if="this.userProfiles.includes('ADV')">
           Orientador, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
+        </p>
+        <p v-else-if="this.userProfiles.includes('STU')">
+          Você pode realizar solicitações no sistema para serem encaminhadas à coordenação de estágios e seu professor orientador.
         </p>
         <p v-else>
           Não se esqueça de verificar diariamente seu email institucional e/ou secundário após realizar 
@@ -52,7 +55,7 @@
 
     <div class="pageContentRow" v-if="this.studentSolTable['content'].length > 0">
       <TextCustom
-        customFontSize='title'
+        customFontSize='title_bold'
         margin='20px 0px 5px 0px'
         display='block'>
         Suas solicitações
@@ -64,7 +67,7 @@
 
     <div class="pageContentRow" v-if="this.userProfiles.includes('STU')">
       <TextCustom
-        customFontSize='title'
+        customFontSize='title_bold'
         margin='20px 0px 5px 0px'
         display='block'>
         Solicitar início de estágio
@@ -170,7 +173,7 @@ export default {
 
   async created() {
 
-    this.$root.pageName = 'Home';
+    this.$root.pageName = 'Solicitações';
     this.userProfiles = this.$root.userLoggedData['profile_acronyms'];
     this.user = this.$root.userLoggedData;
 

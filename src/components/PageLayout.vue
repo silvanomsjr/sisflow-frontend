@@ -178,6 +178,7 @@ export default {
     align-items: center;
   }
   .menuContentWrapper {
+    padding: 7px;
     height: calc(100% - 45px);
     text-align: center;
   }

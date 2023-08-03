@@ -78,14 +78,15 @@
             @click="setItemSelected(index);"
             :style="{
               'text-decoration': item.iSelected && item.subItems.length == 0 ? 'underline' : 'none',
-              'font-weight': item.iHover || item.iSelected ? '600' : '500'
+              'font-weight': item.iHover || item.iSelected ? 'bold' : '500'
             }">
 
-            <font-awesome-icon :icon="'fa-solid fa-' + item.faIconName"/>
+            <font-awesome-icon class='itemIcon' :icon="'fa-solid fa-' + item.faIconName"/>
             <TextCustom class='itemTextLabel'
               customColor='inherit'
-              customFontSize="normal"
-              display='inline'>
+              customFontSize="inherit"
+              display='inline'
+              :style="{'font-weight': item.iHover || item.iSelected ? 'bold' : '500'}">
 
               {{ item.label }}
 
@@ -103,14 +104,13 @@
               @click="setSubItemSelected(index, indexS);"
               @mouseover="subItem.sHover=true"
               @mouseleave="subItem.sHover=false"
-              :style="{
-                'text-decoration': item.iSelected && subItem.sSelected ? 'underline' : 'none',
-                'font-weight': subItem.sHover || (item.iSelected && subItem.sSelected) ? '600' : '500'
-              }">
+              :style="{'text-decoration': item.iSelected && subItem.sSelected ? 'underline' : 'none',}">
+
               <TextCustom class='itemTextLabel'
                 customColor='inherit'
                 customFontSize="normal"
-                display='inline'>
+                display='inline'
+                :style="{'font-weight': subItem.sSelected || subItem.sHover ? 'bold' : '500'}">
 
                 {{ subItem.subLabel }}
 
@@ -147,7 +147,7 @@ export default {
   data() {
     return {
       items: [
-        { label: "Home", faIconName: "home", view: 'home', iSelected: true, iHover: false, subItemsShow: false, subItems: [] },
+        { label: "Solicitações", faIconName: "home", view: 'home', iSelected: true, iHover: false, subItemsShow: false, subItems: [] },
         { label: "Areas", faIconName: "users", view: '', iSelected: false, iHover: false, subItemsShow: false, subItems: [ 
           { subLabel: "Aluno", view: 'areastudent', sSelected: false, sHover: false }, 
           { subLabel: "Orientador", view: 'areaadvisor', sSelected: false, sHover: false },
@@ -257,7 +257,7 @@ export default {
   .menuWrapper{
     width: 100%;
     height: 100%;
-    border-radius: 20px;
+    border-radius: 10px;
   }
   .menuWrapper > div{
     padding: 3%;
@@ -324,8 +324,8 @@ export default {
   display: inline;
   vertical-align: middle;
 }
-.itemTextLabel{
-  margin-left: 5px;
+.itemIcon{
+  margin-right: 5px;
 }
 .itemLabelContainer{
   display: inline-block;
