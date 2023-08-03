@@ -1,7 +1,7 @@
 <template>
 
   <div class="wrapper">
-
+    
     <div id="TopUserMenu" class="shownOnlyOnNotMobile">
 
       <div class="TopLeftBox">
@@ -49,33 +49,36 @@
 
     </div>
     
-    <div class="menuBox">
-      <PageMenu
-        @modifyUserInfo="this.modifyUserInfo()"
-        @userSignOut="this.userSignOut()"
-      />
-    </div>
-    
-    <div class="contentBox">
+    <div class="menuContentWrapper">
+      <div class="menuBox">
+        <PageMenu
+          @modifyUserInfo="this.modifyUserInfo()"
+          @userSignOut="this.userSignOut()"
+        />
+      </div>
+      
+      <div class="contentBox">
 
-      <div>
-        <div class="pageTitle">
-          <TextCustom
-            customColor='darkblue1'
-            customFontSize='page_title'>
-            {{ this.$root.pageName }}
-          </TextCustom>
+        <div>
+          <div class="pageTitle">
+            <TextCustom
+              customColor='darkblue1'
+              customFontSize='page_title'>
+              {{ this.$root.pageName }}
+            </TextCustom>
+          </div>
         </div>
-      </div>
 
-      <div class="pageContent"
-        :style="{
-          'background-color': this.white
-        }">
-        <slot></slot>
+        <div class="pageContent"
+          :style="{
+            'background-color': this.white
+          }">
+          <slot></slot>
+        </div>
+      
       </div>
-    
     </div>
+    
   </div>
 
 </template>
@@ -147,6 +150,8 @@ export default {
 
 @media (min-width: 900px) {
   .wrapper{
+    position: absolute;
+    height: 100%;
     width: 100%;
     text-align: center;
   }
@@ -157,6 +162,7 @@ export default {
     display: flex;
     justify-content: space-between;
     line-height: 100%;
+    height: 45px;
     padding: 5px 0px 5px 20px;
   }
   .TopRightBox, .TopLeftBox{
@@ -171,10 +177,17 @@ export default {
     justify-content: center;
     align-items: center;
   }
+  .menuContentWrapper {
+    height: calc(100% - 45px);
+    text-align: center;
+  }
+  .menuContentWrapper > *{
+    vertical-align: middle;
+  }
   .menuBox, .contentBox{
     display: inline-block;
     min-height: 500px;
-    height: 99vh;
+    height: 100%;
     line-height: normal;
     padding: 0px;
     margin: 0px;
@@ -199,7 +212,7 @@ export default {
 }
 @media (min-width: 900px) {
   .menuBox{
-    height: calc(99vh - 15px);
+    height: calc(100% - 15px);
   }
 }
 @media (max-width: 900px) {

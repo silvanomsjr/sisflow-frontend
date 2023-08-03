@@ -325,11 +325,12 @@ export default {
 #pageBackground {
   width: 100%;
   height: 100%;
-  position: fixed;
+  position: absolute;
   background-color: #F0F2F5;
   z-index: -1;
 }
 #pageWrapper {
+  position: absolute;
   margin: 0px;
   padding: 0px;
   width: 100%;
