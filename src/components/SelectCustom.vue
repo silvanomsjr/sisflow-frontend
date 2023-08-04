@@ -174,8 +174,8 @@ export default {
     },
     setV(value){
 
-      if(!value){
-        this.actualOptSelected = 0;
+      if(value == null){
+        this.actualOptSelected = null;
       }
       else{
         this.items.forEach( (item, index) => {

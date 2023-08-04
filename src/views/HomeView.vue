@@ -85,7 +85,7 @@
             class="solicitationBoxSelect"
             placeholder="Selecione: "
             :items="this.solicitationTypes"
-            @optClicked="(optValue) => {this.selectedSolType=optValue; this.handleOptsClick();}"
+            @optClicked="(optValue) => {this.selectedSolType=optValue; this.handleOptsClick(true);}"
           />
         </div>
       </div>
@@ -379,10 +379,21 @@ export default {
       }
     },
 
-    async handleOptsClick(){
+    handleOptsClick(restartValues=false){
+
+      if(restartValues){
+        this.employmentRelationship = null;
+        this.intershipLocal = null;
+        if(this.$refs.intershipLocalSelect){
+          this.$refs.intershipLocalSelect.setV(null);
+        }
+        if(this.$refs.employmentRelationshipSelect){
+          this.$refs.employmentRelationshipSelect.setV(null);
+        }
+      }
 
       if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
-        this.selectedSolType != null && this.employmentRelationship != null){
+        this.employmentRelationship != null && this.intershipLocal != null){
         this.btnSendSolDisabled = false;
       }
       else if(this.selectedSolType=='Envio de relatório parcial' || this.selectedSolType=='Envio de relatório final'){
@@ -397,7 +408,7 @@ export default {
 
       let solicitationId = null;
       if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
-        this.selectedSolType != null && this.employmentRelationship != null){
+        this.employmentRelationship != null && this.intershipLocal != null){
         solicitationId = 1;
       }
       else if(this.selectedSolType=='Envio de relatório parcial'){
