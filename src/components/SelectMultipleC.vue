@@ -18,7 +18,7 @@
       }"
       @click="this.handleSelClick()">
 
-      {{ this.items && this.items.length > 0 && !this.notShowSelectedLabels ? this.selectedOptsLabels : this.placeholder }}
+      {{ this.items && this.items.length > 0 && !this.notShowSelectedLabels && this.selectedOptsLabels.length > 0 ? this.selectedOptsLabels : this.placeholder }}
       <font-awesome-icon v-if="this.items && this.items.length && this.iconVisible"
         class='selchevron'
         icon='fa-solid fa-chevron-down'

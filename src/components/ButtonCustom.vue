@@ -123,7 +123,7 @@ export default {
 
 .buttoncustom{
   border: 1px solid;
-  border-radius: 25px;
+  border-radius: 1px;
   border: 2px solid rgba(255,255,255,0);
 }
 

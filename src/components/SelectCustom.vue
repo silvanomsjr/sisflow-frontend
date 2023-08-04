@@ -7,7 +7,7 @@
     @focusout='this.handleOutClick()'
     tabindex="0">
 
-    <div class="selectLabelWrapper">
+    <div class="selectLabelWrapper" v-if="this.labelValue != ''">
       {{ this.labelValue }}
     </div>
 
@@ -19,7 +19,7 @@
         :style="{
           'color': this.cFontColor,
           'background-color': this.cBackgroundColor,
-          'border': (this.borderVisible ? '2px solid ' + this.cBorderColor : 'none'),
+          'border': (this.borderVisible ? '1px solid ' + this.cBorderColor : 'none'),
           'border-radius': (this.borderVisible ? '1px' : '0'),
           'padding': this.selectBoxPadding,
           'font-weight': this.cFontWeight,
@@ -27,7 +27,7 @@
         }"
         @click="this.handleSelClick()">
 
-        {{ this.items[this.actualOptSelected].label }}
+        {{ this.actualOptSelected != null ? this.items[this.actualOptSelected].label : this.placeholder }}
         <font-awesome-icon v-if="this.iconVisible && !this.disabled"
           class='selchevron'
           icon='fa-solid fa-chevron-down'
@@ -76,7 +76,7 @@ export default {
     name: String,
     items: Array,
     labelValue: {
-      default: 'Selecione uma das opções:',
+      default: '',
       type: String
     },
     customFontColor:{
@@ -88,15 +88,15 @@ export default {
       type: String
     },
     customHoverFontColor:{
-      default: 'black1',
+      default: 'white',
       type: String
     },
     customHoverBackgroundColor:{
-      default: 'gray1',
+      default: 'darkblue1',
       type: String
     },
     customBorderColor: {
-      default: 'gray2',
+      default: 'gray3',
       type: String
     },
     customFontSize: {
@@ -104,11 +104,11 @@ export default {
       type: String
     },
     initialOptSelected: {
-      default: 0,
+      default: null,
       type: Number
     },
     selectBoxPadding: {
-      default: '3px 7px',
+      default: '6px 10px',
       type: String
     },
     display: {
@@ -123,6 +123,10 @@ export default {
       default: true,
       type: Boolean
     },
+    placeholder: {
+      default: '---',
+      type: String
+    },
     disabled: {
       default: false,
       type: Boolean
@@ -131,7 +135,7 @@ export default {
 
   data() {
     return {
-      actualOptSelected: 0,
+      actualOptSelected: null,
       showOptsT: false,
       selectOptsWidth: 'auto',
       cFontColor: 'black',
@@ -221,16 +225,14 @@ export default {
 .selectWrapper{
   position: relative;
   display: inline-block;
-  text-align: center;
-  width: 100%;
+  text-align: left;
 }
 .selectWrapper > *{
   vertical-align: middle;
 }
 .selectLabelWrapper, .selectBoxWrapper{
   display: block;
-  width: 90%;
-  margin-top: 10px;
+  width: 100%;
 }
 .selectLabelWrapper{
   text-align: left;
@@ -238,7 +240,6 @@ export default {
 }
 .selectBoxWrapper{
   margin: auto;
-  margin-top: 10px
 }
 .selchevron{
   font-size: 11px;
@@ -258,7 +259,7 @@ export default {
   margin: 0px;
   padding: 0px;
   list-style: none;
-  text-align: center;
+  text-align: left;
 }
 .selectOpts ul li{
   padding: 3px 7px;

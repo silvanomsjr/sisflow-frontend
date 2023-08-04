@@ -65,43 +65,83 @@
         :tableData="this.studentSolTable"/>
     </div>
 
-    <div class="pageContentRow" v-if="this.userProfiles.includes('STU')">
-      <TextCustom
-        customFontSize='title_bold'
-        margin='20px 0px 5px 0px'
-        display='block'>
-        Solicitar início de estágio
-      </TextCustom>
+    <div class='solicitationBox' v-if="this.userProfiles.includes('STU')">
 
-      <RadioTreeCustom ref="radioSolicitation" class="radioSolicitation"
-        :options="this.radioOpts" @optSelected="(newValue) => this.handleOptsClick(newValue)"/>
-      
-      <div class='btnWrapper'>
-        <div class='btn'>
-          <ButtonCustom
-            id="btnSendSol"
-            label="Solicitar"
-            customTextColor="white"
-            customBackColor="darkblue1"
-            customFontSize="normal"
-            width="98%"
-            padding="3px 20px"
-            :disabled="this.btnSendSolDisabled"
-            @click="createSolicitation"
+      <div class="solicitationBoxTitle">
+        <TextCustom customFontSize='title_bold' display="block">
+          Realizar Solicitações
+        </TextCustom>
+        <TextCustom customFontSize='small' display="block" padding="10px" customColor="black2">
+          Realize uma solicitação às partes relacionadas selecionando o tipo e preenchendo os campos listados
+        </TextCustom>
+      </div>
+
+      <div class="solicitationBoxItem">
+        <div>
+          <TextCustom customFontSize='normal' display="block" margin="5px 10px 0px 10px">
+            Tipo de solicitação
+          </TextCustom>
+          <SelectCustom id="solicitationTypeSelect" ref='solicitationTypeSelect' name='solicitationType'
+            class="solicitationBoxSelect"
+            placeholder="Selecione: "
+            :items="this.solicitationTypes"
+            @optClicked="(optValue) => {this.selectedSolType=optValue; this.handleOptsClick();}"
           />
         </div>
       </div>
+
+      <div class="solicitationBoxItem" v-if="this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório'">
+        <div>
+          <TextCustom customFontSize='normal' display="block" margin="5px 10px 0px 10px">
+            Modalidade de estágio
+          </TextCustom>
+          <SelectCustom id="intershipLocalSelect" ref='intershipLocalSelect' name='intershipLocal'
+            class="solicitationBoxSelect"
+            placeholder="Selecione: "
+            :items="this.intershipLocals"
+            @optClicked="(optValue) => {this.intershipLocal=optValue; this.handleOptsClick();}"
+          />
+        </div>
+        <div>
+          <TextCustom customFontSize='normal' display="block" margin="5px 10px 0px 10px">
+            Relação de trabalho
+          </TextCustom>
+          <SelectCustom id="employmentRelationshipSelect" ref='employmentRelationshipSelect' name='employmentRelationship'
+            class="solicitationBoxSelect"
+            placeholder="Selecione: "
+            :items="this.employmentRelationships"
+            @optClicked="(optValue) => {this.employmentRelationship=optValue; this.handleOptsClick();}"
+          />
+        </div>
+      </div>
+
+      <div class="solicitationBoxItem">
+        
+        <div class='btnWrapper'>
+          <div class='btn'>
+            <ButtonCustom id="btnSendSol"
+              label="Solicitar"
+              customTextColor="white"
+              customBackColor="darkblue1"
+              customFontSize="normal"
+              width="150px"
+              padding="3px 20px"
+              :disabled="this.btnSendSolDisabled"
+              @click="createSolicitation"
+            />
+          </div>
+        </div>
+
+      </div>
     </div>
-
   </div>
-
 </template>
 
 <script>
 
 import ButtonCustom from '../components/ButtonCustom.vue'
 import Requests from '../js/requests.js'
-import RadioTreeCustom from '../components/RadioTreeCustom.vue'
+import SelectCustom from '../components/SelectCustom.vue'
 import TableCustom from '../components/TableCustom.vue'
 import TextCustom from '../components/TextCustom.vue'
 //import Utils from '../js/utils.js'
@@ -112,7 +152,7 @@ export default {
 
   components: {
     ButtonCustom,
-    RadioTreeCustom,
+    SelectCustom,
     TableCustom,
     TextCustom
   },
@@ -138,36 +178,24 @@ export default {
         'colWidths': [ '18%', '35%', '15%', '10%', '15%', '7%' ],
         'content': []
       },
-      radioOptSelected: '',
-      radioOpts: [
-        { label: 'Estágio obrigatório', value: 'eo',
-          suboptions: [
-            { label: 'Estágio externo com vínculo empregatício', value: 1 },
-            { label: 'Estágio externo', value: 2 }
-          ]
-        },
-        { label: 'Estágio nao obrigatório', value: 'eno',
-          suboptions: [
-            { label: 'Externo', value: 3 },
-            { label: 'Interno', value: 4 }
-          ]
-        }
+      selectedSolType: null,
+      employmentRelationship: null,
+      intershipLocal: null,
+      solicitationTypes: [
+        {'label': 'Início de estágio obrigatório', 'value': 'Início de estágio obrigatório'},
+        {'label': 'Início de estágio não obrigatório', 'value': 'Início de estágio não obrigatório'},
+        {'label': 'Envio de relatório parcial', 'value': 'Envio de relatório parcial'},
+        {'label': 'Envio de relatório final', 'value': 'Envio de relatório final'}
       ],
-      btnSendSolDisabled: true,
-      typeSelectItems: [
-        {'label': 'lbl1', 'value': 'val1'},
-        {'label': 'lbl2', 'value': 'val2'},
-        {'label': 'lbl3', 'value': 'val3'},
-        {'label': 'lbl4', 'value': 'val4'},
-        {'label': 'lbl5', 'value': 'val5'},
-        {'label': 'lbl6', 'value': 'val6'},
-        {'label': 'lbl7', 'value': 'val7'},
-        {'label': 'lbl8', 'value': 'val8'},
-        {'label': 'lbl9', 'value': 'val9'},
-        {'label': 'lbl10', 'value': 'val10'},
-        {'label': 'lbl11', 'value': 'val11'},
-        {'label': 'lbl12', 'value': 'val12'}
-      ]
+      employmentRelationships: [
+        {'label': 'Sem vínculo empregatício', 'value': 'Sem vínculo empregatício'},
+        {'label': 'Com vínculo empregatício', 'value': 'Com vínculo empregatício'}
+      ],
+      intershipLocals: [
+        {'label': 'Externo', 'value': 'Externo'},
+        {'label': 'Interno', 'value': 'Interno'}
+      ],
+      btnSendSolDisabled: true
     }
   },
 
@@ -351,33 +379,44 @@ export default {
       }
     },
 
-    async handleOptsClick(newValue){
+    async handleOptsClick(){
 
-      this.radioOptSelected = newValue;
-
-      if(isNaN(this.radioOptSelected)){
-        this.btnSendSolDisabled = true;
+      if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
+        this.selectedSolType != null && this.employmentRelationship != null){
+        this.btnSendSolDisabled = false;
+      }
+      else if(this.selectedSolType=='Envio de relatório parcial' || this.selectedSolType=='Envio de relatório final'){
+        this.btnSendSolDisabled = false;
       }
       else{
-        this.btnSendSolDisabled = false;
+        this.btnSendSolDisabled = true;
       }
     },
 
     async createSolicitation(){
 
-      if(isNaN(this.radioOptSelected) || !this.radioOptSelected){
+      let solicitationId = null;
+      if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
+        this.selectedSolType != null && this.employmentRelationship != null){
+        solicitationId = 1;
+      }
+      else if(this.selectedSolType=='Envio de relatório parcial'){
+        solicitationId=2;
+      }
+      else if(this.selectedSolType=='Envio de relatório final'){
+        solicitationId=3;
+      }
+      else{
         this.$root.renderMsg('warn', 'Solicitação inválida!', '');
         return;
       }
 
-      let solicitationOpt = parseInt(this.radioOptSelected);
-      
-      if(solicitationOpt < 0 || solicitationOpt > 4){
-        this.$root.renderMsg('warn', 'Solicitação inválida!', '');
+      if(solicitationId>1){
+        this.$root.renderMsg('warn', 'Fluxo desta maquina de estados em desenvolvimento!', '');
         return;
       }
 
-      let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationOpt] );
+      let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationId] );
 
       if(vreturn && vreturn['ok']){
         this.$root.renderView( 'solicitation', { 'user_has_state_id': vreturn['response']['user_has_state_id'] })
@@ -410,13 +449,36 @@ export default {
 .radioSolicitation{
   margin: 20px 0px;
 }
+.solicitationBox{
+  border: 1px solid var(--color-gray2);
+  border-radius: 2px;
+  box-shadow: rgba(0, 0, 0, 0.2) -1px 1px 1px;
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  width: 100%;
+}
+.solicitationBoxTitle{
+  background-color: var(--color-gray1);
+  border-bottom: 0.5px solid var(--color-gray2);
+  color: var(--color-black2);
+  padding: 15px;
+}
+.solicitationBoxItem{
+  border-bottom: 0.5px solid var(--color-gray2);
+  color: var(--color-black2);
+  padding: 5px;
+}
+.solicitationBoxLabel, .solicitationBoxSelect{
+  margin: 5px 10px;
+  width: 300px;
+}
 @media (min-width: 900px) {
   .btnWrapper{
-    text-align: left;
+    text-align: right;
   }
   .btn{
     display: inline-block;
-    width: 40%;
   }
 }
 @media (max-width: 900px) {
