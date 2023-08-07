@@ -438,7 +438,7 @@ export default {
 
 .dynamicPageWrapper{
   font-size: var(--font-size-normal);
-  text-align: center;
+  text-align: right;
 }
 .innerHtmlWrapper{
   text-align: left;
@@ -446,17 +446,16 @@ export default {
 .buttonComponentWrapper{
   display: inline-block;
   margin-right: 1%;
-  width: 30%;
+  width: 200px;
 }
 .sendSolicitationWrapper{
   display: block;
   width: 100%;
-  text-align: center;
+  text-align: right;
   margin-top: 10px;
 }
 .sendSolicitationBtnWrapper{
   display: inline-block;
-  margin: auto;
 }
 @media (min-width: 900px) {
   .sendSolicitationBtnWrapper{
