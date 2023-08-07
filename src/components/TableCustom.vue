@@ -291,6 +291,7 @@ export default {
   width: 100%;
   margin: 0px;
   padding: 0px;
+  box-shadow: rgba(0, 0, 0, 0.2) -1px 1px 1px;
 }
 .prevNextWrapper{
   text-align: center;
@@ -308,10 +309,10 @@ export default {
   text-align: center;
 }
 .titleWrapper{
-  padding: 4px 0px;
+  padding: 12px;
   margin: 0px;
-  border: solid 1px;
-  border-radius: 5px 5px 0px 0px;
+  border: solid 0.2px;
+  border-radius: 2px 2px 0px 0px;
 }
 .titleWrapper > *{
   vertical-align: middle;
@@ -319,7 +320,7 @@ export default {
 .contentWrapper{
   padding: 0px;
   margin: 0px;
-  border: solid 1px;
+  border: solid 0.2px;
 }
 .contentRow{
   display: flex;
@@ -335,13 +336,13 @@ export default {
   word-wrap: break-word;
 }
 .content{
-  border: solid 1px;
+  border: solid 0.2px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .contentBox{
-  border: solid 1px;
+  border: solid 0.2px;
   padding: 10px 20px;
 }
 .contentBoxItem{

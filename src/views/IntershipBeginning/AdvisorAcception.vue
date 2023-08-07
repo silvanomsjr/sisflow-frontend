@@ -21,7 +21,7 @@
       :items="this.studentDetailsCardItems"
     />
 
-    <div class="pageContentRow center" v-if="!this.pageDisabled">
+    <div class="pageContentRow btnWrapper" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnConfirm"
         ref="btnConfirm"
@@ -29,7 +29,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="doAccept()"
@@ -41,7 +41,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="doReject()"
@@ -53,7 +53,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="this.$root.renderView('home')"
@@ -221,7 +221,7 @@ export default {
 }
 @media (min-width: 900px) {
   .btnWrapper{
-    text-align: left;
+    text-align: right;
   }
   .btn{
     display: inline-block;

@@ -3,7 +3,7 @@
   <div class='fileInputWrapper'>
 
     <div style="text-align: left; margin: 10px 0px">
-      <SelectCustom :ref="'selectfileu' + this.id" :labelValue="this.selectLabel" :items="this.selectOpts" :disabled="this.disabled"/>
+      <SelectCustom class="selectC" :ref="'selectfileu' + this.id" :labelValue="this.selectLabel" :items="this.selectOpts" :disabled="this.disabled"/>
     </div>
     
     <div class='fileNLWrapper'>
@@ -306,9 +306,10 @@ export default {
 @media (min-width: 900px) {
   .fileInputName, .labelInput{
     display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 5px;
   }
   .fileInputName{
+    text-align: left;
     width: calc(100% - 160px);
     border-radius: 5px 0px 0px 5px;
   }
@@ -350,6 +351,9 @@ export default {
 .fileIProgress::-webkit-progress-value {
   background-color: rgb(28,34,86);
   border-radius: 7px;
+}
+.selectC{
+  width: 100%;
 }
 
 </style>

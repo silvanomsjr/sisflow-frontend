@@ -159,7 +159,7 @@ export default {
     this.cFontSize = tmp[0];
     this.cFontWeight = tmp[1];
 
-    if(this.initialOptSelected){
+    if(this.initialOptSelected != null){
       this.actualOptSelected = this.initialOptSelected;
     }
   },
@@ -236,7 +236,7 @@ export default {
 }
 .selectLabelWrapper{
   text-align: left;
-  margin-left: 10px;
+  margin-bottom: 5px;
 }
 .selectBoxWrapper{
   margin: auto;

@@ -80,7 +80,7 @@
         </div>
         
       </div>
-      <div class="center">
+      <div class="left">
         <ButtonCustom
           id="btnShowHistory"
           ref="btnShowHistory"
@@ -88,7 +88,7 @@
           customTextColor="white"
           customBackColor="darkblue1"
           customFontSize="normal"
-          width="50%"
+          width="200px"
           padding="3px 20px"
           @click="this.showHistory = !this.showHistory"
         />
@@ -100,7 +100,7 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         customFontSize='title_bold'
-        display='inline'>
+        display='block'>
         Enviar documentos
       </TextCustom>
 
@@ -109,6 +109,7 @@
         class="selectC"
         labelValue="TCE com PA incluso?" 
         :items="this.selectTcePaItems"
+        :initialOptSelected="0"
         @optClicked="(optValue) => this.tcePaTogether = optValue"
       />
 
@@ -141,7 +142,7 @@
         />
       </div>
 
-      <div class="pageContentRow center">
+      <div class="pageContentRow left">
         <ButtonCustom
           id="btnSendDocs"
           ref="btnSendDocs"
@@ -149,7 +150,7 @@
           customTextColor="white"
           customBackColor="darkblue1"
           customFontSize="normal"
-          width="45%"
+          width="200px"
           padding="3px 20px"
           margin="0px 20px"
           @click="sendDocs()"
@@ -161,14 +162,14 @@
           customTextColor="white"
           customBackColor="darkblue1"
           customFontSize="normal"
-          width="45%"
+          width="200px"
           padding="3px 20px"
           @click="sendDocs(true)"
         />
       </div>
     </div>
 
-    <div class="pageContentRow center">
+    <div class="pageContentRow right">
       <ButtonCustom v-if="!this.pageDisabled && (this.userProfiles.includes('ADM') || this.userProfiles.includes('COO'))"
         id="btnDefer"
         ref="btnDefer"
@@ -176,7 +177,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="doDeferWithoutSend()"
@@ -188,7 +189,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="doReject()"
@@ -200,7 +201,7 @@
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="30%"
+        width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="this.$root.renderView('home')"
@@ -473,10 +474,17 @@ export default {
   padding: 10px;
   border-radius: 10px;
   margin: 10px 0px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .fileU{
   margin: 10px 0px;
+}
+.left{
+  text-align: left;
+  margin-top: 5px;
+}
+.right{
+  text-align: right;
+  margin-top: 5px;
 }
 .center{
   text-align: center;

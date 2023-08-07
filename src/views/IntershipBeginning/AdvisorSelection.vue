@@ -61,14 +61,15 @@
       />
     </div>
 
-    <div class="pageContentRow center" v-if="!this.pageDisabled">
+    <div class="pageContentRow btnWrapper" v-if="!this.pageDisabled">
       <ButtonCustom
         id="btnSendSol"
         label="Solicitar"
+        class="btnSendSol"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"
-        width="98%"
+        width="300px"
         padding="3px 20px"
         @click="doSolicitation"
       />
@@ -315,7 +316,7 @@ export default {
 }
 @media (min-width: 900px) {
   .btnWrapper{
-    text-align: left;
+    text-align: right;
   }
   .btn{
     display: inline-block;

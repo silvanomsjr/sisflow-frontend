@@ -286,6 +286,7 @@ export default {
   border-radius: 5px;
 }
 .fileInputName, .labelInput{
+  text-align: left;
   margin-bottom: 5px;
   box-shadow: 1px 1px 4px rgba( 0, 0, 0, 0.3 );
 }
