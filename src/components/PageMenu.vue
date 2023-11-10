@@ -31,7 +31,7 @@
             customColor="white"
             customFontSize='page_title'
             margin='0px 0px 0px 10px'>
-            Sisges
+            SisFlow
           </TextCustom>
         </div>
 
@@ -147,12 +147,12 @@ export default {
   data() {
     return {
       items: [
-        { label: "Solicitações", faIconName: "home", view: 'home', iSelected: true, iHover: false, subItemsShow: false, subItems: [] },
+        { label: "Solicitações", faIconName: "home", view: 'home', iSelected: true, iHover: false, subItemsShow: false, subItems: [] }/*,
         { label: "Areas", faIconName: "users", view: '', iSelected: false, iHover: false, subItemsShow: false, subItems: [ 
           { subLabel: "Aluno", view: 'areastudent', sSelected: false, sHover: false }, 
           { subLabel: "Orientador", view: 'areaadvisor', sSelected: false, sHover: false },
           { subLabel: "Coordenador", view: 'areacoordinator', sSelected: false, sHover: false }
-        ]}
+        ]}*/
       ],
       itemSelected: 0,
       subItemSelected: 0,

@@ -1,7 +1,7 @@
 const base_url = `${process.env.VUE_APP_SERVICE_URL}`
 
 // Used to avoid code duplication on requests
-async function baseRequestFBody(headers, endpoint){
+async function baseRequestHandle(headers, endpoint){
 
   var vreturn = {};
 
@@ -73,7 +73,7 @@ async function loginDo(_, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'login');
+  let vreturn = await baseRequestHandle(myHeaders, 'login');
   return vreturn;
 }
 
@@ -92,7 +92,7 @@ async function signMakeCode(_, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'sign');
+  let vreturn = await baseRequestHandle(myHeaders, 'sign');
   return vreturn;
 }
 
@@ -111,7 +111,7 @@ async function signVerifyCodeData(_, args){
 
   var querystring = `?institutional_email=${insEmail}&validation_code=${valCode}`;
 
-  let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `sign${querystring}`);
   return vreturn;
 }
 
@@ -129,7 +129,7 @@ async function signVerifyCodeToken(_, args){
 
   var querystring = `?acess_token=${token}`;
 
-  let vreturn = await baseRequestFBody(myHeaders, `sign${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `sign${querystring}`);
   return vreturn;
 }
 
@@ -156,7 +156,7 @@ async function signDoWithCode(_, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'sign');
+  let vreturn = await baseRequestHandle(myHeaders, 'sign');
   return vreturn;
 }
 
@@ -176,7 +176,7 @@ async function getAdvisors(token_jwt, args){
     'advisor_name': args[2]
   });
 
-  let vreturn = await baseRequestFBody(myHeaders, `advisors${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `advisors${querystring}`);
   return vreturn;
 }
 
@@ -192,7 +192,7 @@ async function getCoordinatorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'coordinator/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'coordinator/solicitations');
   return vreturn;
 }
 
@@ -208,7 +208,7 @@ async function getAdvisorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'advisor/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'advisor/solicitations');
   return vreturn;
 }
 
@@ -224,7 +224,7 @@ async function getStudentSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'student/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'student/solicitations');
   return vreturn;
 }
 
@@ -241,7 +241,7 @@ async function getSolicitation(token_jwt, args){
   }
   
   var querystring = `?user_has_state_id=${userHasStateId}`;
-  let vreturn = await baseRequestFBody(myHeaders, `solicitation${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `solicitation${querystring}`);
   return vreturn;
 }
 
@@ -261,7 +261,7 @@ async function putSolicitation(token_jwt, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'solicitation');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitation');
   return vreturn;
 }
 
@@ -285,7 +285,7 @@ async function postSolicitation(token_jwt, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'solicitation');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitation');
   return vreturn;
 }
 
@@ -307,7 +307,7 @@ async function putSolicitationAdvisor(token_jwt, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'solicitation/advisor');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitation/advisor');
   return vreturn;
 }
 
@@ -329,7 +329,7 @@ async function patchSolicitationAdvisor(token_jwt, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'solicitation/advisor');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitation/advisor');
   return vreturn;
 }
 
@@ -350,7 +350,7 @@ async function getReasons(token_jwt, args){
     'reason_id': args[3]
   });
 
-  let vreturn = await baseRequestFBody(myHeaders, `reasons${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `reasons${querystring}`);
   return vreturn;
 }
 
@@ -380,7 +380,7 @@ async function postSendMail(token_jwt, args){
     })
   }
 
-  let vreturn = await baseRequestFBody(myHeaders, 'sendmail');
+  let vreturn = await baseRequestHandle(myHeaders, 'sendmail');
   return vreturn;
 }
 

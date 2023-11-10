@@ -15,7 +15,7 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <h1>Sisges</h1>
+                        <h1>SisFlow</h1>
                         <QuillHtmlEditor ref='quillHtml'/>
                       </td>
                     </tr>

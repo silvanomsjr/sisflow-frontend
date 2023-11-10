@@ -6,7 +6,7 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         display='block'>
-        <p>Bem vindo ao <b>Nome do Sistema</b>, o sistema de gestão do fluxo de estágios supervisionados.</p>
+        <p>Bem vindo ao <b>SisFlow</b>, o sistema de gestão de fluxos de estágios da FACOM.</p>
         <p>O sistema foi criado com a finalidade de facilitar as etapas relacionadas 
           à gestão de estágios supervisionados fornecendo a possibilidade de realizar as 
           solicitações às pessoas envolvidas no procedimento de forma centralizada e organizada.</p>
