@@ -3,10 +3,11 @@
   <div id="appWrapper">
     <div id="pageBackground" ></div>
     <div id="pageWrapper">
+
       <!-- Render login and Sign -->
       <router-view v-if="this.createdDone && this.mountedDone && (this.$route.path == '/' || this.$route.path == '/sign')"/>
       
-      <!-- Render other pages -->
+      <!-- Render other Views inside PageLayout -->
       <PageLayout v-else-if="
         this.createdDone &&
         this.mountedDone &&
@@ -59,6 +60,7 @@ export default {
 
   data() {
     return {
+      // logic control vars
       createdDone: false,
       mountedDone: false,
       userLoggedData: null,
@@ -66,8 +68,10 @@ export default {
       userJwtToken: null,
       pageName: '',
 
+      // load modal var
       loadModalEnabled: false,
 
+      // message modal vars
       msgModalEnabled: false,
       msgType: 'ok',
       msgTitle: 'Title',
@@ -105,8 +109,8 @@ export default {
   },
 
   mounted() {
-    // page is only rendered starting dynamic css colors vars
-    this.startCssDynamicColors();
+    // page is only rendered after loading dynamic css colors vars
+    this.startCssDynamicVars();
     this.mountedDone = true;
   },
 
@@ -115,11 +119,11 @@ export default {
     $route(to){
       let viewName = to.name;
 
-      // access non login/sign url without user logged
+      // block access to all Views except login and sign url if the user is not logged
       if( (this.userJwtToken == null || this.userLoggedData == null) && viewName != 'login' && viewName != 'sign' ){
         this.$router.push({ name: 'login' });
       }
-      // verifies if user is allowed to access a page with allowedUsers
+      // if user is logged, verifies if it is allowed to access a page with allowedUsers
       else if(this.userLoggedData && this.$route.meta && this.$route.meta.allowedUsers){
 
         this.userAcessAllowed = this.isUserAllowedForPage(this.userLoggedData, this.$route.meta.allowedUsers);
@@ -135,21 +139,25 @@ export default {
   methods: {
 
     /** Render methods **/
+    // this method is used by to render a View a lot in this project, with or without query params
     renderView(viewName, viewQueryParams = null){
       
-      // no user data, redirect to login
+      // no user data or token redirect to login
       if( (this.userLoggedData == null || this.userJwtToken == null) && viewName != 'login' && viewName != 'sign'){
         this.$router.push({ name: 'login' });
         return;
       }
 
+      // with params
       if(viewQueryParams != null){
         this.$router.push({ name: viewName, query: viewQueryParams });
       }
+      // without
       else{
         this.$router.push({ name: viewName });
       }
     },
+    // used with information modals to wait for user press a button
     async waitRenderMsgButtonPress() {
       let timeout = async ms => new Promise(res => setTimeout(res, ms));
 
@@ -159,10 +167,12 @@ export default {
       }
       this.renderMsgButtonPressed = false;
     },
+    // used with information modals to finish the waiting for user to press a button
     async finishWaitRenderMsgButtonPress(isAccepted){
       this.renderMsgAccepted = isAccepted;
       this.renderMsgButtonPressed = true;
     },
+    // render a message for the user, if awaitForClick the message will await for user click using the previous two methods
     async renderMsg(msgType, msgTitle, msgInfo, msgOkFunction = null, msgAcceptFunction = null, msgRejectFunction = null, awaitForClick = null){
       this.msgType = msgType;
       this.msgTitle = msgTitle;
@@ -180,6 +190,7 @@ export default {
         return this.renderMsgAccepted;
       }
     },
+    // render user not authorized message
     renderUserNotAllowedMsg(){
       let pageContext = this;
       this.renderMsg(
@@ -188,6 +199,7 @@ export default {
         'O usuário não possui permissão para acessar esta pagina.',
         function () { pageContext.renderView('home'); });
     },
+    // render request error message
     renderRequestErrorMsg(vreturn, knownMsgs = null){
 
       var isKnownMsg = false;
@@ -226,9 +238,12 @@ export default {
     },
 
     /** Requests methods **/
+    // the login request sets JWT in the localStorage
     async doLoginRequest(mailV, passV){
 
-      let vreturn = await this.doRequest(Requests.loginDo, [mailV, passV]);
+      let vreturn = await this.doRequest(
+        Requests.loginDo,
+        [mailV, passV]);
 
       if(vreturn && vreturn['ok']){
         let token = vreturn['response'];
@@ -239,6 +254,7 @@ export default {
 
       return vreturn;
     },
+    // other requests are simpler than Login
     async doRequest(requestF, requestArgs, enableLadingModal=true) {
 
       var vreturn = {};
@@ -260,15 +276,15 @@ export default {
     /** **/
 
     /** Other methods */
-
-    startCssDynamicColors(){
+    // loads css global variables
+    startCssDynamicVars(){
       let appWrapper = document.getElementById('appWrapper');
 
       Cst.DYNAMIC_CSS_VARS.forEach(cssVar => {
         appWrapper.style.setProperty(cssVar['label'], cssVar['value']);
       });
     },
-
+    // check if user is allowed to access a page
     isUserAllowedForPage(userData, allowedUsers){
       
       if(!userData){
@@ -289,7 +305,7 @@ export default {
       });
       return allowed;
     },
-
+    // used to signout
     clearLoginData(){
       UserStorage.removeTokenJwt();
       this.userJwtToken = null;
@@ -330,13 +346,19 @@ export default {
   z-index: -1;
 }
 #pageWrapper {
-  position: absolute;
+  position: fixed;
   margin: 0px;
   padding: 0px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   z-index: 1;
+}
+
+@media (max-width: 900px) {
+  #pageWrapper {
+    position: absolute;
+  }
 }
 
 </style>

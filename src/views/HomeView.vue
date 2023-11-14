@@ -427,7 +427,9 @@ export default {
         return;
       }
 
-      let vreturn = await this.$root.doRequest( Requests.putSolicitation, [solicitationId] );
+      let vreturn = await this.$root.doRequest(
+        Requests.putSolicitation,
+        [solicitationId]);
 
       if(vreturn && vreturn['ok']){
         this.$root.renderView( 'solicitation', { 'user_has_state_id': vreturn['response']['user_has_state_id'] })

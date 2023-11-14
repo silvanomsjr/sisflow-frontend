@@ -204,7 +204,7 @@ export default {
     text-align: left;
   }
   .pageContent{
-    min-height: calc(100% - 50px);
+    height: calc(100% - 48px);
     padding: 40px;
     overflow: auto;
     overflow-x: hidden;
