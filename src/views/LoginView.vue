@@ -12,7 +12,7 @@
 
       <div class="logo">
         <ImgLogoUfu/>
-        <TextCustom 
+        <TextCustom
           customColor="darkblue1"
           customFontSize='page_title'>
           SisFlow
