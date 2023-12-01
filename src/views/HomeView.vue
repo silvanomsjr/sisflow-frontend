@@ -442,7 +442,12 @@ export default {
         this.$root.renderView( 'solicitation', { 'user_has_state_id': vreturn['response']['user_has_state_id'] })
       }
       else{
-        this.$root.renderRequestErrorMsg(vreturn, ['Você já possui essa solicitação!']);
+        this.$root.renderRequestErrorMsg(vreturn, [
+          'Dados da solicitação não encontrados',
+          'Você já possui essa solicitação',
+          'Erro ao criar a solicitação do usuário',
+          'Erro ao criar o estado da solicitação do usuário'
+        ]);
       }
     }
   }
