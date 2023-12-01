@@ -1,5 +1,3 @@
-# sisflow
-
 # SisFlow Front-end - Solução da atividade de Término de Conclusão de Curso (TCC)
 
 Esta camada juntamente com o Back-end copõe a solução aplicada na minha monografia da universidade.
