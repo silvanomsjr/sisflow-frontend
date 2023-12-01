@@ -32,9 +32,7 @@ export default {
   },
 
   mounted() {
-
     let divElems = document.querySelectorAll(".lds-ring div");
-
     for(let i = 0; i < divElems.length; i++) {
       divElems[i].style.borderColor = this.darkblue1 + 'transparent transparent transparent';
     }
