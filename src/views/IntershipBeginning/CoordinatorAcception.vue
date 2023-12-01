@@ -177,7 +177,7 @@ export default {
 
             this.vinculoE = {
               'download_name': `Vinculo_${splitHashTmp[1]}_${splitHashTmp[0]}`,
-              'download_endpoint': `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${supload['upload_hash_name']}`
+              'download_endpoint': `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${supload['select_upload_hash_name']}`
             };
           }
         });

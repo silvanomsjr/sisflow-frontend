@@ -33,7 +33,7 @@
     </div>
     
     <!-- desktop version -->
-    <div class="shownOnlyOnNotMobile">
+    <div class="shownOnlyOnNotMobile tableBoxShadow">
       <div class="titleWrapper"
         :style="{
           'font-weight': this.cFontWeightBold,
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Mobile version -->
-    <div class="shownOnlyOnMobile">
+    <div class="shownOnlyOnMobile tableBoxShadow">
 
       <div v-if="this.tableData['content'].length > 0"
         class="contentWrapperMobile">
@@ -291,11 +291,11 @@ export default {
   width: 100%;
   margin: 0px;
   padding: 0px;
-  box-shadow: rgba(0, 0, 0, 0.2) -1px 1px 1px;
 }
 .prevNextWrapper{
   text-align: center;
   margin-bottom: 5px;
+  border: none;
 }
 .prevNextWrapper > *{
   text-align: center;
@@ -316,6 +316,9 @@ export default {
 }
 .titleWrapper > *{
   vertical-align: middle;
+}
+.tableBoxShadow{
+  box-shadow: rgba(0, 0, 0, 0.2) -1px 1px 1px;
 }
 .contentWrapper{
   padding: 0px;

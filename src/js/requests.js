@@ -92,7 +92,7 @@ async function signMakeCode(_, args){
     })
   }
 
-  let vreturn = await baseRequestHandle(myHeaders, 'sign');
+  let vreturn = await baseRequestHandle(myHeaders, 'signup');
   return vreturn;
 }
 
@@ -111,7 +111,7 @@ async function signVerifyCodeData(_, args){
 
   var querystring = `?institutional_email=${insEmail}&validation_code=${valCode}`;
 
-  let vreturn = await baseRequestHandle(myHeaders, `sign${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `signup${querystring}`);
   return vreturn;
 }
 
@@ -129,7 +129,7 @@ async function signVerifyCodeToken(_, args){
 
   var querystring = `?acess_token=${token}`;
 
-  let vreturn = await baseRequestHandle(myHeaders, `sign${querystring}`);
+  let vreturn = await baseRequestHandle(myHeaders, `signup${querystring}`);
   return vreturn;
 }
 
@@ -156,7 +156,7 @@ async function signDoWithCode(_, args){
     })
   }
 
-  let vreturn = await baseRequestHandle(myHeaders, 'sign');
+  let vreturn = await baseRequestHandle(myHeaders, 'signup');
   return vreturn;
 }
 
@@ -192,7 +192,7 @@ async function getCoordinatorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestHandle(myHeaders, 'coordinator/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitations/coordinator');
   return vreturn;
 }
 
@@ -208,7 +208,7 @@ async function getAdvisorSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestHandle(myHeaders, 'advisor/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitations/advisor');
   return vreturn;
 }
 
@@ -224,7 +224,7 @@ async function getStudentSolicitations(token_jwt, args){
     }
   }
 
-  let vreturn = await baseRequestHandle(myHeaders, 'student/solicitations');
+  let vreturn = await baseRequestHandle(myHeaders, 'solicitations/student');
   return vreturn;
 }
 
@@ -270,6 +270,7 @@ async function postSolicitation(token_jwt, args){
   let userHasStateId = args[0];
   let transitionId = args[1];
   let solicitationUserData = args[2] ? args[2] : { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
+  let validateDynamicPageFields = args[3] ? args[3] : 1;
 
   var myHeaders = {
     method: 'POST',
@@ -281,7 +282,8 @@ async function postSolicitation(token_jwt, args){
     body: JSON.stringify({
       'user_has_state_id': userHasStateId,
       'transition_id': transitionId,
-      'solicitation_user_data': solicitationUserData
+      'solicitation_user_data': solicitationUserData,
+      'validate_dynamic_page_fields': validateDynamicPageFields
     })
   }
 

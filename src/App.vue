@@ -210,6 +210,10 @@ export default {
             this.renderMsg('warn', '', vreturn['response']['message']);
             isKnownMsg = true;
           }
+          else if(!isKnownMsg && vreturn['response'] == knownMsg){
+            this.renderMsg('warn', '', vreturn['response']);
+            isKnownMsg = true;
+          }
         });
       }
       
@@ -233,6 +237,7 @@ export default {
             errorMsgs.push(vreturn['method']);
           }
         }
+        errorMsgs.push(vreturn);
         this.renderMsg('error', '', errorMsgs);
       }
     },

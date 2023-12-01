@@ -196,11 +196,11 @@ export default {
         { "label": "Telefone", "value": this.studentData["phone"] }
       ];
       this.advisorDetailsCardItems = [
-        { "label": "Nome", "value": this.advisorData["user_name"] },
-        { "label": "Email institucional", "value": this.advisorData["institutional_email"] },
-        { "label": "Alunos orientados", "value": this.advisorData["advisor_students"] },
-        { "label": "Siape", "value": this.advisorData["siape"] },
-        { "label": "Telefone", "value": this.advisorData["phone"] }
+        { "label": "Nome", "value": this.advisorData ? this.advisorData["user_name"] : null },
+        { "label": "Email institucional", "value": this.advisorData ? this.advisorData["institutional_email"] : null },
+        { "label": "Alunos orientados", "value": this.advisorData ? this.advisorData["advisor_students"] : null },
+        { "label": "Siape", "value": this.advisorData ? this.advisorData["siape"] : null },
+        { "label": "Telefone", "value": this.advisorData ? this.advisorData["phone"] : null }
       ];
     },
     parsePageInput(component){
@@ -365,10 +365,18 @@ export default {
       return null;
     },
     async doSolicitation(dynamicPageComponent){
+
+      let validate_component_fields = dynamicPageComponent == 'Button-Request' || dynamicPageComponent == 'Button-Send' || 
+        dynamicPageComponent == 'Button-Send and Defer' || dynamicPageComponent == 'Button-Defer';
       
-      if(!await this.isComponentsValid()){
-        return;
+      // check components
+      if(validate_component_fields){
+        if(!await this.isComponentsValid()){
+          return;
+        }
       }
+
+      // check transition with the component
       let transitionId = this.getTransitionId(dynamicPageComponent);
       if(transitionId == null){
         this.$root.renderMsg('warn', 'Tipo de transação inválido', 'Caso o erro persista contate a coordenação');
@@ -377,56 +385,78 @@ export default {
 
       let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
 
-      // add all valided component data to solicitationData
-      for(let i = 0; i < this.pageData['components'].length; i++){
-        let queryComponent = this.pageData['components'][i];
-        let pageComponent = this.$refs['pageComp'][i];
+      // only verify if its a aproval transition 
+      if(validate_component_fields){
 
-        if(queryComponent['component_type'] == 'input'){
-          solicitationData['inputs'].push({
-            'input_name' : queryComponent['input_name'],
-            'input_value' : pageComponent.getV()
-          });
-        }
-        else if(queryComponent['component_type'] == 'upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
-          solicitationData['uploads'].push({
-            'upload_name' : queryComponent['upload_name'],
-            'upload_hash_name' : pageComponent.getFileIHashName()
-          });
-        }
-        else if(queryComponent['component_type'] == 'select_upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
-          solicitationData['select_uploads'].push({
-            'select_upload_name' : queryComponent['select_upload_name'],
-            'select_upload_hash_name' : pageComponent.getFileIHashName()
-          });
+        // add all valided component data to solicitationData
+        for(let i = 0; i < this.pageData['components'].length; i++){
+          
+          let queryComponent = this.pageData['components'][i];
+          let pageComponent = this.$refs['pageComp'][i];
+
+          if(queryComponent['component_type'] == 'input'){
+            solicitationData['inputs'].push({
+              'input_name' : queryComponent['input_name'],
+              'input_value' : pageComponent.getV()
+            });
+          }
+          else if(queryComponent['component_type'] == 'upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
+            solicitationData['uploads'].push({
+              'upload_name' : queryComponent['upload_name'],
+              'upload_hash_name' : pageComponent.getFileIHashName()
+            });
+          }
+          else if(queryComponent['component_type'] == 'select_upload' && pageComponent.getFileIHashName() != null && pageComponent.isLoaded()){
+            solicitationData['select_uploads'].push({
+              'select_upload_name' : queryComponent['select_upload_name'],
+              'select_upload_hash_name' : pageComponent.getFileIHashName()
+            });
+          }
         }
       }
-
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
-        [this.solicitationData['user_has_state_id'], transitionId, solicitationData]);
+        [this.solicitationData['user_has_state_id'], transitionId, solicitationData, validate_component_fields ? 1 : 0]);
 
       if(!vreturn || !vreturn['ok']){
         this.$root.renderRequestErrorMsg(vreturn, [
-          'Usuario não possui o estado da solicitação!',
-          'Edição a solicitação não permitida!',
-          'Perfil editor a solicitação inválido!',
-          'Edição do estado da solicitação não permitido!',
-          'Esta etapa da solicitação não foi iniciada!',
-          'Esta etapa da solicitação foi expirada!',
-          'Esta solicitação já foi realizada!',
-          'Input da solicitação está faltando!',
-          'Anexo da solicitação está faltando!']);
+          'Estado do usuário não encontrado',
+          'Dados do usuário inválidos',
+          'Estado do usuário não encontrado',
+          'Transições da solicitação inválidas',
+          'Transição não encontrada para este estado',
+          'Erro ao criar o novo estado da solicitação do usuário',
+          'Erro ao atualizar a solicitação do usuário',
+          'Erro ao atualizar a solicitação do usuário',
+          'Edição a solicitação não permitida, perfil não pertence a solicitação',
+          'Edição a solicitação não permitida, perfil inválido',
+          'Edição a solicitação não permitida, estado diferente do atual',
+          'Edição a solicitação não permitida, a etapa da solicitação não foi iniciada',
+          'Edição a solicitação não permitida, a etapa da solicitação foi expirada',
+          'Edição a solicitação não permitida, a solicitação já foi realizada',
+          'Input da solicitação está faltando',
+          'Anexo da solicitação está faltando']);
         return;
       }
       else{
         let pageContext = this;
-        this.$root.renderMsg(
-          'ok',
-          'Solicitação realizada!',
-          'Aguarde os prazos e verifique seus e-mails para mais atualizações.',
-          function () { pageContext.$root.renderView('home'); }
-        );
+
+        if(validate_component_fields){
+          this.$root.renderMsg(
+            'ok',
+            'Solicitação realizada!',
+            'Aguarde os prazos e verifique seus e-mails para mais atualizações.',
+            function () { pageContext.$root.renderView('home'); }
+          );
+        }
+        else{
+          this.$root.renderMsg(
+            'ok',
+            'Solicitação rejeitada!',
+            'Mais informações são encaminhadas por e-mail.',
+            function () { pageContext.$root.renderView('home'); }
+          );
+        }
       }
     }
   }

@@ -40,6 +40,7 @@
 
 
 import TextCustom from '../components/TextCustom.vue'
+import UserStorage from '../js/userStorage.js'
 import Utils from '../js/utils.js'
 
 export default {
@@ -189,6 +190,8 @@ export default {
         pageContext.setLabelEnabled();
       });
 
+      // set header with Authorization jwt token and send
+      xhr.setRequestHeader('Authorization', `Bearer ${UserStorage.getTokenJwt()}`)
       xhr.send(payload);
     },
 

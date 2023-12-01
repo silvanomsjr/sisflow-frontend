@@ -91,6 +91,7 @@
       </div>
 
       <div class="solicitationBoxItem" v-if="this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório'">
+        <!--
         <div>
           <TextCustom customFontSize='normal' display="block" margin="5px 10px 0px 10px">
             Modalidade de estágio
@@ -102,7 +103,8 @@
             @optClicked="(optValue) => {this.intershipLocal=optValue; this.handleOptsClick();}"
           />
         </div>
-        <div>
+        -->
+        <div v-if="this.selectedSolType=='Início de estágio obrigatório'">
           <TextCustom customFontSize='normal' display="block" margin="5px 10px 0px 10px">
             Relação de trabalho
           </TextCustom>
@@ -183,13 +185,11 @@ export default {
       intershipLocal: null,
       solicitationTypes: [
         {'label': 'Início de estágio obrigatório', 'value': 'Início de estágio obrigatório'},
-        {'label': 'Início de estágio não obrigatório', 'value': 'Início de estágio não obrigatório'},
-        {'label': 'Envio de relatório parcial', 'value': 'Envio de relatório parcial'},
-        {'label': 'Envio de relatório final', 'value': 'Envio de relatório final'}
+        {'label': 'Início de estágio não obrigatório', 'value': 'Início de estágio não obrigatório'}
       ],
       employmentRelationships: [
-        {'label': 'Sem vínculo empregatício', 'value': 'Sem vínculo empregatício'},
-        {'label': 'Com vínculo empregatício', 'value': 'Com vínculo empregatício'}
+        {'label': 'Com vínculo empregatício', 'value': 'Com vínculo empregatício'},
+        {'label': 'Sem vínculo empregatício', 'value': 'Sem vínculo empregatício'}
       ],
       intershipLocals: [
         {'label': 'Externo', 'value': 'Externo'},
@@ -233,42 +233,46 @@ export default {
         let pageContext = this;
         pageContext.coordinatorSolTable['content'] = [];
 
-        vreturnCoor['response'].forEach(solicitation => {
+        vreturnCoor['response']['solicitations'].forEach(solicitation => {
+          solicitation['states'].forEach(state => {
 
-          let iconName = null;
-          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("COO") && solicitation['profile_acronyms'].includes("COO") && 
-            solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
-            iconName = 'fa-solid fa-pencil';
-          }
-          else if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV") && 
-            this.user['user_name'] == solicitation['advisor_name'] && solicitation['state_active'] && 
-            solicitation['state_decision'] == 'Em analise'){
-            iconName = 'fa-solid fa-pencil';
-          }
-          else if(!solicitation['state_active'] || !solicitation['profile_acronyms']){
-            iconName = 'fa-solid fa-eye';
-          }
+            // set icon name
+            let iconName = null;
+            if(state['state_profile_acronyms'] && pageContext.userProfiles.includes("COO") && state['state_profile_acronyms'].includes("COO") && 
+              state['state_active'] && state['state_decision'] == 'Em analise'){
+              iconName = 'fa-solid fa-pencil';
+            }
+            else if(state['state_profile_acronyms'] && pageContext.userProfiles.includes("ADV") && state['state_profile_acronyms'].includes("ADV") && 
+              this.user['user_name'] == solicitation['advisor_name'] && state['state_active'] && 
+              state['state_decision'] == 'Em analise'){
+              iconName = 'fa-solid fa-pencil';
+            }
+            else if(!state['state_active'] || !state['state_profile_acronyms']){
+              iconName = 'fa-solid fa-eye';
+            }
 
-          this.coordinatorSolTable['content'].push([
-            solicitation['student_name'],
-            solicitation['is_accepted_by_advisor'] ? solicitation['advisor_name'] : '---',
-            solicitation['solicitation_name'],
-            solicitation['state_description'],
-            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/'): '' ,
-            solicitation['state_decision'],
-            solicitation['state_reason'],
-            {
-              'iconName' : iconName,
-              'iconSelFunction' : function(){
-                if(iconName){
-                  pageContext.$root.renderView(
-                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
-                    { 'user_has_state_id': solicitation['user_has_state_id'] 
-                  });
+            // load table data
+            this.coordinatorSolTable['content'].push([
+              solicitation['student_name'],
+              solicitation['is_accepted_by_advisor'] ? solicitation['advisor_name'] : '---',
+              solicitation['solicitation_name'],
+              state['state_description'],
+              state['state_start_datetime'] ? state['state_start_datetime'].replaceAll('-','/'): '' ,
+              state['state_decision'],
+              state['state_reason'],
+              {
+                'iconName' : iconName,
+                'iconSelFunction' : function(){
+                  if(iconName){
+                    pageContext.$root.renderView(
+                      state['state_static_page_name'] ? state['state_static_page_name'] : 'solicitation', 
+                      { 'user_has_state_id': state['user_has_state_id'] 
+                    });
+                  }
                 }
               }
-            }
-          ]);
+            ]);
+          });
         });
       }
       else{
@@ -287,40 +291,44 @@ export default {
         let pageContext = this;
         pageContext.advisorSolTable['content'] = [];
 
-        vreturnAdv['response'].forEach(solicitation => {
+        vreturnAdv['response']['solicitations'].forEach(solicitation => {
+          solicitation['states'].forEach(state => { 
 
-          let iconName = null;
-          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("ADV") && solicitation['profile_acronyms'].includes("ADV")){
-            if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
-              iconName = 'fa-solid fa-pencil';
-            }
-            else{
-              iconName = 'fa-solid fa-eye';
-            }
-          }
-          else if(!solicitation['profile_acronyms']){
-            iconName = 'fa-solid fa-eye';
-          }
-
-          this.advisorSolTable['content'].push([
-            solicitation['student_name'],
-            solicitation['solicitation_name'],
-            solicitation['state_description'],
-            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/'): '',
-            solicitation['state_decision'],
-            solicitation['state_reason'],
-            {
-              'iconName' : iconName,
-              'iconSelFunction' : function(){
-                if(iconName){
-                  pageContext.$root.renderView(
-                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
-                    { 'user_has_state_id': solicitation['user_has_state_id'] 
-                  });
-                }
+            // set icon name
+            let iconName = null;
+            if(state['state_profile_acronyms'] && pageContext.userProfiles.includes("ADV") && state['state_profile_acronyms'].includes("ADV")){
+              if(state['state_active'] && state['state_decision'] == 'Em analise'){
+                iconName = 'fa-solid fa-pencil';
+              }
+              else{
+                iconName = 'fa-solid fa-eye';
               }
             }
-          ]);
+            else if(!state['state_profile_acronyms']){
+              iconName = 'fa-solid fa-eye';
+            }
+
+            // load table data
+            this.advisorSolTable['content'].push([
+              solicitation['student_name'],
+              solicitation['solicitation_name'],
+              state['state_description'],
+              state['state_start_datetime'] ? state['state_start_datetime'].replaceAll('-','/'): '',
+              state['state_decision'],
+              state['state_reason'],
+              {
+                'iconName' : iconName,
+                'iconSelFunction' : function(){
+                  if(iconName){
+                    pageContext.$root.renderView(
+                      state['state_static_page_name'] ? state['state_static_page_name'] : 'solicitation', 
+                      { 'user_has_state_id': state['user_has_state_id'] 
+                    });
+                  }
+                }
+              }
+            ]);
+          });
         });
       }
       else{
@@ -339,39 +347,43 @@ export default {
         let pageContext = this;
         pageContext.studentSolTable['content'] = [];
 
-        vreturnStud['response'].forEach(solicitation => {
-
-          let iconName = null;
-          if(solicitation['profile_acronyms'] && pageContext.userProfiles.includes("STU") && solicitation['profile_acronyms'].includes("STU")){
-            if(solicitation['state_active'] && solicitation['state_decision'] == 'Em analise'){
-              iconName = 'fa-solid fa-pencil';
-            }
-            else{
-              iconName = 'fa-solid fa-eye';
-            }
-          }
-          else if(!solicitation['profile_acronyms']){
-            iconName = 'fa-solid fa-eye';
-          }
-
-          this.studentSolTable['content'].push([
-            solicitation['solicitation_name'],
-            solicitation['state_description'],
-            solicitation['state_start_datetime'] ? solicitation['state_start_datetime'].replaceAll('-','/') : '',
-            solicitation['state_decision'],
-            solicitation['state_reason'],
-            {
-              'iconName' : iconName,
-              'iconSelFunction' : function(){
-                if(iconName){
-                  pageContext.$root.renderView(
-                    solicitation['state_static_page_name'] ? solicitation['state_static_page_name'] : 'solicitation', 
-                    { 'user_has_state_id': solicitation['user_has_state_id'] 
-                  });
-                }
+        vreturnStud['response']['solicitations'].forEach(solicitation => {
+          solicitation['states'].forEach(state => {
+            
+            // set icon name
+            let iconName = null;
+            if(state['state_profile_acronyms'] && pageContext.userProfiles.includes("STU") && state['state_profile_acronyms'].includes("STU")){
+              if(state['state_active'] && state['state_decision'] == 'Em analise'){
+                iconName = 'fa-solid fa-pencil';
+              }
+              else{
+                iconName = 'fa-solid fa-eye';
               }
             }
-          ]);
+            else if(!state['state_profile_acronyms']){
+              iconName = 'fa-solid fa-eye';
+            }
+
+            // load table data
+            this.studentSolTable['content'].push([
+              solicitation['solicitation_name'],
+              state['state_description'],
+              state['state_start_datetime'] ? state['state_start_datetime'].replaceAll('-','/') : '',
+              state['state_decision'],
+              state['state_reason'],
+              {
+                'iconName' : iconName,
+                'iconSelFunction' : function(){
+                  if(iconName){
+                    pageContext.$root.renderView(
+                      state['state_static_page_name'] ? state['state_static_page_name'] : 'solicitation', 
+                      { 'user_has_state_id': state['user_has_state_id'] 
+                    });
+                  }
+                }
+              }
+            ]);
+          });
         });
       }
       else{
@@ -392,11 +404,10 @@ export default {
         }
       }
 
-      if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
-        this.employmentRelationship != null && this.intershipLocal != null){
+      if(this.selectedSolType=='Início de estágio obrigatório' && this.employmentRelationship != null){
         this.btnSendSolDisabled = false;
       }
-      else if(this.selectedSolType=='Envio de relatório parcial' || this.selectedSolType=='Envio de relatório final'){
+      else if(this.selectedSolType=='Início de estágio não obrigatório'){
         this.btnSendSolDisabled = false;
       }
       else{
@@ -407,23 +418,19 @@ export default {
     async createSolicitation(){
 
       let solicitationId = null;
-      if((this.selectedSolType=='Início de estágio obrigatório' || this.selectedSolType=='Início de estágio não obrigatório') && 
-        this.employmentRelationship != null && this.intershipLocal != null){
-        solicitationId = 1;
+      if(this.selectedSolType=='Início de estágio obrigatório' && this.employmentRelationship != null){
+        if(this.employmentRelationship=='Com vínculo empregatício'){
+          solicitationId = 1;
+        }
+        else{
+          solicitationId = 2;
+        }
       }
-      else if(this.selectedSolType=='Envio de relatório parcial'){
-        solicitationId=2;
-      }
-      else if(this.selectedSolType=='Envio de relatório final'){
-        solicitationId=3;
+      else if(this.selectedSolType=='Início de estágio não obrigatório'){
+        solicitationId = 3;
       }
       else{
         this.$root.renderMsg('warn', 'Solicitação inválida!', '');
-        return;
-      }
-
-      if(solicitationId>1){
-        this.$root.renderMsg('warn', 'Fluxo desta maquina de estados em desenvolvimento!', '');
         return;
       }
 

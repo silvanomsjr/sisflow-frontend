@@ -139,12 +139,12 @@ function getJsonKeyTree(json){
   return retString;
 }
 
-function getNameFormated(name){
+function getNameFormated(name, numWords=2){
   let tmp = name.split(' ');
   return ( 
     (tmp[0] ? tmp[0] + ' ' + 
-    (tmp[1] ? ' ' + tmp[1].charAt(0) + '.' + 
-    (tmp[2] ? ' ' + tmp[2].charAt(0) + '.' : '') : '') : name)
+    (tmp[1] && numWords >= 1 ? ' ' + tmp[1].charAt(0) + '.' + 
+    (tmp[2] && numWords >= 2 ? ' ' + tmp[2].charAt(0) + '.' : '') : '') : name)
   ).slice(0, 15);
 }
 

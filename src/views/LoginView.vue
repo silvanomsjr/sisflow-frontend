@@ -177,8 +177,9 @@ export default {
       }
       else{
         this.$root.renderRequestErrorMsg(vreturn, [
-          'Usuário não cadastrado!',
-          'Senha incorreta!']);
+          'Usuário não encontrado no sistema',
+          'Usuário não cadastrado',
+          'Senha incorreta']);
       }
     }
   }

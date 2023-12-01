@@ -5,12 +5,17 @@
       <TextCustom
         margin='0px 0px 15px 0px'
         display='block'>
-        O aluno realizou a solicitação de sua orientação para o estágio na modalidade modalidadeestagio.
+        O seguinte aluno realizou a solicitação orientação para estágio.
       </TextCustom>
       <TextCustom v-if="this.pageDisabled"
         margin='0px 0px 15px 0px'
         display='block'>
         Esta solicitação já foi respondida.
+      </TextCustom>
+      <TextCustom v-else
+        margin='0px 0px 15px 0px'
+        display='block'>
+        Aceite o discente para a possibilidade de continuar o processo de início.
       </TextCustom>
     </div>
 

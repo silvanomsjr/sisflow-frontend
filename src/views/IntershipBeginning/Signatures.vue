@@ -221,6 +221,7 @@ import FileUpload from '../../components/FileUpload.vue'
 import Requests from '../../js/requests.js'
 import SelectCustom from '../../components/SelectCustom.vue'
 import TextCustom from '../../components/TextCustom.vue'
+import Utils from '../../js/utils.js'
 
 export default {
 
@@ -336,7 +337,7 @@ export default {
             let splitNameTmp = upload['upload_name'].split('_');
 
             this.historyItems.push({
-              'download_label': `${splitNameTmp[1] == "TcePa" ? "TCE com PA" : splitNameTmp[1].toUpperCase()} enviado por ${splitHashTmp[0].replace(/([A-Z])/g, ' $1').trim()}`,
+              'download_label': `${splitNameTmp[1] == "TcePa" ? "TCE com PA" : splitNameTmp[1].toUpperCase()} enviado por ${Utils.getNameFormated(splitHashTmp[0].replace(/([A-Z])/g, ' $1').trim(), 1)}`,
               'download_name': `${upload['upload_name']}_${splitHashTmp[0]}`,
               'download_endpoint': `${process.env.VUE_APP_SERVICE_URL}file?bearer=${this.$root.userJwtToken}&file_name=${upload['upload_hash_name']}`
             });
@@ -370,11 +371,15 @@ export default {
         }
       }
 
-      // create solicitation data
+      // create solicitation data and sets final signature file with correct name
       let solicitationData = { 'inputs' : [], 'uploads' : [], 'select_uploads' : [] };
       if(this.tcePaTogether){
         solicitationData['uploads'].push({
           'upload_name' : `v${this.actualHistoryVersion}_TcePa`,
+          'upload_hash_name' : this.$refs['uploadTcePa'].getFileIHashName()
+        });
+        solicitationData['uploads'].push({
+          'upload_name' : 'TCEPA',
           'upload_hash_name' : this.$refs['uploadTcePa'].getFileIHashName()
         });
       }
@@ -387,12 +392,21 @@ export default {
           'upload_name' : `v${this.actualHistoryVersion}_Pa`,
           'upload_hash_name' : this.$refs['uploadPa'].getFileIHashName()
         });
+        solicitationData['uploads'].push({
+          'upload_name' : 'TCE',
+          'upload_hash_name' : this.$refs['uploadTce'].getFileIHashName()
+        });
+        solicitationData['uploads'].push({
+          'upload_name' : 'PA',
+          'upload_hash_name' : this.$refs['uploadPa'].getFileIHashName()
+        });
       }
 
       // parse transition id
       let transitionId = null;
       if(sestaProfile){
-        transitionId = this.transitions.find(tr => tr['transition_name'] == 'SESTA: send docs and defer')['id'];
+        let transitionName = 'SESTA: send docs and defer ' + (this.tcePaTogether ? 'TCE com PA' : 'TCE e PA');
+        transitionId = this.transitions.find(tr => tr['transition_name'] == transitionName)['id'];
       }
       else if(this.userProfiles.includes('ADM') || this.userProfiles.includes('COO')){
         transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: send docs loopback')['id'];
@@ -412,16 +426,23 @@ export default {
     },
 
     async doDeferWithoutSend(){
-      let transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: defer')['id'];
+
+      if(!this.historyItems || this.historyItems.length == 0){
+        this.$root.renderMsg('warn', 'Não foram anexados nenhuma documentação!', '');
+        return
+      }
+      
+      let transitionName = 'COO: defer ' + (this.historyItems[0]['download_name'].includes('TcePa') ? 'TCE com PA' : 'TCE e PA');
+      let transitionId = this.transitions.find(tr => tr['transition_name'] == transitionName)['id'];
       await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId);
     },
 
     async doReject(){
       let transitionId = this.transitions.find(tr => tr['transition_name'] == 'COO: reject')['id'];
-      await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId);
+      await this.sendSolicitation(this.solicitationData['user_has_state_id'], transitionId, null, true);
     },
 
-    async sendSolicitation(userHasStateId, transitionId, solicitationData=null){
+    async sendSolicitation(userHasStateId, transitionId, solicitationData=null, is_reject=false){
       // send solicitation
       let vreturn = await this.$root.doRequest(
         Requests.postSolicitation,
@@ -444,10 +465,10 @@ export default {
         let pageContext = this;
         this.$root.renderMsg(
           'ok',
-          'Documentos enviados!',
-          this.userProfiles.includes('ADM') ? 
+          is_reject ? 'Procedimento indeferido!' : 'Documentos enviados!',
+          is_reject ? '' : (this.userProfiles.includes('ADM') ? 
             'Aguarde as outras partes envolvidas ou finalize o processo de assinaturas' :
-            'Aguarde a assinatura e validação dos documentos',
+            'Aguarde a assinatura e validação dos documentos'),
           function () { pageContext.$root.renderView('home'); }
         );
       }
@@ -463,7 +484,7 @@ export default {
   margin: 10px 0px;
 }
 .boxWrapper{
-  margin: 15px;
+  margin: 0px;
   padding: 20px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
