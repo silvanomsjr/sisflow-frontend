@@ -4,8 +4,8 @@ Esta camada juntamente com o Back-end copõe a solução aplicada na minha monog
 
 ## **Membros**
 
-- Aluno: Vinicius Calixto Rocha
-- Orientador: Prof. Dr. Alexsandro Santos Soares
+- **Aluno**: Vinicius Calixto Rocha
+- **Orientador**: Prof. Dr. Alexsandro Santos Soares
 
 ## **Sobre o repositório**
 
