@@ -1,5 +1,6 @@
 <template>
 
+  <a href="/home">
   <img v-if="this.color_name == 'blue'"
     class="ufuIconLogo"
     src="../assets/ufu_logo_small.png"
@@ -19,6 +20,7 @@
       'height': this.height
     }"
   >
+</a>
 
 </template>
 

@@ -13,7 +13,7 @@
 
       <label :id="this.id + '_L'" class='labelInput' :for="this.id"
         @mouseover="mouseLabelOver()"
-        @mouseout="mouseeLabelOut()">
+        @mouseout="mouseeLabelOut()" style="text-align: center;">
         <font-awesome-icon :icon="this.tmpIconName"/>
         {{ this.tmpButtonText }}
       </label>

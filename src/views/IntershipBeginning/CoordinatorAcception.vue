@@ -1,6 +1,17 @@
 <template>
 
   <div>
+    <ButtonCustom
+        id="btnReturn"
+        ref="btnReturn"
+        label="← Voltar"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        padding="3px 20px"
+        margin="0px 5px"
+        @click="this.$root.renderView('home')"
+      />
     <div class="pageContentRow">
 
       <TextCustom v-if="!this.pageDisabled" margin='0px 0px 15px 0px' display='block'>

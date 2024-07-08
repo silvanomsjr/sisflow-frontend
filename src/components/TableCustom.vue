@@ -34,83 +34,87 @@
     
     <!-- desktop version -->
     <div class="shownOnlyOnNotMobile tableBoxShadow">
-      <div class="titleWrapper"
-        :style="{
-          'font-weight': this.cFontWeightBold,
-          'font-size': this.cFontSizeBold,
-          'border-color': this.gray2,
-          'background-color': this.gray2
-        }">
+  <div class="titleWrapper"
+    :style="{
+      'font-weight': this.cFontWeightBold,
+      'font-size': this.cFontSizeBold,
+      'border-color': this.gray2,
+      'background-color': this.gray2
+    }">
 
-        <div v-for="(title, indexT) in this.tableData['titles']" :key="indexT"
-          class="title"
-          :style="{
-            'width': this.tableData['colWidths'][indexT]
-          }">
-          {{ title }}
-        </div>
-      
-      </div>
-
-      <div v-if="this.tableData['content'].length > 0"
-        class="contentWrapper"
-        :style="{
-          'font-weight': this.cFontWeight,
-          'font-size': this.cFontSize,
-          'border-color': this.gray2,
-          'background-color': this.white
-        }">
-
-        <div v-for="(contentRow, indexR) in this.tableData['content']" :key="indexR"
-          class="contentRow">
-
-          <div v-for="(content, indexC) in contentRow" :key="indexC"
-            class="content"
-            :style="{
-              'width': this.tableData['colWidths'][indexC],
-              'border-color': this.gray2
-            }">
-
-            <span v-if="this.tableData['colTypes'][indexC] == 'string'">
-              <TextCustom
-                :ref="'tableContent' + indexR"
-                display='inline'>
-                {{ content }}
-              </TextCustom>
-            </span>
-
-            <span v-if="this.tableData['colTypes'][indexC] == 'iconfunction'">
-              <font-awesome-icon v-if="content['iconName']"
-                :icon="content['iconName']"
-                class="tableIcon"
-                :style="{
-                  'font-weight': this.cFontWeight,
-                  'font-size': this.cFontSize,
-                  'color': this.darkblue1
-                }"
-                @click="content['iconSelFunction']"
-              />
-            </span>
-
-            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox'"
-              :ref="'tableContent' + indexR"
-              class="tableCheckBox"
-              :id="'tableCheckBox' + indexR + '_' + indexC"
-              :name="'tableCheckBox' + indexR + '_' + indexC"
-            />
-
-            <CheckboxC v-if="this.tableData['colTypes'][indexC] == 'checkbox-single'"
-              :ref="'tableContent' + indexR"
-              class="tableCheckBox"
-              :id="'tableCheckBoxS' + indexR + '_' + indexC"
-              :name="'tableCheckBox' + indexR + '_' + indexC"
-              @checkBoxClicked="this.cleanOtherCheckboxItems(indexR, indexC)"
-            />
-
-          </div>
-        </div>
+    <div v-for="(title, indexT) in this.tableData['titles']" :key="indexT"
+      class="title"
+      :style="{
+        'width': this.tableData['colWidths'][indexT]
+      }">
+      <div class="titleContent">
+      {{ title }}
+        <button @click="toggleSort(indexT)" class="sortButton">⇅</button>
       </div>
     </div>
+
+  </div>
+
+  <div v-if="filteredContent.length > 0"
+    class="contentWrapper"
+    :style="{
+      'font-weight': cFontWeight,
+      'font-size': cFontSize,
+      'border-color': gray2,
+      'background-color': white
+    }">
+
+    <div v-for="(contentRow, indexR) in filteredContent" :key="indexR"
+      class="contentRow">
+
+      <div v-for="(content, indexC) in contentRow" :key="indexC"
+        class="content"
+        :style="{
+          'width': tableData['colWidths'][indexC],
+          'border-color': gray2
+        }">
+
+        <span v-if="tableData['colTypes'][indexC] == 'string'">
+          <TextCustom
+            :ref="'tableContent' + indexR"
+            display='inline'>
+            {{ content }}
+          </TextCustom>
+        </span>
+
+        <span v-if="tableData['colTypes'][indexC] == 'iconfunction'">
+          <font-awesome-icon v-if="content['iconName']"
+            :icon="content['iconName']"
+            class="tableIcon"
+            :style="{
+              'font-weight': cFontWeight,
+              'font-size': cFontSize,
+              'color': darkblue1
+            }"
+            @click="content['iconSelFunction']"
+          />
+        </span>
+
+        <CheckboxC v-if="tableData['colTypes'][indexC] == 'checkbox'"
+          :ref="'tableContent' + indexR"
+          class="tableCheckBox"
+          :id="'tableCheckBox' + indexR + '_' + indexC"
+          :name="'tableCheckBox' + indexR + '_' + indexC"
+        />
+
+        <CheckboxC v-if="tableData['colTypes'][indexC] == 'checkbox-single'"
+          :ref="'tableContent' + indexR"
+          class="tableCheckBox"
+          :id="'tableCheckBoxS' + indexR + '_' + indexC"
+          :name="'tableCheckBox' + indexR + '_' + indexC"
+          @checkBoxClicked="cleanOtherCheckboxItems(indexR, indexC)"
+        />
+
+      </div>
+    </div>
+  </div>
+</div>
+
 
     <!-- Mobile version -->
     <div class="shownOnlyOnMobile tableBoxShadow">
@@ -213,9 +217,48 @@ export default {
   },
 
   data(){
-    return{}
+    return{
+      filters: [],
+      sortColumnIndex: null,
+      sortOrder: 'asc',
+    };
   },
+  watch: {
+    'tableData.titles': {
+      immediate: true,
+      handler(newTitles){
+        this.filters = Array(newTitles.length).fill('');
+      }
+    }
+  },
+  computed: {
+    filteredContent(){
+      let content = this.tableData.content;
 
+      content = content.filter(row => {
+        return row.every((cell, index)=> {
+          const filter = this.filters[index];
+          if(filter){
+            return String(cell).toLowerCase().includes(filter.toLowerCase());
+          }
+          return true;
+        });
+      });
+      if (this.sortColumnIndex!==null){
+        content = content.slice().sort((a, b) => { 
+          const cellA = a[this.sortColumnIndex];
+          const cellB = b[this.sortColumnIndex];
+          if(this.sortOrder==='asc'){
+            return String(cellA).localeCompare(String(cellB));
+          } else {
+            return String(cellB).localeCompare(String(cellA));
+          }
+        });
+      }
+      return content;
+    }
+  },
+ 
   created() {
     this.darkblue1 = Utils.handleColorSelection('darkblue1');
     this.white = Utils.handleColorSelection('white');
@@ -231,6 +274,22 @@ export default {
   },
 
   methods: {
+    toggleSort(index) {
+    if (this.sortColumnIndex === index) {
+      if (this.sortOrder === 'asc') {
+        this.sortOrder = 'desc';
+      } else if (this.sortOrder === 'desc') {
+        this.sortOrder = null;
+        this.sortColumnIndex = null;
+      } else {
+        this.sortOrder = 'asc';
+      }
+    } else {
+      this.sortColumnIndex = index;
+      this.sortOrder = 'asc';
+    }
+  },
+
 
     parseTableCell(cell, row, col){
       
@@ -285,6 +344,25 @@ export default {
 
 <!-- style applies only to this component -->
 <style scoped>
+
+.title{
+  display: flex;
+  align-items: center;
+}
+
+.title-content{
+  display: flex;
+  align-items: center;
+}
+
+.sortButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8em;
+  margin-left: 5px;
+  color: #212529;
+}
 
 .tableWrapper, .prevNextWrapper{
   display: block;

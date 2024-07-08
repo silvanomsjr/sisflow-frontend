@@ -1,7 +1,19 @@
 <template>
 
   <div>
+    <ButtonCustom
+        id="btnReturn"
+        ref="btnReturn"
+        label="← Voltar"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        padding="3px 20px"
+        margin="0px 5px"
+        @click="this.$root.renderView('home')"
+      />
     <div class="pageContentRow">
+      
       <TextCustom
         margin='0px 0px 15px 0px'
         display='inline'>
@@ -80,7 +92,7 @@
         </div>
         
       </div>
-      <div class="left">
+      <div class="right">
         <ButtonCustom
           id="btnShowHistory"
           ref="btnShowHistory"
@@ -194,18 +206,7 @@
         margin="0px 5px"
         @click="doReject()"
       />
-      <ButtonCustom
-        id="btnReturn"
-        ref="btnReturn"
-        label="Voltar"
-        customTextColor="white"
-        customBackColor="darkblue1"
-        customFontSize="normal"
-        width="200px"
-        padding="3px 20px"
-        margin="0px 5px"
-        @click="this.$root.renderView('home')"
-      />
+      
     </div>
   </div>
 
@@ -222,6 +223,7 @@ import Requests from '../../js/requests.js'
 import SelectCustom from '../../components/SelectCustom.vue'
 import TextCustom from '../../components/TextCustom.vue'
 import Utils from '../../js/utils.js'
+
 
 export default {
 

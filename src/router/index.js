@@ -57,6 +57,12 @@ const routes = [
     meta: { allowedUsers: 'ALL' }
   },
   {
+    path: '/interbegin/newsolicitationview',
+    name: 'interbegin-newsolicitationview',
+    component: IntBeginAdvisorAcception,
+    meta: { allowedUsers: 'ALL' }
+  },
+  {
     path: '/interbegin/signatures',
     name: 'interbegin-signatures',
     component: IntBeginSignatures,

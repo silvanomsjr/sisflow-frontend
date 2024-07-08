@@ -1,5 +1,17 @@
 <template>
 
+  <ButtonCustom
+        id="btnReturn"
+        ref="btnReturn"
+        label="← Voltar"
+        customTextColor="white"
+        customBackColor="darkblue1"
+        customFontSize="normal"
+        padding="3px 20px"
+        margin="10px 5px"
+        @click="this.$root.renderView('home')"
+      />
+
   <div class="dynamicPageWrapper" v-show="this.createdDone && this.pageData && this.pageData['components']">
 
     <div v-for="(component) in this.pageData['components']" :key="component['component_order']"

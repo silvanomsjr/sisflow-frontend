@@ -69,7 +69,7 @@
 
       <div class="solicitationBoxTitle">
         <TextCustom customFontSize='title_bold' display="block">
-          Realizar Solicitações
+          Realizar Nova Solicitação
         </TextCustom>
         <TextCustom customFontSize='small' display="block" padding="10px" customColor="black2">
           Realize uma solicitação às partes relacionadas selecionando o tipo e preenchendo os campos listados
@@ -122,7 +122,7 @@
         <div class='btnWrapper'>
           <div class='btn'>
             <ButtonCustom id="btnSendSol"
-              label="Solicitar"
+              label="Iniciar"
               customTextColor="white"
               customBackColor="darkblue1"
               customFontSize="normal"
@@ -163,19 +163,19 @@ export default {
     return {
       userProfiles: null,
       coordinatorSolTable: {
-        'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
+        'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descrição', 'Data', 'Decisão', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '11%', '10%', '15%', '25%', '10%', '11%', '11%', '7%' ],
         'content': []
       },
       advisorSolTable: {
-        'titles': [ 'Aluno', 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
+        'titles': [ 'Aluno', 'Solicitação', 'Descrição', 'Data', 'Decisão', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '11%', '15%', '30%', '10%', '15%', '12%', '7%' ],
         'content': []
       },
       studentSolTable: {
-        'titles': [ 'Solicitação', 'Descricao', 'Data e hora', 'Decisao', 'Motivo', 'Ação' ],
+        'titles': [ 'Solicitação', 'Descrição', 'Data', 'Decisão', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
         'colWidths': [ '18%', '35%', '15%', '10%', '15%', '7%' ],
         'content': []

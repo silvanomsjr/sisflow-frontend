@@ -48,7 +48,7 @@ export default {
     titleText: String,
     fileName: String,
     buttonText: {
-      default: 'Download',
+      default: 'Baixar',
       type: String
     }
   },

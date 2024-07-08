@@ -9,7 +9,8 @@
         <TextCustom 
           customColor="darkblue1"
           customFontSize='page_title'>
-          SisFlow
+          <a href="/home"  style="text-decoration: none; color: inherit">SisFlow</a>
+          
         </TextCustom>
       </div>
 
