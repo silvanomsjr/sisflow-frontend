@@ -4,6 +4,8 @@ const DYNAMIC_CSS_VARS = [
   { 'label': '--color-black2', 'value': 'rgb(54,52,52)' }, 
   { 'label': '--color-black-placeholder', 'value': 'rgba(0,0,0,0.8)' }, 
   { 'label': '--color-darkblue1', 'value': 'rgb(28,34,86)' }, 
+  { 'label': '--color-darkgreen', 'value': 'rgb(34,139,34)' },
+  { 'label': '--color-darkred', 'value': 'rgb(205,0,26)' },
   { 'label': '--color-darkblue2', 'value': 'rgb(39,46,112)' }, 
   { 'label': '--color-gray1', 'value': 'rgb(242,241,241)' }, 
   { 'label': '--color-gray2', 'value': 'rgb(203,203,203)' }, 
@@ -19,6 +21,8 @@ const COLOR_BLACK1 = "rgb(0,0,0)";
 const COLOR_BLACK2 = "rgb(54,52,52)";
 const COLOR_DARKBLUE1 = "rgb(28,34,86)";
 const COLOR_DARKBLUE2 = "rgb(39,46,112)";
+const COLOR_DARKGREEN = "rgb(21,71,52)";
+const COLOR_DARKRED = "rgb(128,5,0)";
 const COLOR_GRAY1 = "rgb(242, 241, 241)";
 const COLOR_GRAY2 = "rgb(203,203,203)";
 const COLOR_GRAY3 = "rgb(167,167,167)";
@@ -46,6 +50,8 @@ export default {
   COLOR_BLACK2,
   COLOR_DARKBLUE1,
   COLOR_DARKBLUE2,
+  COLOR_DARKGREEN,
+  COLOR_DARKRED,
   COLOR_GRAY1,
   COLOR_GRAY2,
   COLOR_GRAY3,

@@ -197,7 +197,7 @@
       <ButtonCustom v-if="!this.pageDisabled && (this.userProfiles.includes('ADM') || this.userProfiles.includes('COO'))"
         id="btnReject"
         ref="btnReject"
-        label="Indeferir"
+        label="Indeferir ✘"
         customTextColor="white"
         customBackColor="darkblue1"
         customFontSize="normal"

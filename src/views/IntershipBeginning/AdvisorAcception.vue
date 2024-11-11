@@ -39,40 +39,29 @@
 
     <div class="pageContentRow btnWrapper" v-if="!this.pageDisabled">
       <ButtonCustom
-        id="btnConfirm"
-        ref="btnConfirm"
-        label="Aceitar"
-        customTextColor="white"
-        customBackColor="darkblue1"
-        customFontSize="normal"
-        width="200px"
-        padding="3px 20px"
-        margin="0px 5px"
-        @click="doAccept()"
-      />
-      <ButtonCustom
         id="btnReject"
         ref="btnReject"
-        label="Recusar"
+        label="Recusar ✘"
         customTextColor="white"
-        customBackColor="darkblue1"
+        customBackColor="darkred"
         customFontSize="normal"
         width="200px"
         padding="3px 20px"
         margin="0px 5px"
         @click="doReject()"
       />
-      <ButtonCustom v-if="!this.pageDisabled"
-        id="btnCancel"
-        ref="btnCancel"
-        label="Voltar"
+      
+      <ButtonCustom
+        id="btnConfirm"
+        ref="btnConfirm"
+        label="Aceitar ✔"
         customTextColor="white"
-        customBackColor="darkblue1"
+        customBackColor="darkgreen"
         customFontSize="normal"
         width="200px"
         padding="3px 20px"
         margin="0px 5px"
-        @click="this.$root.renderView('home')"
+        @click="doAccept()"
       />
     </div>
 

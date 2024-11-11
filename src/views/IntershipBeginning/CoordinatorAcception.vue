@@ -44,18 +44,15 @@
     <ReasonBox v-if="this.pageLoaded" :userHasStateId="this.userHasStateId" ref='reasonBox'/>
 
     <div class="pageContentRow center" v-if="!this.pageDisabled">
-      <ButtonCustom id="btnConfirm" ref="btnConfirm" 
-        label="Deferir" customTextColor="white" customBackColor="darkblue1" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px" 
-        @click="doAccept()"
-      />
       <ButtonCustom id="btnReject" ref="btnReject" 
-        label="Indeferir" customTextColor="white" customBackColor="darkblue1" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px"
+        label="Indeferir ✘" customTextColor="white" customBackColor="darkred" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px"
         @click="doReject()"
       />
-      <ButtonCustom v-if="!this.pageDisabled" id="btnCancel" ref="btnCancel" 
-        label="Voltar" customTextColor="white" customBackColor="darkblue1" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px" 
-        @click="this.$root.renderView('home')"
+      <ButtonCustom id="btnConfirm" ref="btnConfirm" 
+        label="Deferir ✔" customTextColor="white" customBackColor="darkgreen" customFontSize="normal" width="30%" padding="3px 20px" margin="0px 5px" 
+        @click="doAccept()"
       />
+      
     </div>
   </div>
 </template>

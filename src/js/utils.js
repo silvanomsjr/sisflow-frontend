@@ -19,6 +19,12 @@ function handleColorSelection(colorType){
   if(colorType == 'darkblue1'){
     return Cst.COLOR_DARKBLUE1;
   }
+  if(colorType == 'darkred'){
+    return Cst.COLOR_DARKRED;
+  }
+  if(colorType == 'darkgreen'){
+    return Cst.COLOR_DARKGREEN;
+  }
   if(colorType == 'darkblue2'){
     return Cst.COLOR_DARKBLUE1;
   }

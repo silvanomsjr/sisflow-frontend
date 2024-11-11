@@ -106,7 +106,7 @@ export default {
       type: String
     },
     boxInnerTitle: {
-      default: 'Selecione os motivos abaixo. Você pode filtrar os motivos que aparecem pela sua classe ou pelo seu conteúdo.',
+      default: 'Selecione os motivos para eventual indeferimento abaixo. Você pode filtrar os motivos que aparecem pela sua classe ou pelo seu conteúdo.',
       type: String
     },
     boxMailTitle: {
