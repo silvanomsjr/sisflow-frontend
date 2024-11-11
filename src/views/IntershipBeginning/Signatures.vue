@@ -119,7 +119,7 @@
       <SelectCustom 
         ref="selectTcePa"
         class="selectC"
-        labelValue="TCE com PA incluso?" 
+        labelValue="TCE com Plano de Atividades assinado incluso?" 
         :items="this.selectTcePaItems"
         :initialOptSelected="0"
         @optClicked="(optValue) => this.tcePaTogether = optValue"
@@ -154,7 +154,7 @@
         />
       </div>
 
-      <div class="pageContentRow left">
+      <div class="pageContentRow right">
         <ButtonCustom
           id="btnSendDocs"
           ref="btnSendDocs"
