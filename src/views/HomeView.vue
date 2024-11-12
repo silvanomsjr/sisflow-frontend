@@ -14,7 +14,7 @@
           Você está logado com uma conta de perfil administrador, abaixo você pode visualizar as solicitações de alunos ordenadas pela data de criação.
         </p>
         <p v-else-if="this.userProfiles.includes('COO')">
-          Coordenador, abaixo você pode visualizar solicitações de alunos ordenadas pela data de criação.
+          Coordenador, abaixo você pode visualizar solicitações de alunos ordenadas primordialmente pela data de criação, está incluido também um recurso de busca.
         </p>
         <p v-else-if="this.userProfiles.includes('ADV')">
           Orientador, abaixo você pode visualizar solicitações de seus alunos orientados ordenadas pela data de criação.
@@ -30,15 +30,26 @@
     </div>
 
     <div class="pageContentRow" v-if="this.coordinatorSolTable['content'].length > 0">
-      <TextCustom
-        customFontSize='title'
-        margin='20px 0px 5px 0px'
-        display='block'>
-        Solicitações
-      </TextCustom>
 
-      <TableCustom class="tableC"
-        :tableData="this.coordinatorSolTable"/>
+      <input
+      v-model="searchTerm"
+      type="text"
+      placeholder="Buscar por qualquer campo da tabela"
+      class="search-bar"
+      />
+      <div v-if="displayedTableData['content'].length > 0">
+        <TextCustom
+          customFontSize="title"
+          margin="20px 0px 5px 0px"
+          display="block"
+        >
+          Solicitações
+          </TextCustom>
+          <TableCustom class="tableC" :tableData="this.displayedTableData"/>
+      </div>
+      <div v-else>
+        <p>Nenhum resultado encontrado.</p>
+      </div>
     </div>
 
     <div class="pageContentRow" v-if="this.advisorSolTable['content'].length > 0">
@@ -162,6 +173,7 @@ export default {
   data() {
     return {
       userProfiles: null,
+      searchTerm: '',
       coordinatorSolTable: {
         'titles': [ 'Aluno', 'Orientador', 'Solicitação', 'Descrição', 'Data', 'Decisão', 'Motivo', 'Ação' ],
         'colTypes': [ 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'iconfunction' ],
@@ -217,7 +229,27 @@ export default {
       await this.loadStudentSolTable();
     }
   },
-
+  computed: {
+    filteredData() {
+      const search = this.searchTerm
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return this.coordinatorSolTable.content.filter((row) => {
+        return Object.values(row).some((value) =>
+          value
+            .toString()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(search)
+        );
+      });
+    },
+    displayedTableData() {
+      return this.searchTerm ? { ...this.coordinatorSolTable, content: this.filteredData } : this.coordinatorSolTable;
+    },
+  },
   mounted() {},
 
   methods:{
@@ -456,6 +488,14 @@ export default {
 
 <!-- style applies only to this component -->
 <style scoped>
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+  border: 1px solid var(--color-gray2);
+}
 
 .pageContentRow{
   margin-bottom: 40px;
