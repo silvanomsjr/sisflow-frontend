@@ -1,18 +1,23 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
 // bootstrap
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap/dist/js/bootstrap.js'
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.js";
+
+import "vuetify/styles";
+import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
 
 // masks for inputs and fields
-import VueTheMask from 'vue-the-mask'
+import VueTheMask from "vue-the-mask";
 
 //fontawesome
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {
   faArrowRightArrowLeft,
   faArrowRotateRight,
   faBars,
@@ -35,8 +40,8 @@ import {
   faTriangleExclamation,
   faUser,
   faUsers,
-  faXmark
-} from '@fortawesome/free-solid-svg-icons'
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 library.add(
   faArrowRightArrowLeft,
   faArrowRotateRight,
@@ -61,10 +66,16 @@ library.add(
   faUser,
   faUsers,
   faXmark
-)
+);
+
+const vuetify = createVuetify({
+  components,
+  directives,
+});
 
 const app = createApp(App);
 app.use(router);
 app.use(VueTheMask);
-app.component('font-awesome-icon', FontAwesomeIcon);
-app.mount('#app');
+app.use(vuetify);
+app.component("font-awesome-icon", FontAwesomeIcon);
+app.mount("#app");

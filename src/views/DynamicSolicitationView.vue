@@ -162,6 +162,8 @@ export default {
     this.pageData = vreturn['response']['solicitation']['page'];
     this.solicitationUserData = vreturn['response']['solicitation']['solicitation_user_data'];
 
+    console.log("this.pageData: ", this.pageData)
+
     // verify if page is disabled
     this.pageDisabled = false;
     if(this.solicitationData['decision'] != 'Em analise'){

@@ -1,6 +1,5 @@
 <template>
-
-  <div class="center boxLogin"
+  <!-- <div class="center boxLogin"
     :style="{
       'color': this.boxBorderColor
     }">
@@ -103,93 +102,156 @@
         @click="this.$root.renderView('sign')"
       />
     </div>
-  </div>
-
+  </div> -->
+  <main>
+    <div class="cardLogin">
+      <div class="logo">
+        <ImgLogoUfu />
+        <h3>SisFlow</h3>
+      </div>
+      <div class="divLine">
+        <LineCustom width="80%" />
+      </div>
+      <div class="cardTop">
+        <h3>Login</h3>
+        <v-form ref="loginForm">
+          <v-text-field
+            v-model="emailInput"
+            ref="mail"
+            variant="outlined"
+            density="compact"
+            autocomplete="instmail"
+            label="E-mail institucional"
+            :rules="[rules.required]"
+          />
+          <v-text-field
+            v-model="passwordInput"
+            ref="pass"
+            variant="outlined"
+            density="compact"
+            type="password"
+            autocomplete="current-password"
+            label="Senha"
+            :rules="[rules.required]"
+          />
+          <v-btn color="#1c2256" variant="flat" @click="doLogin">Logar</v-btn>
+        </v-form>
+      </div>
+      <div class="cardBottom">
+        <span> Ainda não possui conta? </span>
+        <v-btn
+          variant="plain"
+          type="submit"
+          id="btnRedirectSign"
+          @click="this.$root.renderView('sign')"
+        >
+          Cadastrar
+        </v-btn>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
-
-import ButtonCustom from '../components/ButtonCustom.vue'
-import ImgLogoUfu from '../components/ImgLogoUfu.vue'
-import InputCustom from '../components/InputCustom.vue'
-import LineCustom from '../components/LineCustom.vue'
-import TextCustom from '../components/TextCustom.vue'
-import Utils from '../js/utils.js'
+// import ButtonCustom from '../components/ButtonCustom.vue'
+// import InputCustom from '../components/InputCustom.vue'
+// import TextCustom from "../components/TextCustom.vue";
+import ImgLogoUfu from "../components/ImgLogoUfu.vue";
+import LineCustom from "../components/LineCustom.vue";
+import Utils from "../js/utils.js";
 
 export default {
-
-  name: 'LoginView',
+  name: "LoginView",
 
   components: {
-    ButtonCustom,
     ImgLogoUfu,
-    InputCustom,
     LineCustom,
-    TextCustom
+    // ButtonCustom,
+    // InputCustom,
+    // TextCustom,
   },
 
-  data(){
+  data() {
     return {
-      topBackColor: 'rgb(255,255,255)',
-      bottomBackColor: 'rgb(28, 34, 86)',
-      boxBorderColor: 'rgb(28, 34, 86)'
-    }
+      topBackColor: "rgb(255,255,255)",
+      bottomBackColor: "rgb(28, 34, 86)",
+      boxBorderColor: "rgb(28, 34, 86)",
+      emailInput: "",
+      passwordInput: "",
+      rules: {
+        required: (v) => !!v || "Campo obrigatório",
+      },
+    };
   },
 
-  created(){
-    this.topBackColor = Utils.handleColorSelection('white');
-    this.bottomBackColor = Utils.handleColorSelection('darkblue1');
-    this.boxBorderColor = Utils.handleColorSelection('darkblue1');
+  created() {
+    this.topBackColor = Utils.handleColorSelection("white");
+    this.bottomBackColor = Utils.handleColorSelection("darkblue1");
+    this.boxBorderColor = Utils.handleColorSelection("darkblue1");
   },
 
   methods: {
-    async doLogin(){
+    async doLogin() {
+      const checkForm = await this.$refs.loginForm.validate();
+      console.log("reality: ", this.emailInput);
+      if (checkForm.valid) {
+        // verify institutional mail
+        if (!this.emailInput.match(/\S+@\S+\.\S+/)) {
+          this.$root.renderMsg("warn", "Email inválido!", "");
+          this.$root.clearLoginData();
+          return;
+        }
+        if (!this.emailInput.endsWith("@ufu.br")) {
+          this.$root.renderMsg(
+            "warn",
+            "O email informado deve ser o institucional!",
+            ""
+          );
+          this.$root.clearLoginData();
+          return;
+        }
 
-      let mailV = this.$refs.mail.getV().trim();
-      let passV = this.$refs.pass.getV();
+        // verify password
+        if (!/^\S*$/.test(this.passwordInput)) {
+          this.$root.renderMsg(
+            "warn",
+            "Senha inválida!",
+            "A senha não contém espaços."
+          );
+          return;
+        }
+        if (!/^.{8,18}$/.test(this.passwordInput)) {
+          this.$root.renderMsg(
+            "warn",
+            "Senha inválida!",
+            "A senha não contém de 8 a 18 caracteres."
+          );
+          return;
+        }
 
-      // verify institutional mail
-      if(!mailV.match(/\S+@\S+\.\S+/)){
-        this.$root.renderMsg('warn', 'Email inválido!', '');
-        this.$root.clearLoginData();
-        return;
-      }
-      if(!mailV.endsWith('@ufu.br')){
-        this.$root.renderMsg('warn', 'O email informado deve ser o institucional!', '');
-        this.$root.clearLoginData();
-        return;
-      }
-      
-      // verify password
-      if(!/^\S*$/.test(passV)){
-        this.$root.renderMsg('warn', 'Senha inválida!', 'A senha não contém espaços.');
-        return;
-      }
-      if(!/^.{8,18}$/.test(passV)){
-        this.$root.renderMsg('warn', 'Senha inválida!', 'A senha não contém de 8 a 18 caracteres.');
-        return;
-      }
+        let vreturn = await this.$root.doLoginRequest(
+          this.emailInput,
+          this.passwordInput
+        );
 
-      let vreturn = await this.$root.doLoginRequest(mailV, passV);
-
-      if(vreturn && vreturn['ok']){
-        this.$root.renderView('home');
+        if (vreturn && vreturn["ok"]) {
+          this.$root.renderView("home");
+        } else {
+          this.$root.renderRequestErrorMsg(vreturn, [
+            "Usuário não encontrado no sistema",
+            "Usuário não cadastrado",
+            "Senha incorreta",
+          ]);
+        }
       }
-      else{
-        this.$root.renderRequestErrorMsg(vreturn, [
-          'Usuário não encontrado no sistema',
-          'Usuário não cadastrado',
-          'Senha incorreta']);
-      }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <!-- style applies only to this component -->
 <style scoped>
-
-.boxLogin{
+/* .boxLogin {
   border: none;
   box-shadow: 0 0 0 3px;
   border-radius: 40px;
@@ -197,64 +259,140 @@ export default {
   padding: 0px;
 }
 @media (max-width: 900px) {
-  .center{
+  .center {
     margin: auto;
-    text-align:center;
+    text-align: center;
   }
-  .boxLogin{
+  .boxLogin {
     width: 80%;
   }
 }
 @media (min-width: 900px) {
-  .center{
+  .center {
     position: absolute;
     top: 50%;
     left: 50%;
     -ms-transform: translateX(-50%) translateY(-50%);
-    -webkit-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
   }
-  .boxLogin{
+  .boxLogin {
     width: 40%;
   }
 }
-.top, .bottom{
+.top,
+.bottom {
   padding: 13px 30px;
   margin: 0px;
 }
-.logo{
+.logo {
   line-height: 100%;
   text-align: center;
   margin-bottom: 10px;
 }
-.logo > *{
+.logo > * {
   vertical-align: middle;
 }
-.signFields{
+.signFields {
   margin-top: 10px;
 }
-.divhref{
+.divhref {
   margin-left: 20px;
 }
-.horCenter{
+.horCenter {
   text-align: center;
 }
-.divLine{
+.divLine {
   margin-top: 3px;
 }
-.divForm{
+.divForm {
   margin: 10px;
 }
-.divField{
+.divField {
   display: inline-block;
   width: 80%;
   margin: 7px;
 }
-.alignLeft{
+.alignLeft {
   text-align: left;
 }
-.btnLogar{
+.btnLogar {
   margin: 10px 0px;
+} */
+main {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+.cardLogin {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0px 10px 40px #00000056;
 
+  .logo {
+    display: flex;
+    padding: 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    & > h3 {
+      color: #1c2256;
+      font-weight: 600;
+      display: inline;
+      font-size: 20px;
+      margin: 0;
+    }
+  }
+
+  .divLine {
+    width: 100%;
+    margin-top: 3px;
+  }
+
+  .cardTop {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem 1rem 2rem;
+
+    & > form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      div {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    & > h3 {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 1.2rem;
+    }
+  }
+  .cardBottom {
+    width: 100%;
+    padding: 1rem;
+    background-color: #1c2256;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 0 10px 10px;
+    & {
+      color: white;
+    }
+  }
+}
 </style>

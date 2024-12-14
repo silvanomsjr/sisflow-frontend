@@ -98,6 +98,8 @@ export default {
 
         this.userAcessAllowed = this.isUserAllowedForPage(this.userLoggedData, this.$route.meta.allowedUsers);
 
+        console.log("userAcessAllowed: ", this.userAccessAllowed)
+
         if(!this.userAcessAllowed){
           this.renderUserNotAllowedMsg();
         }
@@ -129,6 +131,7 @@ export default {
         this.userAcessAllowed = this.isUserAllowedForPage(this.userLoggedData, this.$route.meta.allowedUsers);
 
         if(!this.userAcessAllowed){
+          console.log("this.userAcessAllowed: ", this.userAcessAllowed)
           this.renderUserNotAllowedMsg();
           return;
         }
@@ -291,6 +294,9 @@ export default {
     },
     // check if user is allowed to access a page
     isUserAllowedForPage(userData, allowedUsers){
+
+      console.log("userData: ", userData)
+      console.log("allowedUsers: ", allowedUsers)
       
       if(!userData){
         return false;
