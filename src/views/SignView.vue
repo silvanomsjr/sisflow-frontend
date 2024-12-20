@@ -1,5 +1,5 @@
 <template>
-  <div
+  <!-- <div
     class="center boxSign"
     :style="{
       color: this.boxBorderColor,
@@ -175,37 +175,168 @@
         "
       />
     </div>
-  </div>
+  </div> -->
+  <main>
+    <div class="cardCadastro">
+      <div class="logo">
+        <ImgLogoUfu />
+        <h3>SisFlow</h3>
+      </div>
+      <div class="divLine">
+        <LineCustom width="80%" />
+      </div>
+      <div class="cardTop">
+        <h3>Cadastro</h3>
+        <v-form
+          v-if="signStep <= 3"
+          @submit.prevent="
+            signStep == 1 ? verifyInsMakeSignCode() : verifySignCode()
+          "
+          validate-on="blur"
+          ref="cadastroForm"
+        >
+          <v-text-field
+            v-if="signStep == 1"
+            v-model="mailins"
+            variant="outlined"
+            density="compact"
+            autocomplete="instmail"
+            label="E-mail institucional"
+            :rules="[rules.required, rules.emailIns]"
+          />
+          <v-text-field
+            v-if="signStep == 2"
+            v-model="signcode"
+            variant="outlined"
+            density="compact"
+            autocomplete="off"
+            ref="signcode"
+            name="signcode"
+            id="signcode"
+            maxlength="10"
+            label="Código recebido por email"
+            :rules="[rules.required]"
+          />
+          <div v-if="signStep == 3">
+            <v-text-field
+              v-model="mailsec"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+              label="E-mail secundário"
+              :rules="[rules.required, rules.email]"
+            />
+            <v-text-field
+              v-model="phonenum"
+              variant="outlined"
+              density="compact"
+              autocomplete="off"
+              label="Telefone"
+              id="phonenum"
+              ref="phonenum"
+              name="phonenum"
+              :rules="[rules.required]"
+              v-mask="['(##) ####-####', '(##) #####-####']"
+            />
+            <v-text-field
+              v-model="password"
+              type="password"
+              variant="outlined"
+              density="compact"
+              autocomplete="password"
+              label="Senha"
+              :rules="[rules.required]"
+            />
+            <v-text-field
+              v-model="confirmPassword"
+              type="password"
+              variant="outlined"
+              density="compact"
+              autocomplete="password"
+              label="Confirme a senha"
+              :rules="[rules.required]"
+            />
+          </div>
+          <v-btn
+            v-if="signStep < 3"
+            type="submit"
+            color="#1c2256"
+            variant="flat"
+          >
+            {{ signStep == 1 ? "Enviar Código" : "Confirmar" }}
+          </v-btn>
+        </v-form>
+      </div>
+      <div class="cardBottom">
+        <span v-if="signStep < 3">
+          {{
+            signStep == 1
+              ? "Possui conta cadastrada?"
+              : "Deseja reenviar o código?"
+          }}
+        </span>
+        <v-btn
+          variant="plain"
+          type="submit"
+          id="btnRedirectSign"
+          @click="
+            this.signStep == 1
+              ? this.$root.renderView('login')
+              : this.signStep == 2
+              ? this.makeSignCode()
+              : this.doSign()
+          "
+        >
+          {{
+            this.signStep == 1
+              ? "Login"
+              : this.signStep == 2
+              ? "Reenviar"
+              : "Cadastrar"
+          }}
+        </v-btn>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script>
-import ButtonCustom from "../components/ButtonCustom.vue";
+// import ButtonCustom from "../components/ButtonCustom.vue";
+// import InputCustom from "../components/InputCustom.vue";
+// import TextCustom from "../components/TextCustom.vue";
 import ImgLogoUfu from "../components/ImgLogoUfu.vue";
-import InputCustom from "../components/InputCustom.vue";
 import LineCustom from "../components/LineCustom.vue";
 import Requests from "../js/requests.js";
-import TextCustom from "../components/TextCustom.vue";
 import Utils from "../js/utils.js";
 
 export default {
   name: "SignView",
 
   components: {
-    ButtonCustom,
-    ImgLogoUfu,
-    InputCustom,
+    // ButtonCustom,
+    // InputCustom,
+    // TextCustom,
     LineCustom,
-    TextCustom,
+    ImgLogoUfu,
   },
 
   data() {
     return {
-      signStep: 1,
-
+      signStep: 3,
+      mailins: "",
+      signcode: "",
+      mailsec: "",
+      phonenum: "",
+      password: "",
+      confirmPassword: "",
       topBackColor: "rgb(255,255,255)",
       bottomBackColor: "rgb(28, 34, 86)",
       boxBorderColor: "rgb(28, 34, 86)",
     };
+  },
+
+  computed: {
+    rules: () => Utils.rules,
   },
 
   async created() {
@@ -236,13 +367,13 @@ export default {
   },
   methods: {
     async verifyInsMakeSignCode() {
-      console.log("verify");
       this.$root.clearLoginData();
 
-      let mailInsV = this.$refs.mailins.getV().trim();
+      // let mailInsV = this.$refs.mailins.getV().trim();
+      let mailInsV = this.mailins;
 
       // verify institutional mail
-      if (!Utils.validateMail(mailInsV)) {
+      if (!Utils.validateMailIns(mailInsV)) {
         this.$root.renderMsg("warn", "Email institucional inválido!", "");
         return;
       }
@@ -261,10 +392,11 @@ export default {
 
     // request 1 - send institutional mail to generate sign code
     async makeSignCode() {
-      console.log("Uai: ");
       let vreturn = await this.$root.doRequest(Requests.signMakeCode, [
         this.mailInsV,
       ]);
+
+      console.log("vreturn: ", vreturn);
 
       if (vreturn && vreturn["ok"]) {
         this.signStep = 2;
@@ -278,8 +410,8 @@ export default {
 
     // request 2 - verifyes sign auth code
     async verifySignCode() {
-      console.log("seila codigo");
-      let signCode = this.$refs.signcode.getV().trim();
+      // let signCode = this.$refs.signcode.getV().trim();
+      let signCode = this.signcode;
 
       // verify sgnCode format
       if (signCode.length != 10) {
@@ -310,11 +442,15 @@ export default {
 
     // request 3 - do user registration
     async doSign() {
-      console.log("Logar");
-      let mailSecV = this.$refs.mailsec.getV().trim();
-      let phonenumV = this.$refs.phonenum.getV().replaceAll(/\(|\)|-|\s/g, "");
-      let passV = this.$refs.pass.getV();
-      let passConfV = this.$refs.passconf.getV();
+      // let mailSecV = this.$refs.mailsec.getV().trim();
+      // let phonenumV = this.$refs.phonenum.getV().replaceAll(/\(|\)|-|\s/g, "");
+      // let passV = this.$refs.pass.getV();
+      // let passConfV = this.$refs.passconf.getV();
+
+      let mailSecV = this.mailsec;
+      let phonenumV = this.phonenum;
+      let passV = this.password;
+      let passConfV = this.confirmPassword;
 
       // verify secundary mail
       if (mailSecV) {
@@ -407,6 +543,8 @@ export default {
   border-radius: 40px;
   overflow: hidden;
   padding: 0px;
+  width: 100%;
+  height: 100%;
 }
 @media (max-width: 900px) {
   .center {
@@ -418,14 +556,6 @@ export default {
   }
 }
 @media (min-width: 900px) {
-  .center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translateX(-50%) translateY(-50%);
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-  }
   .boxSign {
     width: 50%;
   }
@@ -471,5 +601,91 @@ export default {
 }
 .btnLogar {
   margin: 10px 0px;
+}
+
+main {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cardCadastro {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0px 10px 40px #00000056;
+
+  .logo {
+    display: flex;
+    padding: 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    & > h3 {
+      color: #1c2256;
+      font-weight: 600;
+      display: inline;
+      font-size: 20px;
+      margin: 0;
+    }
+  }
+
+  .divLine {
+    width: 100%;
+    margin-top: 3px;
+  }
+
+  .cardTop {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 2rem 1rem 2rem;
+
+    & > form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      div {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    & > h3 {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 1.2rem;
+    }
+  }
+  .cardBottom {
+    width: 100%;
+    padding: 1rem;
+    background-color: #1c2256;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0 0 10px 10px;
+    & {
+      color: white;
+    }
+  }
+}
+.testando {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>

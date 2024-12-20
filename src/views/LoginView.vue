@@ -114,10 +114,9 @@
       </div>
       <div class="cardTop">
         <h3>Login</h3>
-        <v-form ref="loginForm">
+        <v-form @submit.prevent="doLogin" ref="loginForm">
           <v-text-field
             v-model="emailInput"
-            ref="mail"
             variant="outlined"
             density="compact"
             autocomplete="instmail"
@@ -126,7 +125,6 @@
           />
           <v-text-field
             v-model="passwordInput"
-            ref="pass"
             variant="outlined"
             density="compact"
             type="password"
@@ -134,7 +132,7 @@
             label="Senha"
             :rules="[rules.required]"
           />
-          <v-btn color="#1c2256" variant="flat" @click="doLogin">Logar</v-btn>
+          <v-btn type="submit" color="#1c2256" variant="flat">Logar</v-btn>
         </v-form>
       </div>
       <div class="cardBottom">
@@ -178,10 +176,10 @@ export default {
       boxBorderColor: "rgb(28, 34, 86)",
       emailInput: "",
       passwordInput: "",
-      rules: {
-        required: (v) => !!v || "Campo obrigatório",
-      },
     };
+  },
+  computed: {
+    rules: () => Utils.rules,
   },
 
   created() {
@@ -193,7 +191,6 @@ export default {
   methods: {
     async doLogin() {
       const checkForm = await this.$refs.loginForm.validate();
-      console.log("reality: ", this.emailInput);
       if (checkForm.valid) {
         // verify institutional mail
         if (!this.emailInput.match(/\S+@\S+\.\S+/)) {

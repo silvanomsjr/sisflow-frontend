@@ -1,165 +1,174 @@
-import Cst from './constants.js';
+import Cst from "./constants.js";
 
-function isPageOnMobile(){
+function isPageOnMobile() {
   let viewportWidth = document.documentElement.clientWidth;
   return viewportWidth < Cst.SM_VIEWPORT_SIZE;
 }
 
-function handleColorSelection(colorType){
-
-  if(colorType == 'inherit'){
-    return 'inherit';
+function handleColorSelection(colorType) {
+  if (colorType == "inherit") {
+    return "inherit";
   }
-  if(colorType == 'black1'){
+  if (colorType == "black1") {
     return Cst.COLOR_BLACK1;
   }
-  if(colorType == 'black2'){
+  if (colorType == "black2") {
     return Cst.COLOR_BLACK2;
   }
-  if(colorType == 'darkblue1'){
+  if (colorType == "darkblue1") {
     return Cst.COLOR_DARKBLUE1;
   }
-  if(colorType == 'darkred'){
+  if (colorType == "darkred") {
     return Cst.COLOR_DARKRED;
   }
-  if(colorType == 'darkgreen'){
+  if (colorType == "darkgreen") {
     return Cst.COLOR_DARKGREEN;
   }
-  if(colorType == 'darkblue2'){
+  if (colorType == "darkblue2") {
     return Cst.COLOR_DARKBLUE1;
   }
-  if(colorType == 'gray1'){
+  if (colorType == "gray1") {
     return Cst.COLOR_GRAY1;
   }
-  if(colorType == 'gray2'){
+  if (colorType == "gray2") {
     return Cst.COLOR_GRAY2;
   }
-  if(colorType == 'gray3'){
+  if (colorType == "gray3") {
     return Cst.COLOR_GRAY3;
   }
-  if(colorType == 'lightblue'){
+  if (colorType == "lightblue") {
     return Cst.COLOR_LIGHTBLUE;
   }
-  if(colorType == 'white'){
+  if (colorType == "white") {
     return Cst.COLOR_WHITE;
   }
-  console.log("Warning: Wrong custom color selected " + colorType)
+  console.log("Warning: Wrong custom color selected " + colorType);
   return Cst.COLOR_BLACK1;
-
 }
 
-function handleFontType(fontType){
-
+function handleFontType(fontType) {
   let viewportWidth = document.documentElement.clientWidth;
-  let fontSize = 'inherit';
-  let fontWeight = '500';
+  let fontSize = "inherit";
+  let fontWeight = "500";
 
-  if(fontType == 'page_title'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_PAGE_TITLE : Cst.SMTEXT_PAGE_TITLE;
-    fontWeight = '600';
-  }
-  else if(fontType == 'title'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_TITLE : Cst.SMTEXT_TITLE;
-    fontWeight = '500';
-  }
-  else if(fontType == 'small'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_SMALL : Cst.SMTEXT_SMALL;
-    fontWeight = '500';
-  }
-  else if(fontType == 'small_bold'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_SMALL : Cst.SMTEXT_SMALL;
-    fontWeight = '600';
-  }
-  else if(fontType == 'normal_bold'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_NORMAL : Cst.SMTEXT_NORMAL;
-    fontWeight = '600';
-  }
-  else if(fontType == 'title_bold'){
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_TITLE : Cst.SMTEXT_TITLE;
-    fontWeight = '600';
-  }
-  else{
-    fontSize = viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_NORMAL : Cst.SMTEXT_NORMAL;
-    fontWeight = '500';
+  if (fontType == "page_title") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE
+        ? Cst.TEXT_PAGE_TITLE
+        : Cst.SMTEXT_PAGE_TITLE;
+    fontWeight = "600";
+  } else if (fontType == "title") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_TITLE : Cst.SMTEXT_TITLE;
+    fontWeight = "500";
+  } else if (fontType == "small") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_SMALL : Cst.SMTEXT_SMALL;
+    fontWeight = "500";
+  } else if (fontType == "small_bold") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_SMALL : Cst.SMTEXT_SMALL;
+    fontWeight = "600";
+  } else if (fontType == "normal_bold") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE
+        ? Cst.TEXT_NORMAL
+        : Cst.SMTEXT_NORMAL;
+    fontWeight = "600";
+  } else if (fontType == "title_bold") {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE ? Cst.TEXT_TITLE : Cst.SMTEXT_TITLE;
+    fontWeight = "600";
+  } else {
+    fontSize =
+      viewportWidth > Cst.SM_VIEWPORT_SIZE
+        ? Cst.TEXT_NORMAL
+        : Cst.SMTEXT_NORMAL;
+    fontWeight = "500";
   }
 
   return [fontSize, fontWeight];
 }
 
+function leftZerosPad(num, nChar) {
+  let tmpStr = num.toString();
+  while (tmpStr.length < nChar) tmpStr = "0" + tmpStr;
 
-function leftZerosPad(num, nChar){
-
-  let tmpStr = num.toString()
-  while(tmpStr.length < nChar)
-    tmpStr = '0' + tmpStr;
-    
-  return tmpStr
+  return tmpStr;
 }
 
-function getDateTimeString(date, dateDelim = '-', hourDelim = ':'){
-
-  if(date instanceof Date){
-    return leftZerosPad(date.getDate(), 2) + dateDelim
-      + leftZerosPad((date.getMonth()+1), 2)  + dateDelim
-      + date.getFullYear() + " "  
-      + leftZerosPad(date.getHours(), 2) + hourDelim 
-      + leftZerosPad(date.getMinutes(), 2) + hourDelim
-      + leftZerosPad(date.getSeconds(), 2);
+function getDateTimeString(date, dateDelim = "-", hourDelim = ":") {
+  if (date instanceof Date) {
+    return (
+      leftZerosPad(date.getDate(), 2) +
+      dateDelim +
+      leftZerosPad(date.getMonth() + 1, 2) +
+      dateDelim +
+      date.getFullYear() +
+      " " +
+      leftZerosPad(date.getHours(), 2) +
+      hourDelim +
+      leftZerosPad(date.getMinutes(), 2) +
+      hourDelim +
+      leftZerosPad(date.getSeconds(), 2)
+    );
   }
 }
 
-function getJsonKeyTree(json){
-
-  if(json == null){
-    return '{}'
+function getJsonKeyTree(json) {
+  if (json == null) {
+    return "{}";
   }
 
   let primaryK = Object.keys(json);
   let first = true;
-  let retString = '{';
-  
-  try{
-    primaryK.forEach(pk => {
+  let retString = "{";
 
-      if(isNaN(pk)){
-        if(first){
+  try {
+    primaryK.forEach((pk) => {
+      if (isNaN(pk)) {
+        if (first) {
           retString += pk;
           first = false;
-        }
-        else{
-          retString += ', ' + pk;
+        } else {
+          retString += ", " + pk;
         }
 
         let innerJson = getJsonKeyTree(json[pk]);
-        if(innerJson != '{}'){
+        if (innerJson != "{}") {
           retString += innerJson;
         }
       }
     });
-    retString += '}';
-  }
-  catch(error){
-    return 'getJsonKeyTree error: ' + error.message;
+    retString += "}";
+  } catch (error) {
+    return "getJsonKeyTree error: " + error.message;
   }
 
   return retString;
 }
 
-function getNameFormated(name, numWords=2){
-  let tmp = name.split(' ');
-  return ( 
-    (tmp[0] ? tmp[0] + ' ' + 
-    (tmp[1] && numWords >= 1 ? ' ' + tmp[1].charAt(0) + '.' + 
-    (tmp[2] && numWords >= 2 ? ' ' + tmp[2].charAt(0) + '.' : '') : '') : name)
+function getNameFormated(name, numWords = 2) {
+  let tmp = name.split(" ");
+  return (
+    tmp[0]
+      ? tmp[0] +
+        " " +
+        (tmp[1] && numWords >= 1
+          ? " " +
+            tmp[1].charAt(0) +
+            "." +
+            (tmp[2] && numWords >= 2 ? " " + tmp[2].charAt(0) + "." : "")
+          : "")
+      : name
   ).slice(0, 15);
 }
 
-function getUserProfile(userData, profileAcronym){
-  
-  if(userData && userData['profiles']){
-    for(let i=0; i<userData['profiles'].length; i++){
-      if(userData['profiles'][i]['profile_acronym'] == profileAcronym){
-        return userData['profiles'][i];
+function getUserProfile(userData, profileAcronym) {
+  if (userData && userData["profiles"]) {
+    for (let i = 0; i < userData["profiles"].length; i++) {
+      if (userData["profiles"][i]["profile_acronym"] == profileAcronym) {
+        return userData["profiles"][i];
       }
     }
   }
@@ -167,12 +176,27 @@ function getUserProfile(userData, profileAcronym){
   return null;
 }
 
-function validateMail(mail){
-  let mRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+function validateMail(mail) {
+  let mRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
   return mRegex.test(mail);
 }
 
-export default{
+function validateMailIns(mail) {
+  let regex = /^[a-zA-Z0-9._%+-]+@ufu\.br$/;
+  return regex.test(mail);
+}
+
+const rules = {
+  required: (v) => !!v || "Campo obrigatório",
+  emailIns: (v) =>
+    !v ||
+    /^[a-zA-Z0-9._%+-]+@ufu\.br$/.test(v) || 
+    "E-mail institucional inválido!",
+  email: (v) => !v || validateMail(v) || "E-mail inválido!",
+};
+
+export default {
   handleColorSelection,
   handleFontType,
   isPageOnMobile,
@@ -180,5 +204,7 @@ export default{
   getJsonKeyTree,
   getNameFormated,
   getUserProfile,
-  validateMail
-}
+  validateMail,
+  validateMailIns,
+  rules,
+};
