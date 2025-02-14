@@ -329,8 +329,11 @@ export default {
 
 <style>
 
-#pageWrapper {
+* {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+}
+
+#pageWrapper {
   font-weight: 500;
   font-size: var(--font-size-normal);
 }

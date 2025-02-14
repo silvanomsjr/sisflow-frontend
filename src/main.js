@@ -5,6 +5,7 @@ import router from "./router";
 // bootstrap
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
+import "@mdi/font/css/materialdesignicons.css";
 
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
@@ -69,6 +70,9 @@ library.add(
 );
 
 const vuetify = createVuetify({
+  icons: {
+    defaultSet: "mdi",
+  },
   components,
   directives,
 });

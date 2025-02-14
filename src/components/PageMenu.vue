@@ -2,7 +2,7 @@
 
   <div class="menuWrapper"
     :style="{ 
-      'background-color': this.black1
+      'background-color': this.white
     }"
     @mouseleave='this.handleMouseOut()'
     tabindex="0">

@@ -322,7 +322,7 @@ export default {
 
   data() {
     return {
-      signStep: 3,
+      signStep: 1,
       mailins: "",
       signcode: "",
       mailsec: "",

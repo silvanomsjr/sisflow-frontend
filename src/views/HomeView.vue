@@ -1,4 +1,50 @@
 <template>
+  <v-dialog v-model="filterTableModal" max-width="550">
+    <v-card>
+      <CustomBar
+        text="Filtros da tabela"
+        icon="mdi-content-save"
+        :cleanBtn="true"
+        @clearFunction="cleanTableFilter"
+        @customFunction="useTableFilter"
+      />
+      <v-form>
+        <v-card class="pa-6">
+          <v-text-field
+            v-model="solicitationFilter"
+            variant="outlined"
+            density="compact"
+            label="Solicitação"
+          />
+          <v-text-field
+            v-model="descriptionFilter"
+            variant="outlined"
+            density="compact"
+            label="Descrição"
+          />
+          <v-text-field
+            v-model="dateFilter"
+            type="date"
+            variant="outlined"
+            density="compact"
+            label="Data"
+          />
+          <v-text-field
+            v-model="decisionFilter"
+            variant="outlined"
+            density="compact"
+            label="Decisão"
+          />
+          <v-text-field
+            v-model="reasonFilter"
+            variant="outlined"
+            density="compact"
+            label="Motivo"
+          />
+        </v-card>
+      </v-form>
+    </v-card>
+  </v-dialog>
   <div v-if="this.userProfiles != null">
     <div class="pageContentRow">
       <TextCustom margin="0px 0px 15px 0px" display="block">
@@ -77,10 +123,7 @@
       <TableCustom class="tableC" :tableData="this.advisorSolTable" />
     </div>
 
-    <div
-      class="pageContentRow"
-      v-if="this.studentSolTable['content'].length > 0"
-    >
+    <div class="pageContentRow" v-if="this.allStudentSolTable.length > 0">
       <TextCustom
         customFontSize="title_bold"
         margin="20px 0px 5px 0px"
@@ -88,8 +131,9 @@
       >
         Suas solicitações
       </TextCustom>
-
-      <TableCustom class="tableC" :tableData="this.studentSolTable" />
+      <CustomBar @customFunction="openFilterModal" icon="mdi-filter" />
+      <CustomTableS :headers="headers" :items="studentSolTable"></CustomTableS>
+      <!-- <TableCustom class="tableC" :tableData="this.studentSolTable" /> -->
     </div>
 
     <div class="solicitationBox" v-if="this.userProfiles.includes('STU')">
@@ -205,7 +249,9 @@ import ButtonCustom from "../components/ButtonCustom.vue";
 import Requests from "../js/requests.js";
 import SelectCustom from "../components/SelectCustom.vue";
 import TableCustom from "../components/TableCustom.vue";
+import CustomTableS from "../components/CustomTableS.vue";
 import TextCustom from "../components/TextCustom.vue";
+import CustomBar from "../components/CustomBar.vue";
 //import Utils from '../js/utils.js'
 
 export default {
@@ -215,6 +261,8 @@ export default {
     ButtonCustom,
     SelectCustom,
     TableCustom,
+    CustomTableS,
+    CustomBar,
     TextCustom,
   },
 
@@ -222,6 +270,23 @@ export default {
     return {
       userProfiles: null,
       searchTerm: "",
+
+      filterTableModal: null,
+      solicitationFilter: "",
+      descriptionFilter: "",
+      dateFilter: "",
+      decisionFilter: "",
+      reasonFilter: "",
+
+      headers: [
+        { title: "Solicitação", key: "solicitation_name", align: "center" },
+        { title: "Descrição", key: "state_description", align: "center" },
+        { title: "Data", key: "state_start_datetime", align: "center" },
+        { title: "Decisão", key: "state_decision", align: "end" },
+        { title: "Motivo", key: "state_reason", align: "center" },
+        { title: "Ação", align: "center" },
+      ],
+
       coordinatorSolTable: {
         titles: [
           "Aluno",
@@ -268,26 +333,8 @@ export default {
         colWidths: ["11%", "15%", "30%", "10%", "15%", "12%", "7%"],
         content: [],
       },
-      studentSolTable: {
-        titles: [
-          "Solicitação",
-          "Descrição",
-          "Data",
-          "Decisão",
-          "Motivo",
-          "Ação",
-        ],
-        colTypes: [
-          "string",
-          "string",
-          "string",
-          "string",
-          "string",
-          "iconfunction",
-        ],
-        colWidths: ["18%", "35%", "15%", "10%", "15%", "7%"],
-        content: [],
-      },
+      studentSolTable: [],
+      allStudentSolTable: [],
       selectedSolType: null,
       employmentRelationship: null,
       intershipLocal: null,
@@ -393,6 +440,46 @@ export default {
   mounted() {},
 
   methods: {
+    cleanTableFilter() {
+      this.solicitationFilter = "";
+      this.descriptionFilter = "";
+      this.dateFilter = "";
+      this.decisionFilter = "";
+      this.studentSolTable = this.allStudentSolTable;
+      this.filterTableModal = false;
+    },
+
+    useTableFilter() {
+      if (
+        !this.solicitationFilter &&
+        !this.descriptionFilter &&
+        !this.dateFilter &&
+        !this.decisionFilter
+      ) {
+        this.studentSolTable = this.allStudentSolTable;
+      }
+      this.studentSolTable = this.allStudentSolTable?.filter((tableItem) => {
+        return (
+          tableItem?.solicitation_name
+            .toLowerCase()
+            .includes(this.solicitationFilter) &&
+          tableItem?.state_description
+            .toLowerCase()
+            .includes(this.descriptionFilter) &&
+          tableItem?.state_start_datetime.includes(
+            this.dateFilter.replaceAll("-", "/")
+          ) &&
+          tableItem?.state_decision
+            .toLowerCase()
+            .includes(this.decisionFilter) &&
+          tableItem?.state_reason.toLowerCase().includes(this.reasonFilter)
+        );
+      });
+      this.filterTableModal = false;
+    },
+    openFilterModal() {
+      this.filterTableModal = true;
+    },
     async loadCoordinatorSolTable() {
       let vreturnCoor = await this.$root.doRequest(
         Requests.getCoordinatorSolicitations,
@@ -407,6 +494,7 @@ export default {
           solicitation["states"].forEach((state) => {
             // set icon name
             let iconName = null;
+            // let iconNameTeste = null;
             if (
               state["state_profile_acronyms"] &&
               pageContext.userProfiles.includes("COO") &&
@@ -415,6 +503,7 @@ export default {
               state["state_decision"] == "Em analise"
             ) {
               iconName = "fa-solid fa-pencil";
+              // iconNameTeste = "mdi-pencil";
             } else if (
               state["state_profile_acronyms"] &&
               pageContext.userProfiles.includes("ADV") &&
@@ -424,11 +513,13 @@ export default {
               state["state_decision"] == "Em analise"
             ) {
               iconName = "fa-solid fa-pencil";
+              // iconNameTeste = "mdi-pencil";
             } else if (
               !state["state_active"] ||
               !state["state_profile_acronyms"]
             ) {
               iconName = "fa-solid fa-eye";
+              // iconNameTeste = "mdi-eye";
             }
 
             // load table data
@@ -479,6 +570,7 @@ export default {
           solicitation["states"].forEach((state) => {
             // set icon name
             let iconName = null;
+            // let iconNameTeste = null;
             if (
               state["state_profile_acronyms"] &&
               pageContext.userProfiles.includes("ADV") &&
@@ -489,11 +581,14 @@ export default {
                 state["state_decision"] == "Em analise"
               ) {
                 iconName = "fa-solid fa-pencil";
+                // iconNameTeste = "mdi-pencil";
               } else {
                 iconName = "fa-solid fa-eye";
+                // iconNameTeste = "mdi-eye";
               }
             } else if (!state["state_profile_acronyms"]) {
               iconName = "fa-solid fa-eye";
+              // iconNameTeste = "mdi-eye";
             }
 
             // load table data
@@ -536,6 +631,7 @@ export default {
       if (vreturnStud && vreturnStud["ok"]) {
         let pageContext = this;
         pageContext.studentSolTable["content"] = [];
+        console.log("pageContext: ", pageContext);
 
         vreturnStud["response"]["solicitations"].forEach((solicitation) => {
           solicitation["states"].forEach((state) => {
@@ -550,39 +646,63 @@ export default {
                 state["state_active"] &&
                 state["state_decision"] == "Em analise"
               ) {
-                iconName = "fa-solid fa-pencil";
+                iconName = "mdi-pencil";
               } else {
-                iconName = "fa-solid fa-eye";
+                iconName = "mdi-eye";
               }
             } else if (!state["state_profile_acronyms"]) {
-              iconName = "fa-solid fa-eye";
+              iconName = "mdi-eye";
             }
 
             // load table data
-            this.studentSolTable["content"].push([
-              solicitation["solicitation_name"],
-              state["state_description"],
-              state["state_start_datetime"]
-                ? state["state_start_datetime"].replaceAll("-", "/")
+            // this.studentSolTable["content"].push([
+            //   solicitation["solicitation_name"],
+            //   state["state_description"],
+            //   state["state_start_datetime"]
+            //     ? state["state_start_datetime"].replaceAll("-", "/")
+            //     : "",
+            //   state["state_decision"],
+            //   state["state_reason"],
+            //   {
+            //     iconName: iconName,
+            //     iconSelFunction: function () {
+            //       if (iconName) {
+            //         pageContext.$root.renderView(
+            //           state["state_static_page_name"]
+            //             ? state["state_static_page_name"]
+            //             : "solicitation",
+            //           { user_has_state_id: state["user_has_state_id"] }
+            //         );
+            //       }
+            //     },
+            //   },
+            // ]);
+
+            const studentSolTableEntry = {
+              solicitation_name: solicitation.solicitation_name,
+              state_description: state.state_description,
+              state_start_datetime: state.state_start_datetime
+                ? state.state_start_datetime.replaceAll("-", "/")
                 : "",
-              state["state_decision"],
-              state["state_reason"],
-              {
-                iconName: iconName,
-                iconSelFunction: function () {
-                  if (iconName) {
-                    pageContext.$root.renderView(
-                      state["state_static_page_name"]
-                        ? state["state_static_page_name"]
-                        : "solicitation",
-                      { user_has_state_id: state["user_has_state_id"] }
-                    );
-                  }
-                },
+              state_decision: state.state_decision,
+              state_reason: state.state_reason,
+              icon: iconName,
+              actionFunction: function () {
+                if (iconName) {
+                  pageContext.$root.renderView(
+                    state["state_static_page_name"]
+                      ? state["state_static_page_name"]
+                      : "solicitation",
+                    { user_has_state_id: state["user_has_state_id"] }
+                  );
+                }
               },
-            ]);
+            };
+
+            this.allStudentSolTable.push(studentSolTableEntry);
           });
         });
+        this.studentSolTable = this.allStudentSolTable;
       } else {
         this.$root.renderRequestErrorMsg(vreturnStud);
       }
@@ -653,6 +773,10 @@ export default {
 
 <!-- style applies only to this component -->
 <style scoped>
+:deep(.v-input) .v-input__control input[type="date"] {
+  display: inline-block;
+}
+
 .search-bar {
   width: 100%;
   padding: 10px;
