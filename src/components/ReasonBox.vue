@@ -47,7 +47,7 @@
           :initialValue="reason['reason_selected'] == true"
           @checkBoxClicked="(checkValue) => this.setMailTemplateHtml(reason['reason_id'], checkValue)"
         />
-        <span v-html="reason['reason_inner_html']"/>
+        <span class="custom_span" v-html="reason['reason_inner_html']"/>
       </div>
     </div>
 
@@ -284,5 +284,7 @@ export default {
 .boxReasonElementCheck{
   margin-right: 10px;
 }
-
+.custom_span {
+  line-height: 1.4rem;
+}
 </style>

@@ -161,14 +161,33 @@
           >
             Tipo de solicitação
           </TextCustom>
-          <SelectCustom
+          <!-- <SelectCustom
             id="solicitationTypeSelect"
-            ref="solicitationTypeSelect"
+            ref="solicitationTypeSelect2"
             name="solicitationType"
             class="solicitationBoxSelect"
             placeholder="Selecione: "
             :items="this.solicitationTypes"
             @optClicked="
+              (optValue) => {
+                console.log('this.refs: ', this.$refs)
+                this.selectedSolType = optValue;
+                this.handleOptsClick(true);
+              }
+            "
+          /> -->
+          <v-combobox
+            id="solicitationTypeSelect"
+            ref="solicitationTypeSelect"
+            placeholder="Selecione:"
+            :items="solicitationTypes"
+            item-value="value"
+            style="padding: .6rem; max-width: 400px;"
+            item-title="label"
+            variant="outlined"
+            density="compact"
+            :return-object="false"
+            @update:modelValue="
               (optValue) => {
                 this.selectedSolType = optValue;
                 this.handleOptsClick(true);
@@ -206,14 +225,33 @@
           >
             Relação de trabalho
           </TextCustom>
-          <SelectCustom
-            id="employmentRelationshipSelect"
-            ref="employmentRelationshipSelect"
-            name="employmentRelationship"
-            class="solicitationBoxSelect"
-            placeholder="Selecione: "
-            :items="this.employmentRelationships"
-            @optClicked="
+          <!-- <SelectCustom -->
+          <!--   id="employmentRelationshipSelect" -->
+          <!--   ref="employmentRelationshipSelect" -->
+          <!--   name="employmentRelationship" -->
+          <!--   class="solicitationBoxSelect" -->
+          <!--   placeholder="Selecione: " -->
+          <!--   :items="this.employmentRelationships" -->
+          <!--   @optClicked=" -->
+          <!--     (optValue) => { -->
+          <!--       this.employmentRelationship = optValue; -->
+          <!--       this.handleOptsClick(); -->
+          <!--     } -->
+          <!--   " -->
+          <!-- /> -->
+          <v-combobox
+            placeholder="Selecione:"
+            id="employmentRelationship"
+            v-model="employmentRelationshipSelect"
+            ref="employmentRelationship"
+            :items="employmentRelationships"
+            item-value="value"
+            style="padding: .6rem; max-width: 400px;"
+            item-title="label"
+            variant="outlined"
+            density="compact"
+            :return-object="false"
+            @update:modelValue="
               (optValue) => {
                 this.employmentRelationship = optValue;
                 this.handleOptsClick();
@@ -226,16 +264,11 @@
       <div class="solicitationBoxItem">
         <div class="btnWrapper">
           <div class="btn">
-            <ButtonCustom
-              id="btnSendSol"
-              label="Iniciar"
-              customTextColor="white"
-              customBackColor="darkblue1"
-              customFontSize="normal"
-              width="150px"
-              padding="3px 20px"
+            <CustomButtonS
+              text="Iniciar"
               :disabled="this.btnSendSolDisabled"
-              @click="createSolicitation"
+              style="width: 150px; padding: 3px 20px;"
+              @customFunction="createSolicitation"
             />
           </div>
         </div>
@@ -245,29 +278,29 @@
 </template>
 
 <script>
-import ButtonCustom from "../components/ButtonCustom.vue";
 import Requests from "../js/requests.js";
-import SelectCustom from "../components/SelectCustom.vue";
+// import SelectCustom from "../components/SelectCustom.vue";
 import TableCustom from "../components/TableCustom.vue";
 import CustomTableS from "../components/CustomTableS.vue";
 import TextCustom from "../components/TextCustom.vue";
 import CustomBar from "../components/CustomBar.vue";
+import CustomButtonS from "@/components/CustomButtonS.vue";
 //import Utils from '../js/utils.js'
 
 export default {
   name: "HomeView",
 
   components: {
-    ButtonCustom,
-    SelectCustom,
     TableCustom,
     CustomTableS,
     CustomBar,
+    CustomButtonS,
     TextCustom,
   },
 
   data() {
     return {
+      seila: "",
       userProfiles: null,
       searchTerm: "",
 
@@ -277,6 +310,8 @@ export default {
       dateFilter: "",
       decisionFilter: "",
       reasonFilter: "",
+
+      employmentRelationshipSelect: null,
 
       headers: [
         { title: "Solicitação", key: "solicitation_name", align: "center" },
@@ -710,15 +745,19 @@ export default {
 
     handleOptsClick(restartValues = false) {
       if (restartValues) {
+        this.employmentRelationshipSelect = null;
         this.employmentRelationship = null;
         this.intershipLocal = null;
         if (this.$refs.intershipLocalSelect) {
           this.$refs.intershipLocalSelect.setV(null);
         }
         if (this.$refs.employmentRelationshipSelect) {
-          this.$refs.employmentRelationshipSelect.setV(null);
+          this.employmentRelationshipSelect = null;
         }
       }
+
+      console.log("this.selectsoltype: ", this.selectedSolType)
+      console.log("this.employmentRelationship= ", this.employmentRelationship)
 
       if (
         this.selectedSolType == "Início de estágio obrigatório" &&

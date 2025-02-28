@@ -24,9 +24,34 @@
 
     </div>
 
-    <DetailsCard 
+    <!-- <DetailsCard 
       id="stuDetails" title="Dados do aluno solicitante" :showItemsOnStart="true" :items="this.studentDetailsCardItems"
-    />
+    /> -->
+    <v-expansion-panels
+      style="margin: 10px 0;"
+      v-model="expansionPanel"
+    >
+      <v-expansion-panel>
+        <v-expansion-panel-title>
+          <h3 class="detailsTitle">
+            Dados do aluno solicitante
+          </h3>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <v-row dense>
+            <v-col
+              v-for="item in studentDetailsCardItems"
+              :key="item?.value"
+              cols="12"
+              sm="12"
+              md="12"
+            >
+              <b>{{ item?.label }}:</b> {{ item?.value }}
+            </v-col>
+          </v-row>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
 
     <FileDownload v-if="this.histTextual"
       id='downht' titleText="Faça o download do histórico textual" class="fileD"
@@ -60,7 +85,7 @@
 <script>
 
 import ButtonCustom from '../../components/ButtonCustom.vue'
-import DetailsCard from '../../components/DetailsCard.vue'
+// import DetailsCard from '../../components/DetailsCard.vue'
 import FileDownload from '../../components/FileDownload.vue'
 import ReasonBox from '../../components/ReasonBox.vue'
 import Requests from '../../js/requests.js'
@@ -72,7 +97,6 @@ export default {
 
   components: {
     ButtonCustom,
-    DetailsCard,
     FileDownload,
     ReasonBox,
     TextCustom
@@ -80,6 +104,7 @@ export default {
 
   data() {
     return {
+      expansionPanel: 0,
       histTextual: null,
       histVisual: null,
       vinculoE: null,
@@ -264,6 +289,11 @@ export default {
 
 <!-- style applies only to this component -->
 <style scoped>
+
+.detailsTitle{
+  font-weight: bold;
+  font-size: var(--font-size-title);
+}
 
 .pageContentRow{
   margin-top: 15px;

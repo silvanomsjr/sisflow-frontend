@@ -48,6 +48,10 @@ export default {
     }
   },
 
+  mounted() {
+    console.log("items: ", this.$props.items)
+  },
+
   created() {
     if(this.showItemsOnStart){
       this.showItems = true;
